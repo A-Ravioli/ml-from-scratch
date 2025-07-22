@@ -1,12 +1,14 @@
 # LSTM: Long Short-Term Memory Networks
 
 ## Prerequisites
+
 - Vanilla RNN architecture and limitations
 - Gradient flow and vanishing gradient problem
 - Gating mechanisms and sigmoid activation
 - Sequence modeling concepts
 
 ## Learning Objectives
+
 - Master the LSTM cell design and gating mechanisms
 - Understand how LSTMs solve the vanishing gradient problem
 - Implement bidirectional and stacked LSTM architectures
@@ -18,13 +20,16 @@
 ### 1. The Vanishing Gradient Problem in RNNs
 
 #### Gradient Flow in Vanilla RNNs
+
 For a vanilla RNN with hidden state recursion:
-```
+
+```LaTeX
 h_t = tanh(W_hh h_{t-1} + W_xh x_t + b_h)
 ```
 
 The gradient flows as:
-```
+
+```LaTeX
 ∂h_t/∂h_{t-k} = ∏_{i=1}^k ∂h_{t-i+1}/∂h_{t-i}
 ```
 
