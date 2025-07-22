@@ -1,0 +1,44 @@
+# ML From Scratch - Python Dependencies
+# Core machine learning and deep learning curriculum implementation
+# Updated: July 2025
+
+# Core Scientific Computing
+numpy>=1.24.0
+scipy>=1.10.0
+matplotlib>=3.6.0
+
+# Traditional Machine Learning
+scikit-learn>=1.3.0
+
+# Deep Learning Framework
+torch>=2.0.0
+torchvision>=0.15.0
+torchaudio>=2.0.0
+
+# Geometric Deep Learning (Graph Neural Networks)
+# torch-geometric>=2.3.0
+# torch-sparse>=0.6.17
+# torch-cluster>=1.6.1
+# torch-scatter>=2.1.1
+
+# Optimization
+cvxpy>=1.3.0
+
+# Testing Framework
+pytest>=7.4.0
+pytest-cov>=4.1.0
+
+# Additional utilities for advanced chapters
+networkx>=3.1  # For graph algorithms and visualization
+seaborn>=0.12.0  # Enhanced statistical visualizations
+pandas>=2.0.0  # Data manipulation (used in some examples)
+tqdm>=4.65.0  # Progress bars for long-running computations
+
+# Optional: Jupyter ecosystem for interactive development
+jupyter>=1.0.0
+ipykernel>=6.25.0
+nbformat>=5.9.0
+
+# Optional: Additional visualization tools
+plotly>=5.15.0  # Interactive plotting
+tensorboard>=2.13.0  # Training visualization
