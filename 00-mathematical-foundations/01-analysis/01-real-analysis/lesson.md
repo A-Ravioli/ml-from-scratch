@@ -208,36 +208,6 @@ Let (X, d) be a metric space.
 - A set U ⊆ X is **open** if for every x ∈ U, there exists ε > 0 such that B(x, ε) ⊆ U
 - A set C ⊆ X is **closed** if its complement X \ C is open
 
-#### Intuitive Understanding: Open vs Closed Sets
-
-**Open Sets: "Fuzzy Boundaries"**
-Think of an open set as having "fuzzy" or "soft" boundaries. If you're inside an open set, you can wiggle around a little bit and still stay inside.
-
-**Visual Example**:
-
-- An open interval (0,1) on the number line
-- If you're at 0.5, you can move a tiny bit left or right and still be in (0,1)
-- But if you're at 0.999, you can only move left (moving right would take you outside)
-
-**Closed Sets: "Hard Boundaries"**
-Closed sets have "hard" boundaries that include their edge points. If a sequence converges to a point on the boundary, that point is included in the set.
-
-**Visual Example**:
-
-- A closed interval [0,1] on the number line
-- The points 0 and 1 are included in the set
-- If a sequence converges to 0 or 1, the limit is in the set
-
-**Key Insight**:
-
-- **Open**: You can always find a small "bubble" around any point that stays inside
-- **Closed**: The set contains all its "limit points" - points that sequences can converge to
-
-**ML Connection**:
-
-- Open sets are important for optimization (you can always take a small step and stay in the feasible region)
-- Closed sets are important for convergence (if your algorithm converges to a point, you know it's in the set)
-
 ### 2. Sequences and Convergence
 
 #### Definition 2.1 (Convergence)
