@@ -267,6 +267,15 @@ Let (X, dₓ) and (Y, dᵧ) be metric spaces. A function f: X → Y is continuou
 
 f is continuous at x₀ ⟺ for every sequence xₙ → x₀, we have f(xₙ) → f(x₀)
 
+#### Intuitive Understanding: What is Continuity?
+
+- **Small input wiggle → small output wiggle**: If you nudge x a tiny bit (within some δ-window), f(x) only moves a little (within an ε-window). The ε–δ definition formalizes this “no nasty surprises” idea.
+- **No jumps or tears**: You can “draw” the graph near x₀ without teleporting. Continuity is local: it’s about the behavior arbitrarily close to a single point.
+- **Robustness to perturbations**: In modeling, continuous maps don’t amplify vanishingly small input changes into large output swings.
+- **Examples**:
+  - Continuous: f(x) = x²; ReLU(x) = max{0, x} (continuous everywhere, though not differentiable at 0).
+  - Not continuous: step/threshold functions like sign(x) at 0; piecewise definitions with mismatched endpoints.
+
 #### ML Connection: Loss Functions
 
 Continuity ensures small changes in parameters lead to small changes in loss - crucial for gradient-based optimization!
@@ -280,6 +289,16 @@ A set K ⊆ X is compact if every open cover has a finite subcover.
 #### Theorem 4.1 (Heine-Borel)
 
 In ℝⁿ, a set is compact ⟺ it is closed and bounded.
+
+#### Intuitive Understanding: What is Compactness?
+
+- **Finite coverability**: No matter how you try to cover the set with tiny open balls, you can always do it with finitely many. Intuitively, the set has no “loose ends” or infinite sprawl.
+- **No escape to infinity**: Every infinite sequence inside the set has a convergent subsequence that stays in the set (sequential compactness). You can’t keep running off without settling somewhere.
+- **In ℝⁿ = closed + bounded**: Bounded prevents running to infinity; closed ensures limit points don’t fall outside.
+- **Examples**:
+  - Compact: closed intervals like [0,1], closed balls, finite unions of such sets.
+  - Not compact: (0,1) (not closed; sequence 1/n → 0 exits the set), ℝⁿ (unbounded), open balls.
+- **Why it matters**: Continuous functions on compact sets attain their maxima and minima (extreme value theorem). Optimization on compact parameter domains guarantees existence of an optimum.
 
 #### ML Application
 
