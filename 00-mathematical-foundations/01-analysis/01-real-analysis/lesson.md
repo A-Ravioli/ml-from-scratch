@@ -217,6 +217,29 @@ A sequence {xₙ} in a metric space (X, d) converges to x ∈ X if:
 
 We write: lim(n→∞) xₙ = x or xₙ → x
 
+#### Intuitive Understanding: What is Convergence?
+
+**The ε-N Game**
+The formal definition says: "Pick any small number ε > 0. I can find a point N in the sequence such that from N onward, all terms are within ε of the limit."
+
+**Examples**:
+
+- **Converging**: 1, 1/2, 1/3, 1/4, ... → 0
+- **Not converging**: 1, -1, 1, -1, 1, -1, ... (oscillates)
+- **Converging**: 0.9, 0.99, 0.999, 0.9999, ... → 1
+
+**Why Uniqueness Matters**
+If a sequence could converge to two different limits, you'd have a paradox:
+
+- How can you get arbitrarily close to both point A and point B?
+- The triangle inequality prevents this (as the proof shows)
+
+**ML Connection**:
+
+- Gradient descent: θₜ → θ* (parameters converge to optimum)
+- Training loss: L(θₜ) → L* (loss converges to minimum)
+- Validation accuracy: A(θₜ) → A* (accuracy converges to best)
+
 #### Theorem 2.1 (Uniqueness of Limits)
 
 **Proof**: Suppose xₙ → x and xₙ → y with x ≠ y. Let ε = d(x,y)/2 > 0.
