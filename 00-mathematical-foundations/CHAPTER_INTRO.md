@@ -21,25 +21,7 @@ This chapter follows a **theorem-proof-application** paradigm. Each section buil
 
 ## Section-by-Section Approach
 
-### 01. Analysis
-
-**Focus**: Convergence, continuity, and limiting behavior of functions and sequences.
-
-**Study Strategy**:
-
-1. **Start with Real Analysis** - Master convergence concepts, uniform convergence, and function spaces
-2. **Progress to Functional Analysis** - Understand infinite-dimensional spaces, operators, and duality
-3. **Connect to ML**: Convergence of gradient descent, universal approximation theorems, reproducing kernel Hilbert spaces
-
-**Key Skills to Develop**:
-
-- ε-δ arguments and convergence proofs
-- Function space analysis (L^p spaces, Sobolev spaces)
-- Operator theory for understanding neural network dynamics
-
-**Time Investment**: 3-4 weeks for solid foundation
-
-### 02. Linear Algebra
+### 01. Linear Algebra
 
 **Focus**: Advanced linear algebra beyond undergraduate level, emphasizing computational and geometric perspectives.
 
@@ -57,6 +39,24 @@ This chapter follows a **theorem-proof-application** paradigm. Each section buil
 - Tensor operations for deep learning architectures
 
 **Time Investment**: 2-3 weeks (building on undergraduate knowledge)
+
+### 02. Analysis
+
+**Focus**: Convergence, continuity, and limiting behavior of functions and sequences.
+
+**Study Strategy**:
+
+1. **Start with Real Analysis** - Master convergence concepts, uniform convergence, and function spaces
+2. **Progress to Functional Analysis** - Understand infinite-dimensional spaces, operators, and duality
+3. **Connect to ML**: Convergence of gradient descent, universal approximation theorems, reproducing kernel Hilbert spaces
+
+**Key Skills to Develop**:
+
+- ε-δ arguments and convergence proofs
+- Function space analysis (L^p spaces, Sobolev spaces)
+- Operator theory for understanding neural network dynamics
+
+**Time Investment**: 3-4 weeks for solid foundation
 
 ### 03. Probability Theory
 
@@ -143,8 +143,8 @@ This chapter follows a **theorem-proof-application** paradigm. Each section buil
 
 ### Weekly Goals
 
-- **Week 1-2**: Analysis foundations, convergence concepts
-- **Week 3-4**: Linear algebra, matrix decompositions, spectral theory
+- **Week 1-2**: Linear algebra, matrix decompositions, spectral theory
+- **Week 3-4**: Analysis foundations, convergence concepts
 - **Week 5-6**: Probability theory, measure theory, stochastic processes
 - **Week 7-8**: Optimization theory, convex analysis
 - **Week 9-10**: Information geometry (optional), integration and review
