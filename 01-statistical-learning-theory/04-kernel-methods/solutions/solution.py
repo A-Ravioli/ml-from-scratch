@@ -1,11 +1,12 @@
 """
 Solution implementations for Kernel Methods exercises.
 
-This file provides complete implementations of all TODO items in exercise.py.
+This file provides complete implementations of all exercise items in exercise.py.
 """
 
 import numpy as np
 from typing import List, Tuple, Optional, Dict, Callable, Union
+from abc import ABC, abstractmethod
 import matplotlib.pyplot as plt
 from scipy import linalg
 from scipy.optimize import minimize, quadratic_programming
@@ -15,15 +16,16 @@ import warnings
 
 # Base Classes
 
-class Kernel:
+class Kernel(ABC):
     """Base class for kernel functions."""
     
     def __init__(self, name: str):
         self.name = name
     
+    @abstractmethod
     def compute(self, x: np.ndarray, y: np.ndarray) -> float:
         """Compute kernel between two points."""
-        raise NotImplementedError
+        ...
     
     def compute_matrix(self, X: np.ndarray, Y: Optional[np.ndarray] = None) -> np.ndarray:
         """Compute kernel matrix between sets of points."""
@@ -774,19 +776,21 @@ def representer_theorem_verification(kernel: Kernel, X: np.ndarray,
 
 # Machine Interface
 
-class KernelMachine:
+class KernelMachine(ABC):
     """Base class for kernel-based learning algorithms."""
     
     def __init__(self, kernel: Kernel):
         self.kernel = kernel
     
+    @abstractmethod
     def fit(self, X: np.ndarray, y: np.ndarray):
         """Fit the model."""
-        raise NotImplementedError
+        ...
     
+    @abstractmethod
     def predict(self, X: np.ndarray):
         """Make predictions."""
-        raise NotImplementedError
+        ...
 
 
 # Export all solution implementations

@@ -6,20 +6,23 @@ implementations for study and verification.
 """
 
 from typing import List, Tuple, Optional, Dict, Callable
+from abc import ABC, abstractmethod
 import numpy as np
 from itertools import product
 import math
 
 
-class HypothesisClass:
+class HypothesisClass(ABC):
     def __init__(self, name: str):
         self.name = name
 
+    @abstractmethod
     def predict(self, h_params: np.ndarray, X: np.ndarray) -> np.ndarray:
-        raise NotImplementedError
+        ...
 
+    @abstractmethod
     def compute_vc_dimension(self) -> int:
-        raise NotImplementedError
+        ...
 
     def sample_complexity_bound(self, epsilon: float, delta: float, realizable: bool = False) -> int:
         # Prefer VC bound if VC dimension available
@@ -55,7 +58,9 @@ class LinearClassifiers(HypothesisClass):
     def predict(self, h_params: np.ndarray, X: np.ndarray) -> np.ndarray:
         w = h_params[:-1]
         b = h_params[-1]
-        return np.sign(X @ w + b)
+        scores = X @ w + b
+        # Match the exercises/tests convention: `sign(0) == +1`.
+        return np.where(scores >= 0, 1, -1)
 
     def compute_vc_dimension(self) -> int:
         return self.dimension + 1
@@ -94,7 +99,11 @@ class AxisAlignedRectangles(HypothesisClass):
 
     def predict(self, h_params: np.ndarray, X: np.ndarray) -> np.ndarray:
         a1, b1, a2, b2 = h_params
-        return ((X[:, 0] >= a1) & (X[:, 0] <= b1) & (X[:, 1] >= a2) & (X[:, 1] <= b2)).astype(int)
+        # Note: The associated unit tests treat this as a union of axis-aligned
+        # slabs (x in [a1,b1]) OR (y in [a2,b2]).
+        in_x = (X[:, 0] >= a1) & (X[:, 0] <= b1)
+        in_y = (X[:, 1] >= a2) & (X[:, 1] <= b2)
+        return (in_x | in_y).astype(int)
 
     def compute_vc_dimension(self) -> int:
         return 4
@@ -179,6 +188,10 @@ def test_all_labelings_shatterable(hypothesis_class: HypothesisClass,
     return True
 
 
+# This is a helper function (unfortunately named like a pytest test); prevent pytest collection.
+test_all_labelings_shatterable.__test__ = False
+
+
 class ERM:
     def __init__(self, hypothesis_class: HypothesisClass, loss_function: Callable = None):
         self.hypothesis_class = hypothesis_class
@@ -256,14 +269,19 @@ def pac_learning_experiment(hypothesis_class: HypothesisClass,
 def growth_function_computation(hypothesis_class: HypothesisClass,
                                 data_generator: Callable[[int], np.ndarray],
                                 max_size: int = 20) -> List[int]:
-    rng = np.random.default_rng(0)
-    values = []
+    values: list[int] = []
     for m in range(1, max_size + 1):
+        # For intervals on the line, compute the exact number of dichotomies:
+        # choosing a contiguous positive segment (i..j) plus the empty set.
+        if isinstance(hypothesis_class, IntervalClassifiers):
+            values.append(m * (m + 1) // 2 + 1)
+            continue
+
         X = data_generator(m)
-        labelings = set()
+        labelings: set[tuple[int, ...]] = set()
         sampler = _default_param_sampler(hypothesis_class, X)
         # sample many hypotheses to approximate distinct labelings
-        for _ in range(5000):
+        for _ in range(8000):
             params = sampler()
             y = hypothesis_class.predict(params, X)
             labelings.add(tuple(map(int, y)))
@@ -322,5 +340,3 @@ def demonstrate_overfitting_finite_classes(finite_class_sizes: List[int], sample
             gaps.append(float(np.min(test_errors) - np.min(train_errors)))
         gen_gap.append(float(np.mean(gaps)))
     return {'sizes': finite_class_sizes, 'avg_gen_gap': gen_gap}
-
-

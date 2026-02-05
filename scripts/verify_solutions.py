@@ -99,6 +99,16 @@ def run_pytest(topic_temp_dir: Path, *, timeout_s: int) -> tuple[int, str, str]:
     return p.returncode, p.stdout, p.stderr
 
 
+def _coerce_text(value: object) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, str):
+        return value
+    if isinstance(value, (bytes, bytearray)):
+        return value.decode("utf-8", errors="ignore")
+    return str(value)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--all", action="store_true", help="Verify all topics with tests+solutions")
@@ -132,8 +142,8 @@ def main() -> int:
                 ok = rc == 0
             except subprocess.TimeoutExpired as e:
                 rc = 124
-                out = e.stdout or ""
-                err = (e.stderr or "") + "\nTIMEOUT"
+                out = _coerce_text(e.stdout)
+                err = _coerce_text(e.stderr) + "\nTIMEOUT"
                 ok = False
             except Exception as e:
                 rc = 1
@@ -162,4 +172,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

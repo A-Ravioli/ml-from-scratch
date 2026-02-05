@@ -1,11 +1,12 @@
 """
 Solution implementations for Instance-Based Learning exercises.
 
-This file provides complete implementations of all TODO items in exercise.py.
+This file provides complete implementations of all exercise items in exercise.py.
 """
 
 import numpy as np
 from typing import List, Tuple, Optional, Dict, Callable, Union
+from abc import ABC, abstractmethod
 import matplotlib.pyplot as plt
 from collections import Counter
 from scipy.spatial.distance import cdist
@@ -14,15 +15,16 @@ import warnings
 
 # Base Classes
 
-class DistanceMetric:
+class DistanceMetric(ABC):
     """Base class for distance metrics."""
     
     def __init__(self, name: str):
         self.name = name
     
+    @abstractmethod
     def compute(self, x1: np.ndarray, x2: np.ndarray) -> float:
         """Compute distance between two points."""
-        raise NotImplementedError
+        ...
     
     def compute_matrix(self, X1: np.ndarray, X2: Optional[np.ndarray] = None) -> np.ndarray:
         """Compute distance matrix between sets of points."""

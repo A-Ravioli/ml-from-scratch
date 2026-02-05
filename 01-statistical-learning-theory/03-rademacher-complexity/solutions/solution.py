@@ -1,18 +1,19 @@
 """
 Solution implementations for Rademacher Complexity exercises.
 
-This file provides complete implementations of all TODO items in exercise.py.
+This file provides complete implementations of all exercise items in exercise.py.
 """
 
 import numpy as np
 from typing import List, Tuple, Optional, Dict, Callable
+from abc import ABC, abstractmethod
 import matplotlib.pyplot as plt
 from scipy import stats
 from scipy.optimize import minimize
 import warnings
 
 
-class FunctionClass:
+class FunctionClass(ABC):
     """
     Base class for function classes in Rademacher complexity analysis.
     """
@@ -20,6 +21,7 @@ class FunctionClass:
     def __init__(self, name: str):
         self.name = name
     
+    @abstractmethod
     def evaluate(self, f_params: np.ndarray, X: np.ndarray) -> np.ndarray:
         """
         Evaluate function on data.
@@ -31,11 +33,12 @@ class FunctionClass:
         Returns:
             Function values
         """
-        raise NotImplementedError
+        ...
     
+    @abstractmethod
     def sample_function(self) -> np.ndarray:
         """Sample random function parameters."""
-        raise NotImplementedError
+        ...
 
 
 class LinearFunctions(FunctionClass):
@@ -450,9 +453,6 @@ class GaussianComplexity:
     Gaussian complexity computation and comparison with Rademacher.
     """
     
-    def __init__(self):
-        pass
-    
     def compute_gaussian_complexity(self, function_class: FunctionClass,
                                   X: np.ndarray,
                                   n_samples: int = 1000) -> float:
@@ -609,9 +609,6 @@ class StabilityRadmacherConnection:
     """
     Explore connection between algorithmic stability and Rademacher complexity.
     """
-    
-    def __init__(self):
-        pass
     
     def analyze_stable_algorithm(self, algorithm: Callable,
                                 data_generator: Callable,

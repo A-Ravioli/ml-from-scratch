@@ -1,18 +1,19 @@
 """
 Solution implementations for VC Dimension and Complexity Measures exercises.
 
-This file provides complete implementations of all TODO items in exercise.py.
+This file provides complete implementations of all exercise items in exercise.py.
 """
 
 import numpy as np
 from typing import List, Tuple, Optional, Dict, Callable, Set
+from abc import ABC, abstractmethod
 import matplotlib.pyplot as plt
 from itertools import combinations, product
 from scipy.special import comb
 import warnings
 
 
-class AdvancedHypothesisClass:
+class AdvancedHypothesisClass(ABC):
     """
     Advanced hypothesis class with VC dimension analysis tools.
     """
@@ -22,9 +23,10 @@ class AdvancedHypothesisClass:
         self.computed_vc_dim = None
         self.growth_function_cache = {}
     
+    @abstractmethod
     def predict(self, h_params: np.ndarray, X: np.ndarray) -> np.ndarray:
         """Make predictions with hypothesis."""
-        raise NotImplementedError
+        ...
     
     def enumerate_restrictions(self, points: np.ndarray) -> Set[Tuple]:
         """
@@ -72,7 +74,8 @@ class AdvancedHypothesisClass:
             if hasattr(self, 'dimension'):
                 points = np.random.randn(m, self.dimension)
             else:
-                points = np.random.randn(m, 2)  # Default to 2D
+                # Default to 1D (common for interval-based classes).
+                points = np.random.randn(m, 1)
                 
             restrictions = self.enumerate_restrictions(points)
             max_restrictions = max(max_restrictions, len(restrictions))
@@ -139,7 +142,8 @@ class PolynomialClassifiers(AdvancedHypothesisClass):
             return [[total_degree]]
         
         powers = []
-        for i in range(total_degree + 1):
+        # Order matters for tests: higher powers for earlier variables first.
+        for i in range(total_degree, -1, -1):
             for rest in self._generate_powers(n_vars - 1, total_degree - i):
                 powers.append([i] + rest)
         return powers
@@ -459,8 +463,8 @@ class ShatteringVisualizer:
                 predictions = self.hypothesis_class.predict(found_params, grid_points)
                 ZZ = predictions.reshape(XX.shape)
                 plt.contour(XX, YY, ZZ, levels=[0], colors='black', linestyles='--')
-            except:
-                pass  # Skip if visualization fails
+            except Exception as exc:
+                warnings.warn(f"Skipping decision boundary visualization: {exc}", RuntimeWarning)
         
         plt.title(f'Shattering Attempt: {target_labeling}')
         plt.xlabel('x1')

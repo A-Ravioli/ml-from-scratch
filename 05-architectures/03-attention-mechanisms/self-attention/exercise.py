@@ -155,8 +155,9 @@ class MultiHeadSelfAttention:
         self.d_k = d_model // num_heads
         self.d_v = d_model // num_heads
         
-        # Create attention heads
-        self.heads = [SelfAttention(d_model, self.d_k, self.d_v) for _ in range(num_heads)]
+        # Create attention heads. Each head returns a (batch, seq, d_v) tensor so that
+        # concatenating heads yields (batch, seq, d_model).
+        self.heads = [SelfAttentionHead(d_model, self.d_k, self.d_v) for _ in range(num_heads)]
         
         # Final output projection
         self.W_o = np.random.randn(d_model, d_model) * np.sqrt(2.0 / d_model)
@@ -201,6 +202,46 @@ class MultiHeadSelfAttention:
         """Count total number of parameters"""
         head_params = sum(head.count_parameters() for head in self.heads)
         return head_params + self.W_o.size
+
+
+class SelfAttentionHead:
+    """
+    A single attention head used inside MultiHeadSelfAttention.
+
+    Unlike SelfAttention, this head does not project back to d_model; it outputs d_v features.
+    """
+
+    def __init__(self, d_model: int, d_k: int, d_v: int):
+        self.d_model = d_model
+        self.d_k = d_k
+        self.d_v = d_v
+
+        self.W_q = np.random.randn(d_model, d_k) * np.sqrt(2.0 / d_model)
+        self.W_k = np.random.randn(d_model, d_k) * np.sqrt(2.0 / d_model)
+        self.W_v = np.random.randn(d_model, d_v) * np.sqrt(2.0 / d_model)
+
+        self.last_attention_weights = None
+
+    def forward(self, X: np.ndarray, mask: Optional[np.ndarray] = None) -> np.ndarray:
+        Q = np.matmul(X, self.W_q)
+        K = np.matmul(X, self.W_k)
+        V = np.matmul(X, self.W_v)
+
+        # Compute scaled dot-product attention (no output projection).
+        scores = np.matmul(Q, K.transpose(0, 2, 1)) / math.sqrt(self.d_k)
+        if mask is not None:
+            scores = scores + (mask * -1e9)
+        scores_max = np.max(scores, axis=-1, keepdims=True)
+        scores_exp = np.exp(scores - scores_max)
+        attn = scores_exp / np.sum(scores_exp, axis=-1, keepdims=True)
+        self.last_attention_weights = attn
+        return np.matmul(attn, V)
+
+    def get_attention_weights(self) -> Optional[np.ndarray]:
+        return self.last_attention_weights
+
+    def count_parameters(self) -> int:
+        return int(self.W_q.size + self.W_k.size + self.W_v.size)
 
 
 class MaskedSelfAttention(SelfAttention):

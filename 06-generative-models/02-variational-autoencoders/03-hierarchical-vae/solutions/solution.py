@@ -41,7 +41,7 @@ class HierarchicalVAE(nn.Module, ABC):
         Returns:
             List of dicts containing 'mu', 'logvar' for each level
         """
-        pass
+        ...
         
     @abstractmethod
     def decode(self, z_samples: List[torch.Tensor]) -> torch.Tensor:
@@ -54,14 +54,14 @@ class HierarchicalVAE(nn.Module, ABC):
         Returns:
             Reconstructed input
         """
-        pass
+        ...
         
     @abstractmethod
     def forward(self, x: torch.Tensor) -> Dict[str, torch.Tensor]:
         """
         Full forward pass returning all necessary components for loss.
         """
-        pass
+        ...
         
     def reparameterize(self, mu: torch.Tensor, logvar: torch.Tensor) -> torch.Tensor:
         """Reparameterization trick for differentiable sampling."""
@@ -82,7 +82,7 @@ class HierarchicalVAE(nn.Module, ABC):
     @abstractmethod
     def get_latent_dim(self, level: int) -> int:
         """Get latent dimension for specific level."""
-        pass
+        ...
 
 
 class LadderBlock(nn.Module):

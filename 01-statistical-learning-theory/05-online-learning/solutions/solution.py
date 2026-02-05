@@ -1,11 +1,12 @@
 """
 Solution implementations for Online Learning exercises.
 
-This file provides complete implementations of all TODO items in exercise.py.
+This file provides complete implementations of all exercise items in exercise.py.
 """
 
 import numpy as np
 from typing import List, Tuple, Optional, Dict, Callable, Union
+from abc import ABC, abstractmethod
 import matplotlib.pyplot as plt
 from scipy import stats
 import warnings
@@ -13,7 +14,7 @@ import warnings
 
 # Base Classes
 
-class OnlineLearner:
+class OnlineLearner(ABC):
     """Base class for online learning algorithms."""
     
     def __init__(self, name: str):
@@ -24,13 +25,15 @@ class OnlineLearner:
         """Reset learner state."""
         self.history = []
     
+    @abstractmethod
     def update(self, loss_function: Callable, gradient_function: Callable):
         """Update based on observed loss."""
-        raise NotImplementedError
+        ...
     
+    @abstractmethod
     def predict(self, x: np.ndarray):
         """Make prediction (if applicable)."""
-        raise NotImplementedError
+        ...
 
 
 # Online Gradient Descent

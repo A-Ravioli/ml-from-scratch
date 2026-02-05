@@ -278,25 +278,30 @@ def test_hypothesis_class_interface():
         DecisionStumps(dimension=5)
     ]
     
+    rng = np.random.default_rng(0)
+
     for cls in classes:
         # Should have name
         assert hasattr(cls, 'name')
         assert isinstance(cls.name, str)
         
         # Should compute restrictions
-        points = np.random.randn(3, 2)
-        try:
-            restrictions = cls.enumerate_restrictions(points)
-            # Should return set of tuples or similar
-        except NotImplementedError:
-            pass  # TODO methods are acceptable
+        if hasattr(cls, "dimension"):
+            points = rng.normal(size=(3, int(cls.dimension)))
+        else:
+            points = rng.normal(size=(3, 1))
+
+        restrictions = cls.enumerate_restrictions(points)
+        assert isinstance(restrictions, set)
+        for labeling in restrictions:
+            assert isinstance(labeling, tuple)
+            assert len(labeling) == len(points)
         
         # Should compute growth function
-        try:
-            growth_val = cls.compute_growth_function(5, n_trials=10)
-            assert isinstance(growth_val, int)
-        except NotImplementedError:
-            pass
+        np.random.seed(0)
+        growth_val = cls.compute_growth_function(5, n_trials=10)
+        assert isinstance(growth_val, int)
+        assert 1 <= growth_val <= 2**5
 
 
 if __name__ == "__main__":

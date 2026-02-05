@@ -1,11 +1,12 @@
 """
 Solution implementations for Linear Models exercises.
 
-This file provides complete implementations of all TODO items in exercise.py.
+This file provides complete implementations of all exercise items in exercise.py.
 """
 
 import numpy as np
 from typing import List, Tuple, Optional, Dict, Callable, Union
+from abc import ABC, abstractmethod
 import matplotlib.pyplot as plt
 from scipy import linalg, stats
 from scipy.optimize import minimize
@@ -15,7 +16,7 @@ import warnings
 
 # Base Classes
 
-class LinearModel:
+class LinearModel(ABC):
     """Base class for linear models."""
     
     def __init__(self, name: str):
@@ -24,13 +25,15 @@ class LinearModel:
         self.intercept_ = None
         self.fitted_ = False
     
+    @abstractmethod
     def fit(self, X: np.ndarray, y: np.ndarray):
         """Fit the model."""
-        raise NotImplementedError
+        ...
     
+    @abstractmethod
     def predict(self, X: np.ndarray) -> np.ndarray:
         """Make predictions."""
-        raise NotImplementedError
+        ...
     
     def _add_intercept(self, X: np.ndarray) -> np.ndarray:
         """Add intercept column to design matrix."""
@@ -810,7 +813,7 @@ class GeneralizedLinearModel(LinearModel):
         elif self.family == 'poisson' and self.link == 'log':
             return self.inverse_link_func(eta)
         else:
-            raise NotImplementedError("Derivative not implemented for this family/link")
+            raise ValueError("Derivative not implemented for this family/link")
     
     def predict(self, X: np.ndarray) -> np.ndarray:
         """Predict mean response."""

@@ -1,7 +1,7 @@
 """
 Solution implementations for Bayesian Methods exercises.
 
-This file provides complete implementations of all TODO items in exercise.py.
+This file provides complete implementations of all exercise items in exercise.py.
 """
 
 import numpy as np

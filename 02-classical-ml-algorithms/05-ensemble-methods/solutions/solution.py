@@ -1,7 +1,7 @@
 """
 Solution implementations for Ensemble Methods exercises.
 
-This file provides complete implementations of all TODO items in exercise.py.
+This file provides complete implementations of all exercise items in exercise.py.
 """
 
 import numpy as np
@@ -35,12 +35,12 @@ class BaseEnsemble(ABC):
     @abstractmethod
     def fit(self, X: np.ndarray, y: np.ndarray):
         """Fit the ensemble."""
-        pass
+        ...
     
     @abstractmethod
     def predict(self, X: np.ndarray) -> np.ndarray:
         """Make predictions."""
-        pass
+        ...
 
 
 class BaggingEnsemble(BaseEnsemble):
@@ -1655,8 +1655,8 @@ def ensemble_interpretability_analysis(ensemble, X: np.ndarray, feature_names: L
                 results['feature_importance_ranking'] = [
                     feature_names[i] for i in np.argsort(importances)[::-1]
                 ]
-        except:
-            pass
+        except Exception as exc:
+            warnings.warn(f"Feature importance analysis failed: {exc}", RuntimeWarning)
     
     # Prediction confidence (for classification)
     if hasattr(ensemble, 'predict_proba'):
@@ -1668,8 +1668,8 @@ def ensemble_interpretability_analysis(ensemble, X: np.ndarray, feature_names: L
                 'confidence_std': np.std(max_probabilities),
                 'low_confidence_samples': np.sum(max_probabilities < 0.6)
             }
-        except:
-            pass
+        except Exception as exc:
+            warnings.warn(f"Predict_proba confidence analysis failed: {exc}", RuntimeWarning)
     
     # Base learner analysis
     if hasattr(ensemble, 'estimators_'):

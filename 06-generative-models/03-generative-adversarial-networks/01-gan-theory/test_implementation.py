@@ -265,20 +265,18 @@ class TestIntegration:
         p_data = np.exp(-0.5 * x_points**2) / np.sqrt(2 * np.pi)
         p_gen = np.exp(-0.5 * (x_points - 1)**2) / np.sqrt(2 * np.pi)
         
-        # Test full analysis
-        try:
-            d_optimal = GANGameTheory.optimal_discriminator(p_data, p_gen, x_points)
-            js_div = GANGameTheory.jensen_shannon_divergence(p_data / np.sum(p_data), 
-                                                            p_gen / np.sum(p_gen))
-            
-            if d_optimal is not None and js_div is not None:
-                # Basic sanity checks
-                assert len(d_optimal) == len(x_points)
-                assert js_div >= 0
-                
-        except Exception as e:
-            # If not implemented, should not crash
-            pass
+        d_optimal = GANGameTheory.optimal_discriminator(p_data, p_gen, x_points)
+        js_div = GANGameTheory.jensen_shannon_divergence(
+            p_data / np.sum(p_data),
+            p_gen / np.sum(p_gen),
+        )
+
+        # Basic sanity checks
+        assert d_optimal is not None
+        assert js_div is not None
+        assert len(d_optimal) == len(x_points)
+        assert np.all((d_optimal >= 0) & (d_optimal <= 1))
+        assert js_div >= 0
     
     def test_theoretical_consistency(self):
         """Test theoretical consistency of implementations."""
