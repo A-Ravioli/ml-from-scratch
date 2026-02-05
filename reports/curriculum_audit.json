@@ -1,0 +1,1045 @@
+[
+  {
+    "topic_dir": "00-mathematical-foundations/01-linear-algebra/01-vector-spaces",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 3,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "00-mathematical-foundations/01-linear-algebra/02-matrix-decompositions",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "00-mathematical-foundations/01-linear-algebra/03-tensor-algebra",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "00-mathematical-foundations/01-linear-algebra/04-spectral-theory",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "00-mathematical-foundations/02-analysis/01-real-analysis",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "00-mathematical-foundations/02-analysis/02-functional-analysis",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "00-mathematical-foundations/02-analysis/03-measure-theory",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "00-mathematical-foundations/02-analysis/04-topology",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "00-mathematical-foundations/03-probability-theory/01-measure-theoretic-probability",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "00-mathematical-foundations/03-probability-theory/02-stochastic-processes",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "00-mathematical-foundations/03-probability-theory/03-concentration-inequalities",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "00-mathematical-foundations/03-probability-theory/04-martingales",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "00-mathematical-foundations/04-optimization-theory/01-convex-optimization",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "00-mathematical-foundations/04-optimization-theory/02-nonconvex-optimization",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "00-mathematical-foundations/04-optimization-theory/03-constrained-optimization",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "00-mathematical-foundations/04-optimization-theory/04-stochastic-optimization",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "00-mathematical-foundations/05-information-geometry",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "01-statistical-learning-theory/01-pac-learning",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 2,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "01-statistical-learning-theory/02-vc-dimension",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 1,
+      "your_code_here": 0,
+      "not_implemented_error": 2,
+      "pass_lines": 2
+    },
+    "solution_placeholders": {
+      "todo": 1,
+      "your_code_here": 0,
+      "not_implemented_error": 1,
+      "pass_lines": 1
+    }
+  },
+  {
+    "topic_dir": "01-statistical-learning-theory/03-rademacher-complexity",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 1,
+      "your_code_here": 0,
+      "not_implemented_error": 2,
+      "pass_lines": 2
+    }
+  },
+  {
+    "topic_dir": "01-statistical-learning-theory/04-kernel-methods",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 1,
+      "your_code_here": 0,
+      "not_implemented_error": 3,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "01-statistical-learning-theory/05-online-learning",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 1,
+      "your_code_here": 0,
+      "not_implemented_error": 2,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "02-classical-ml-algorithms/01-linear-models",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 1,
+      "your_code_here": 0,
+      "not_implemented_error": 3,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "02-classical-ml-algorithms/02-tree-based-methods",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "02-classical-ml-algorithms/03-instance-based-learning",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 1,
+      "your_code_here": 0,
+      "not_implemented_error": 1,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "02-classical-ml-algorithms/04-bayesian-methods",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 1,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "02-classical-ml-algorithms/05-ensemble-methods",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 1,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 4
+    }
+  },
+  {
+    "topic_dir": "02-classical-ml-algorithms/06-semi-supervised-learning",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "03-optimization-algorithms/01-first-order-methods/01-sgd-variants",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "03-optimization-algorithms/01-first-order-methods/02-momentum-methods",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "03-optimization-algorithms/01-first-order-methods/03-adaptive-methods",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "03-optimization-algorithms/02-second-order-methods/01-newton-methods",
+    "missing": [
+      "test_implementation.py",
+      "solutions/solution.py"
+    ],
+    "test_placeholders": null,
+    "solution_placeholders": null
+  },
+  {
+    "topic_dir": "03-optimization-algorithms/02-second-order-methods/02-quasi-newton",
+    "missing": [
+      "test_implementation.py",
+      "solutions/solution.py"
+    ],
+    "test_placeholders": null,
+    "solution_placeholders": null
+  },
+  {
+    "topic_dir": "03-optimization-algorithms/02-second-order-methods/03-natural-gradient",
+    "missing": [
+      "test_implementation.py",
+      "solutions/solution.py"
+    ],
+    "test_placeholders": null,
+    "solution_placeholders": null
+  },
+  {
+    "topic_dir": "03-optimization-algorithms/03-variance-reduction/01-svrg",
+    "missing": [
+      "test_implementation.py",
+      "solutions/solution.py"
+    ],
+    "test_placeholders": null,
+    "solution_placeholders": null
+  },
+  {
+    "topic_dir": "03-optimization-algorithms/03-variance-reduction/02-saga",
+    "missing": [
+      "test_implementation.py",
+      "solutions/solution.py"
+    ],
+    "test_placeholders": null,
+    "solution_placeholders": null
+  },
+  {
+    "topic_dir": "03-optimization-algorithms/03-variance-reduction/03-spider",
+    "missing": [
+      "test_implementation.py",
+      "solutions/solution.py"
+    ],
+    "test_placeholders": null,
+    "solution_placeholders": null
+  },
+  {
+    "topic_dir": "03-optimization-algorithms/04-distributed-optimization",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "03-optimization-algorithms/05-bilevel-optimization",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "04-deep-learning-fundamentals/01-neural-network-theory",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 33,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 29
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 4
+    }
+  },
+  {
+    "topic_dir": "04-deep-learning-fundamentals/02-backpropagation-calculus",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "04-deep-learning-fundamentals/03-initialization-theory",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 27,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 20
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "04-deep-learning-fundamentals/04-normalization-techniques",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 20,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 13
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "04-deep-learning-fundamentals/05-neural-tangent-kernels",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 14,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 11
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "05-architectures/01-convolutional-networks/classical-cnns",
+    "missing": [
+      "test_implementation.py",
+      "solutions/solution.py"
+    ],
+    "test_placeholders": null,
+    "solution_placeholders": null
+  },
+  {
+    "topic_dir": "05-architectures/01-convolutional-networks/densenet",
+    "missing": [
+      "solutions/solution.py"
+    ],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": null
+  },
+  {
+    "topic_dir": "05-architectures/01-convolutional-networks/efficientnet",
+    "missing": [
+      "solutions/solution.py"
+    ],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": null
+  },
+  {
+    "topic_dir": "05-architectures/01-convolutional-networks/residual-networks",
+    "missing": [
+      "test_implementation.py",
+      "solutions/solution.py"
+    ],
+    "test_placeholders": null,
+    "solution_placeholders": null
+  },
+  {
+    "topic_dir": "05-architectures/02-recurrent-networks/advanced-rnns",
+    "missing": [
+      "solutions/solution.py"
+    ],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": null
+  },
+  {
+    "topic_dir": "05-architectures/02-recurrent-networks/gru",
+    "missing": [
+      "solutions/solution.py"
+    ],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": null
+  },
+  {
+    "topic_dir": "05-architectures/02-recurrent-networks/lstm",
+    "missing": [
+      "test_implementation.py",
+      "solutions/solution.py"
+    ],
+    "test_placeholders": null,
+    "solution_placeholders": null
+  },
+  {
+    "topic_dir": "05-architectures/02-recurrent-networks/vanilla-rnn",
+    "missing": [
+      "solutions/solution.py"
+    ],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": null
+  },
+  {
+    "topic_dir": "05-architectures/03-attention-mechanisms/bahdanau-attention",
+    "missing": [
+      "solutions/solution.py"
+    ],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": null
+  },
+  {
+    "topic_dir": "05-architectures/03-attention-mechanisms/multi-head-attention",
+    "missing": [
+      "solutions/solution.py"
+    ],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": null
+  },
+  {
+    "topic_dir": "05-architectures/03-attention-mechanisms/self-attention",
+    "missing": [
+      "solutions/solution.py"
+    ],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": null
+  },
+  {
+    "topic_dir": "05-architectures/03-attention-mechanisms/sparse-attention",
+    "missing": [
+      "solutions/solution.py"
+    ],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": null
+  },
+  {
+    "topic_dir": "05-architectures/04-transformers/bert-family",
+    "missing": [
+      "test_implementation.py",
+      "solutions/solution.py"
+    ],
+    "test_placeholders": null,
+    "solution_placeholders": null
+  },
+  {
+    "topic_dir": "05-architectures/04-transformers/efficient-transformers",
+    "missing": [
+      "test_implementation.py",
+      "solutions/solution.py"
+    ],
+    "test_placeholders": null,
+    "solution_placeholders": null
+  },
+  {
+    "topic_dir": "05-architectures/04-transformers/gpt-family",
+    "missing": [
+      "test_implementation.py",
+      "solutions/solution.py"
+    ],
+    "test_placeholders": null,
+    "solution_placeholders": null
+  },
+  {
+    "topic_dir": "05-architectures/04-transformers/t5-family",
+    "missing": [
+      "test_implementation.py",
+      "solutions/solution.py"
+    ],
+    "test_placeholders": null,
+    "solution_placeholders": null
+  },
+  {
+    "topic_dir": "05-architectures/04-transformers/vanilla-transformer",
+    "missing": [
+      "test_implementation.py",
+      "solutions/solution.py"
+    ],
+    "test_placeholders": null,
+    "solution_placeholders": null
+  },
+  {
+    "topic_dir": "05-architectures/05-graph-neural-networks/04-gcn",
+    "missing": [
+      "solutions/solution.py"
+    ],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": null
+  },
+  {
+    "topic_dir": "05-architectures/06-exotic-architectures/01-neural-ode",
+    "missing": [
+      "solutions/solution.py"
+    ],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": null
+  },
+  {
+    "topic_dir": "05-architectures/06-exotic-architectures/02-capsule-networks",
+    "missing": [
+      "solutions/solution.py"
+    ],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": null
+  },
+  {
+    "topic_dir": "06-generative-models/01-autoregressive-models",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "06-generative-models/02-variational-autoencoders/01-vanilla-vae",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "06-generative-models/02-variational-autoencoders/02-beta-vae",
+    "missing": [
+      "exercise.py",
+      "test_implementation.py",
+      "solutions/solution.py"
+    ],
+    "test_placeholders": null,
+    "solution_placeholders": null
+  },
+  {
+    "topic_dir": "06-generative-models/02-variational-autoencoders/03-hierarchical-vae",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 4
+    }
+  },
+  {
+    "topic_dir": "06-generative-models/02-variational-autoencoders/04-vq-vae",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "06-generative-models/02-variational-autoencoders/05-vae-theory",
+    "missing": [
+      "lesson.md",
+      "test_implementation.py",
+      "solutions/solution.py"
+    ],
+    "test_placeholders": null,
+    "solution_placeholders": null
+  },
+  {
+    "topic_dir": "06-generative-models/03-generative-adversarial-networks/01-gan-theory",
+    "missing": [
+      "solutions/solution.py"
+    ],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 1
+    },
+    "solution_placeholders": null
+  },
+  {
+    "topic_dir": "06-generative-models/03-generative-adversarial-networks/02-vanilla-gan",
+    "missing": [
+      "test_implementation.py",
+      "solutions/solution.py"
+    ],
+    "test_placeholders": null,
+    "solution_placeholders": null
+  },
+  {
+    "topic_dir": "06-generative-models/03-generative-adversarial-networks/03-wasserstein-gan",
+    "missing": [
+      "test_implementation.py",
+      "solutions/solution.py"
+    ],
+    "test_placeholders": null,
+    "solution_placeholders": null
+  },
+  {
+    "topic_dir": "06-generative-models/04-normalizing-flows/01-planar-flows",
+    "missing": [
+      "test_implementation.py",
+      "solutions/solution.py"
+    ],
+    "test_placeholders": null,
+    "solution_placeholders": null
+  },
+  {
+    "topic_dir": "06-generative-models/05-diffusion-models/01-ddpm",
+    "missing": [
+      "test_implementation.py",
+      "solutions/solution.py"
+    ],
+    "test_placeholders": null,
+    "solution_placeholders": null
+  },
+  {
+    "topic_dir": "07-reinforcement-learning/01-foundations/01-markov-decision-processes",
+    "missing": [
+      "exercise.py",
+      "test_implementation.py",
+      "solutions/solution.py"
+    ],
+    "test_placeholders": null,
+    "solution_placeholders": null
+  },
+  {
+    "topic_dir": "07-reinforcement-learning/01-foundations/02-bellman-equations",
+    "missing": [
+      "exercise.py",
+      "test_implementation.py",
+      "solutions/solution.py"
+    ],
+    "test_placeholders": null,
+    "solution_placeholders": null
+  }
+]

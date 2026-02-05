@@ -1,194 +1,118 @@
 """
-Test suite for SGD variants implementation
-
-This file contains comprehensive tests to verify your implementations
-are correct and match theoretical expectations.
+Test suite for SGD variants implementation (deterministic, fast).
 """
 
+from __future__ import annotations
+
 import numpy as np
-import pytest
-import matplotlib.pyplot as plt
-from exercise import *
+
+from exercise import (
+    QuadraticProblem,
+    VanillaSGD,
+    SGDWithMomentum,
+    NesterovSGD,
+    AdaGrad,
+    RMSprop,
+    Adam,
+    SVRG,
+    optimize_problem,
+)
 
 
-class TestOptimizationProblems:
-    """Test optimization problem implementations"""
-    
-    def test_quadratic_problem_gradient(self):
-        """Test quadratic problem gradient computation"""
-        # TODO: Create quadratic problem and verify gradient using finite differences
-        # Check that numerical gradient matches analytical gradient
-        pass
-    
-    def test_quadratic_problem_optimum(self):
-        """Test that quadratic problem finds correct optimum"""
-        # TODO: Verify that gradient is zero at optimal point
-        pass
-    
-    def test_logistic_regression_gradient(self):
-        """Test logistic regression gradient"""
-        # TODO: Verify gradient using finite differences
-        pass
-    
-    def test_stochastic_vs_full_gradient(self):
-        """Test that stochastic gradient is unbiased estimator"""
-        # TODO: Verify E[stochastic_gradient] = full_gradient
-        pass
+def _numerical_grad(f, x, eps=1e-6):
+    g = np.zeros_like(x, dtype=float)
+    for i in range(len(x)):
+        xp = x.copy()
+        xm = x.copy()
+        xp[i] += eps
+        xm[i] -= eps
+        g[i] = (f(xp) - f(xm)) / (2 * eps)
+    return g
 
 
-class TestSGDOptimizers:
-    """Test SGD optimizer implementations"""
-    
-    def test_vanilla_sgd_convergence(self):
-        """Test basic SGD convergence on strongly convex quadratic"""
-        # TODO: Verify O(1/k) convergence rate
-        # Use small problem where you can verify analytically
-        pass
-    
-    def test_momentum_acceleration(self):
-        """Test that momentum accelerates convergence"""
-        # TODO: Compare SGD vs momentum on ill-conditioned quadratic
-        # Verify momentum converges faster
-        pass
-    
-    def test_nesterov_vs_momentum(self):
-        """Test Nesterov vs standard momentum"""
-        # TODO: Verify Nesterov achieves better convergence rate
-        pass
-    
-    def test_adagrad_learning_rate_adaptation(self):
-        """Test AdaGrad adapts learning rates correctly"""
-        # TODO: Verify that frequently updated coordinates get smaller learning rates
-        pass
-    
-    def test_adam_bias_correction(self):
-        """Test Adam bias correction"""
-        # TODO: Verify early iterations use bias correction properly
-        pass
-    
-    def test_svrg_variance_reduction(self):
-        """Test SVRG reduces variance"""
-        # TODO: Compare gradient variance between SGD and SVRG
-        pass
+def test_quadratic_gradient_matches_finite_differences():
+    prob = QuadraticProblem(dim=5, condition_number=20.0, noise_std=0.0)
+    x = np.linspace(-0.3, 0.2, 5)
+    g = prob.gradient(x)
+    g_num = _numerical_grad(prob.objective, x)
+    np.testing.assert_allclose(g, g_num, rtol=1e-5, atol=1e-6)
 
 
-class TestConvergenceRates:
-    """Test theoretical convergence rate predictions"""
-    
-    def test_sgd_convex_rate(self):
-        """Verify SGD O(1/√k) rate for convex functions"""
-        # TODO: Run SGD on convex problem and verify convergence rate
-        pass
-    
-    def test_sgd_strongly_convex_rate(self):
-        """Verify SGD O(1/k) rate for strongly convex functions"""
-        # TODO: Run SGD on strongly convex problem and verify rate
-        pass
-    
-    def test_nesterov_acceleration_rate(self):
-        """Verify Nesterov O(1/k²) rate"""
-        # TODO: Compare Nesterov vs SGD convergence rates
-        pass
+def test_quadratic_optimal_point_has_zero_gradient():
+    prob = QuadraticProblem(dim=4, condition_number=15.0, noise_std=0.0)
+    x_star = prob.optimal_point()
+    g = prob.gradient(x_star)
+    assert np.linalg.norm(g) < 1e-8
 
 
-class TestNumericalStability:
-    """Test numerical stability of implementations"""
-    
-    def test_gradient_clipping(self):
-        """Test gradient clipping prevents explosions"""
-        # TODO: Test with very large gradients
-        pass
-    
-    def test_adaptive_methods_epsilon(self):
-        """Test epsilon prevents division by zero in adaptive methods"""
-        # TODO: Test edge cases with very small gradients
-        pass
-    
-    def test_learning_rate_schedules(self):
-        """Test various learning rate schedules"""
-        # TODO: Verify schedules satisfy Robbins-Monro conditions
-        pass
+def test_vanilla_sgd_update_rule():
+    opt = VanillaSGD(learning_rate=0.1)
+    g = np.array([0.5, -0.25])
+    dx = opt.step(g)
+    np.testing.assert_allclose(dx, -0.1 * g)
 
 
-def test_optimization_loop():
-    """Test the main optimization loop"""
-    # TODO: Verify the optimization loop works correctly
-    # Test with known simple problem
-    pass
+def test_momentum_updates_velocity_correctly():
+    opt = SGDWithMomentum(learning_rate=0.1, momentum=0.9)
+    g1 = np.array([1.0, 2.0])
+    dx1 = opt.step(g1)
+    # first: v = 0.1*g1, dx=-v
+    np.testing.assert_allclose(dx1, -0.1 * g1)
+    g2 = np.array([0.5, -1.0])
+    dx2 = opt.step(g2)
+    v1 = 0.1 * g1
+    v2 = 0.9 * v1 + 0.1 * g2
+    np.testing.assert_allclose(dx2, -v2)
 
 
-def test_comparison_framework():
-    """Test optimizer comparison utilities"""
-    # TODO: Verify comparison functions work correctly
-    pass
+def test_nesterov_lookahead_point():
+    opt = NesterovSGD(learning_rate=0.1, momentum=0.9)
+    x = np.array([1.0, 2.0])
+    # no velocity yet
+    np.testing.assert_allclose(opt.get_lookahead_point(x), x)
+    # after one step, velocity exists
+    _ = opt.step(np.array([1.0, 1.0]))
+    look = opt.get_lookahead_point(x)
+    assert look.shape == x.shape
 
 
-def benchmark_optimizers():
-    """Benchmark different optimizers on standard problems"""
-    print("Running optimizer benchmarks...")
-    
-    # TODO: Run comprehensive benchmark comparing all optimizers
-    # on multiple problem types
-    
-    problems = [
-        # ("Quadratic (well-conditioned)", ...),
-        # ("Quadratic (ill-conditioned)", ...),
-        # ("Logistic Regression", ...)
-    ]
-    
-    optimizers = [
-        # ("SGD", VanillaSGD(...)),
-        # ("Momentum", SGDWithMomentum(...)),
-        # ("Nesterov", NesterovSGD(...)),
-        # ("AdaGrad", AdaGrad(...)),
-        # ("RMSprop", RMSprop(...)),
-        # ("Adam", Adam(...))
-    ]
-    
-    # TODO: Run each optimizer on each problem
-    # Create comparison plots
-    # Generate summary table of results
-    
-    pass
+def test_adagrad_first_step_matches_formula():
+    opt = AdaGrad(learning_rate=0.1, eps=1e-8)
+    g = np.array([0.5, -0.3])
+    dx = opt.step(g)
+    expected = -0.1 / np.sqrt(g**2 + 1e-8) * g
+    np.testing.assert_allclose(dx, expected, rtol=1e-7, atol=1e-10)
 
 
-def validate_theoretical_results():
-    """Validate key theoretical results from the lesson"""
-    print("Validating theoretical results...")
-    
-    # TODO: Empirically verify key theoretical claims:
-    # 1. SGD convergence rates match theory
-    # 2. Momentum acceleration factor
-    # 3. Adaptive methods behavior
-    # 4. Variance reduction effect
-    # 5. Effect of conditioning on convergence
-    
-    pass
+def test_rmsprop_first_step_matches_formula():
+    opt = RMSprop(learning_rate=0.1, decay_rate=0.9, eps=1e-8)
+    g = np.array([0.5, -0.3])
+    dx = opt.step(g)
+    v = (1 - 0.9) * g**2
+    expected = -(0.1 / (np.sqrt(v) + 1e-8)) * g
+    np.testing.assert_allclose(dx, expected, rtol=1e-10)
 
 
-def create_educational_visualizations():
-    """Create visualizations for educational purposes"""
-    print("Creating educational visualizations...")
-    
-    # TODO: Create the following visualizations:
-    # 1. SGD trajectory on 2D quadratic (show oscillations)
-    # 2. Effect of learning rate (too small, good, too large)
-    # 3. Momentum smoothing effect
-    # 4. Adaptive learning rate evolution
-    # 5. Batch size vs variance tradeoff
-    # 6. Convergence rate comparison
-    
-    pass
+def test_adam_bias_correction_first_step():
+    opt = Adam(learning_rate=0.001, beta1=0.9, beta2=0.999, eps=1e-8)
+    g = np.array([0.5, -0.3])
+    dx = opt.step(g)
+    # t=1: m=(1-beta1)g, v=(1-beta2)g^2, bias-corrected gives m_hat=g, v_hat=g^2
+    expected = -0.001 * g / (np.sqrt(g**2) + 1e-8)
+    np.testing.assert_allclose(dx, expected, rtol=1e-10)
 
 
-if __name__ == "__main__":
-    # Run tests
-    pytest.main([__file__, "-v"])
-    
-    # Run benchmarks and validations
-    benchmark_optimizers()
-    validate_theoretical_results()
-    create_educational_visualizations()
-    
-    print("\nTesting completed!")
-    print("Make sure all tests pass before considering implementation complete.")
+def test_optimize_problem_decreases_objective_on_quadratic():
+    prob = QuadraticProblem(dim=3, condition_number=5.0, noise_std=0.0)
+    x0 = np.array([5.0, -3.0, 2.0])
+    opt = VanillaSGD(learning_rate=0.05)
+    x_final, hist = optimize_problem(prob, opt, x0, n_iterations=200, batch_size=1)
+    assert hist["objective"][0] >= hist["objective"][-1]
+
+
+def test_svrg_runs_and_improves_objective_on_quadratic():
+    prob = QuadraticProblem(dim=5, condition_number=10.0, noise_std=0.0)
+    x0 = np.ones(5)
+    opt = SVRG(learning_rate=0.1, update_frequency=10)
+    x_final, hist = optimize_problem(prob, opt, x0, n_iterations=50, batch_size=1)
+    assert hist["objective"][0] >= hist["objective"][-1]

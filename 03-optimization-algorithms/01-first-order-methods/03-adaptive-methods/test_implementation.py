@@ -468,9 +468,6 @@ def run_adaptive_methods_comparison():
             final_norm = np.linalg.norm(x)
             
             print(f"{name:<12} {final_loss:<12.6f} {final_norm:<12.6f} {iteration+1:<12}")
-        
-        except NotImplementedError:
-            print(f"{name:<12} {'Not implemented':<12}")
         except Exception as e:
             print(f"{name:<12} {'Error: ' + str(e):<40}")
 

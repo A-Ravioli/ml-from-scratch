@@ -128,6 +128,14 @@ begin with `00-mathematical-foundations/01-analysis/01-real-analysis/` and work 
 - `test_implementation.py`: verify your solution
 - `solutions/`: reference implementations (try solo first!)
 
+## authoring / maintenance
+
+if you're adding topics or maintaining the curriculum, see:
+
+- `AUTHORING.md`
+- `scripts/audit_curriculum.py` (find missing files/placeholders)
+- `scripts/verify_solutions.py` (verify reference solutions without editing repo-tracked files)
+
 ## topics covered
 
 ### core areas
