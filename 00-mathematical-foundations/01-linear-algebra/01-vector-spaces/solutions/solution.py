@@ -157,7 +157,7 @@ class LinearTransformation:
     def find_kernel(self, sample_vectors: Optional[List[np.ndarray]] = None) -> List[np.ndarray]:
         """Find kernel (null space) of transformation."""
         if self.matrix is None:
-            raise NotImplementedError("Kernel finding only implemented for matrix transformations")
+            raise ValueError("Kernel finding only implemented for matrix transformations")
         
         # Find null space using SVD
         U, s, Vt = np.linalg.svd(self.matrix)
@@ -176,7 +176,7 @@ class LinearTransformation:
     def find_image(self, sample_vectors: Optional[List[np.ndarray]] = None) -> List[np.ndarray]:
         """Find image (column space) of transformation."""
         if self.matrix is None:
-            raise NotImplementedError("Image finding only implemented for matrix transformations")
+            raise ValueError("Image finding only implemented for matrix transformations")
         
         # Column space is found using QR decomposition
         Q, R = np.linalg.qr(self.matrix)
@@ -195,7 +195,7 @@ class LinearTransformation:
     def verify_rank_nullity(self) -> dict:
         """Verify rank-nullity theorem."""
         if self.matrix is None:
-            raise NotImplementedError("Only implemented for matrix transformations")
+            raise ValueError("Only implemented for matrix transformations")
         
         kernel_basis = self.find_kernel()
         image_basis = self.find_image()
