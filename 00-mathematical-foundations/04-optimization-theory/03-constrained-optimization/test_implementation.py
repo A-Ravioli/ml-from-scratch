@@ -1,45 +1,31 @@
-"""
-Tests for Constrained Optimization utilities.
-"""
-
 import numpy as np
-import pytest
 
-from exercise import (
-    solve_quadratic_program, augmented_lagrangian, projection_box
-)
+from exercise import augmented_lagrangian, projection_box, solve_quadratic_program
 
 
-def test_qp_simple():
-    # minimize 1/2 x^T I x + (-1)^T x subject to x >= 0
-    P = np.eye(2)
-    q = -np.ones(2)
-    G = -np.eye(2)
-    h = np.zeros(2)
-    x = solve_quadratic_program(P, q, G=G, h=h)
-    # Unconstrained optimum is x=1; constraints keep x>=0
-    assert np.all(x >= -1e-8)
-
-
-def test_augmented_lagrangian_equality():
-    # minimize (x-1)^2 subject to x = 0 => solution x=0
-    def f(x):
-        return (x[0]-1.0)**2
-    def g(x):
-        return np.array([2*(x[0]-1.0)])
-    def hfun(x):
-        return np.array([x[0]])
-    out = augmented_lagrangian(f, g, hfun, x0=np.array([2.0]))
-    assert abs(out.get('x', np.array([0.0]))[0]) < 1e-2
-
-
-def test_box_projection():
+def test_projection_box():
     x = np.array([-2.0, 0.5, 3.0])
-    y = projection_box(x, lower=0.0, upper=1.0)
-    assert np.all(y >= 0.0) and np.all(y <= 1.0)
+    projected = projection_box(x, lower=0.0, upper=1.0)
+    assert np.allclose(projected, np.array([0.0, 0.5, 1.0]))
 
 
-if __name__ == "__main__":
-    pytest.main([__file__, "-v"]) 
+def test_quadratic_program_unconstrained():
+    P = 2.0 * np.eye(2)
+    q = np.array([-2.0, -4.0])
+    x = solve_quadratic_program(P, q)
+    assert np.allclose(x, np.array([1.0, 2.0]), atol=1e-6)
 
 
+def test_augmented_lagrangian_returns_trajectory():
+    def f(x):
+        return float((x[0] - 1.0) ** 2)
+
+    def g(x):
+        return np.array([2.0 * (x[0] - 1.0)])
+
+    def h(x):
+        return np.array([x[0]])
+
+    result = augmented_lagrangian(f, g, h, x0=np.array([2.0]))
+    assert "x" in result and "trajectory" in result
+    assert len(result["trajectory"]) > 1

@@ -60,14 +60,12 @@ class TestCausalConstraints:
         # Check mask properties
         assert mask.shape == (seq_len, seq_len), "Mask has wrong shape"
         
-        # Check that mask is lower triangular
-        upper_triangle = torch.triu(mask, diagonal=1)
-        assert torch.all(upper_triangle == float('-inf')), \
+        # Future positions must be masked, while current/past positions remain unmasked.
+        future_positions = mask[torch.triu(torch.ones_like(mask, dtype=torch.bool), diagonal=1)]
+        allowed_positions = mask[torch.tril(torch.ones_like(mask, dtype=torch.bool))]
+        assert torch.all(future_positions == float('-inf')), \
             "Causal mask should mask future positions"
-            
-        # Check diagonal and lower triangle
-        lower_triangle = torch.tril(mask)
-        assert torch.all(lower_triangle == 0), \
+        assert torch.all(allowed_positions == 0), \
             "Causal mask should allow past positions"
 
 

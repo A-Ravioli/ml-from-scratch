@@ -108,6 +108,85 @@ class OnlineGradientDescent(OnlineLearner):
         regret = cumulative_loss - best_fixed_loss
         
         return regret
+
+    def predict(self, t: Optional[int] = None) -> np.ndarray:
+        """Return the current iterate."""
+        return self.x_current.copy()
+
+    def update(
+        self,
+        action: np.ndarray,
+        loss_function: Callable[[np.ndarray], float],
+        gradient: Optional[np.ndarray] = None,
+    ) -> np.ndarray:
+        """Update the cumulative gradient and solve the FTRL subproblem."""
+        if gradient is None:
+            gradient = self._numerical_gradient(loss_function, action)
+        gradient = np.asarray(gradient, dtype=float)
+        self.cumulative_gradients += gradient
+        self.x_current = self._solve_ftrl_problem()
+        self.history.append(
+            {
+                'round': len(self.history) + 1,
+                'choice': np.asarray(action, dtype=float).copy(),
+                'loss': float(loss_function(action)),
+                'gradient': gradient.copy(),
+                'cumulative_gradients': self.cumulative_gradients.copy(),
+            }
+        )
+        return self.x_current.copy()
+
+    def _numerical_gradient(
+        self, loss_function: Callable[[np.ndarray], float], point: np.ndarray, step: float = 1e-6
+    ) -> np.ndarray:
+        gradient = np.zeros_like(point, dtype=float)
+        for index in range(len(point)):
+            point_plus = np.asarray(point, dtype=float).copy()
+            point_minus = np.asarray(point, dtype=float).copy()
+            point_plus[index] += step
+            point_minus[index] -= step
+            gradient[index] = (loss_function(point_plus) - loss_function(point_minus)) / (2 * step)
+        return gradient
+
+    def predict(self, t: Optional[int] = None) -> np.ndarray:
+        """Return the current iterate."""
+        return self.x_current.copy()
+
+    def update(
+        self,
+        action: np.ndarray,
+        loss_function: Callable[[np.ndarray], float],
+        gradient: Optional[np.ndarray] = None,
+    ) -> np.ndarray:
+        """Apply one OGD step from the supplied action."""
+        if gradient is None:
+            gradient = self._numerical_gradient(loss_function, action)
+        gradient = np.asarray(gradient, dtype=float)
+        eta_t = self._get_learning_rate(max(self.t + 1, 1))
+        self.x_current = self._project_onto_constraint_set(action - eta_t * gradient)
+        self.history.append(
+            {
+                'round': self.t + 1,
+                'choice': np.asarray(action, dtype=float).copy(),
+                'loss': float(loss_function(action)),
+                'gradient': gradient.copy(),
+                'learning_rate': eta_t,
+            }
+        )
+        self.t += 1
+        return self.x_current.copy()
+
+    def _numerical_gradient(
+        self, loss_function: Callable[[np.ndarray], float], point: np.ndarray, step: float = 1e-6
+    ) -> np.ndarray:
+        gradient = np.zeros_like(point, dtype=float)
+        for index in range(len(point)):
+            point_plus = np.asarray(point, dtype=float).copy()
+            point_minus = np.asarray(point, dtype=float).copy()
+            point_plus[index] += step
+            point_minus[index] -= step
+            gradient[index] = (loss_function(point_plus) - loss_function(point_minus)) / (2 * step)
+        return gradient
     
     def _get_learning_rate(self, t: int) -> float:
         """Compute learning rate for round t."""
@@ -197,7 +276,46 @@ class FollowTheRegularizedLeader(OnlineLearner):
         regret = cumulative_loss - best_fixed_loss
         
         return regret
-    
+
+    def predict(self, t: Optional[int] = None) -> np.ndarray:
+        """Return the current iterate."""
+        return self.x_current.copy()
+
+    def update(
+        self,
+        action: np.ndarray,
+        loss_function: Callable[[np.ndarray], float],
+        gradient: Optional[np.ndarray] = None,
+    ) -> np.ndarray:
+        """Update the cumulative gradient and solve the FTRL subproblem."""
+        if gradient is None:
+            gradient = self._numerical_gradient(loss_function, action)
+        gradient = np.asarray(gradient, dtype=float)
+        self.cumulative_gradients += gradient
+        self.x_current = self._solve_ftrl_problem()
+        self.history.append(
+            {
+                'round': len(self.history) + 1,
+                'choice': np.asarray(action, dtype=float).copy(),
+                'loss': float(loss_function(action)),
+                'gradient': gradient.copy(),
+                'cumulative_gradients': self.cumulative_gradients.copy(),
+            }
+        )
+        return self.x_current.copy()
+
+    def _numerical_gradient(
+        self, loss_function: Callable[[np.ndarray], float], point: np.ndarray, step: float = 1e-6
+    ) -> np.ndarray:
+        gradient = np.zeros_like(point, dtype=float)
+        for index in range(len(point)):
+            point_plus = np.asarray(point, dtype=float).copy()
+            point_minus = np.asarray(point, dtype=float).copy()
+            point_plus[index] += step
+            point_minus[index] -= step
+            gradient[index] = (loss_function(point_plus) - loss_function(point_minus)) / (2 * step)
+        return gradient
+
     def _solve_ftrl_problem(self) -> np.ndarray:
         """
         Solve: argmin_x [g^T x + R(x)]
@@ -339,6 +457,28 @@ class MultiplicativeWeights(OnlineLearner):
         regret = algorithm_total_loss - best_expert_loss
         
         return regret
+
+    def predict(self, x: Optional[np.ndarray] = None) -> np.ndarray:
+        """Return the current expert distribution."""
+        return self.get_expert_weights()
+
+    def update(self, losses: np.ndarray, gradient_function: Optional[Callable] = None) -> np.ndarray:
+        """Apply one multiplicative-weights update."""
+        losses = np.asarray(losses, dtype=float)
+        probabilities = self.get_expert_weights()
+        eta_t = self._get_learning_rate(max(self.t + 1, 1))
+        self.weights *= np.exp(-eta_t * losses)
+        self.history.append(
+            {
+                'round': self.t + 1,
+                'probabilities': probabilities.copy(),
+                'losses': losses.copy(),
+                'expected_loss': float(np.dot(probabilities, losses)),
+                'learning_rate': eta_t,
+            }
+        )
+        self.t += 1
+        return self.get_expert_weights()
     
     def _get_learning_rate(self, t: int) -> float:
         """Get learning rate for round t."""
@@ -866,6 +1006,55 @@ def adaptive_learning_rates(gradient_norms: np.ndarray, base_rate: float = 0.1,
         return np.full(T, base_rate)
 
 
+def project_simplex(x: np.ndarray) -> np.ndarray:
+    """Project a vector onto the probability simplex."""
+    x = np.asarray(x, dtype=float)
+    u = np.sort(x)[::-1]
+    cssv = np.cumsum(u)
+    rho = np.nonzero(u - (cssv - 1) / np.arange(1, len(x) + 1) > 0)[0]
+    if len(rho) == 0:
+        return np.full_like(x, 1.0 / len(x))
+    theta = (cssv[rho[-1]] - 1) / (rho[-1] + 1)
+    return np.maximum(x - theta, 0.0)
+
+
+def project_l2_ball(x: np.ndarray, radius: float = 1.0) -> np.ndarray:
+    """Project onto an L2 ball."""
+    x = np.asarray(x, dtype=float)
+    norm = np.linalg.norm(x)
+    if norm <= radius or norm == 0.0:
+        return x
+    return radius * x / norm
+
+
+def project_box(x: np.ndarray, lower: float = -1.0, upper: float = 1.0) -> np.ndarray:
+    """Project onto a box constraint."""
+    return np.clip(np.asarray(x, dtype=float), lower, upper)
+
+
+def l2_regularizer(x: np.ndarray, eta: float = 1.0) -> float:
+    """Compute an L2 regularizer."""
+    x = np.asarray(x, dtype=float)
+    return float(0.5 * np.dot(x, x) / eta)
+
+
+def l2_regularizer_grad(x: np.ndarray, eta: float = 1.0) -> np.ndarray:
+    """Gradient of the L2 regularizer."""
+    return np.asarray(x, dtype=float) / eta
+
+
+def entropy_regularizer(x: np.ndarray, eta: float = 1.0) -> float:
+    """Entropy regularizer on the simplex."""
+    x = np.clip(np.asarray(x, dtype=float), 1e-12, None)
+    return float(eta * np.sum(x * np.log(x)))
+
+
+def entropy_regularizer_grad(x: np.ndarray, eta: float = 1.0) -> np.ndarray:
+    """Gradient of the entropy regularizer."""
+    x = np.clip(np.asarray(x, dtype=float), 1e-12, None)
+    return eta * (np.log(x) + 1.0)
+
+
 def online_svm(dimension: int, regularization: float = 0.1,
               learning_rate: float = 0.01, kernel_type: str = 'linear'):
     """
@@ -924,11 +1113,32 @@ def online_svm(dimension: int, regularization: float = 0.1,
     return OnlineSVM()
 
 
+FollowRegularizedLeader = FollowTheRegularizedLeader
+OnlineToBatchConverter = OnlineToBookConversion
+
+
 # Export all solution implementations
 __all__ = [
-    'OnlineLearner', 'OnlineGradientDescent', 'FollowTheRegularizedLeader',
-    'MultiplicativeWeights', 'UCBBandit', 'ThompsonSamplingBandit',
-    'LinUCB', 'ContextualThompsonSampling', 'OnlineToBookConversion',
-    'AdversarialTrainingOnline', 'regret_analysis', 'adaptive_learning_rates',
-    'online_svm'
+    'OnlineLearner',
+    'OnlineGradientDescent',
+    'FollowTheRegularizedLeader',
+    'FollowRegularizedLeader',
+    'MultiplicativeWeights',
+    'UCBBandit',
+    'ThompsonSamplingBandit',
+    'LinUCB',
+    'ContextualThompsonSampling',
+    'OnlineToBookConversion',
+    'OnlineToBatchConverter',
+    'AdversarialTrainingOnline',
+    'regret_analysis',
+    'adaptive_learning_rates',
+    'project_simplex',
+    'project_l2_ball',
+    'project_box',
+    'l2_regularizer',
+    'l2_regularizer_grad',
+    'entropy_regularizer',
+    'entropy_regularizer_grad',
+    'online_svm',
 ]

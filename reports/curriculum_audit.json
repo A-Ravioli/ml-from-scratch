@@ -897,87 +897,291 @@
   },
   {
     "topic_dir": "05-architectures/04-transformers/bert-family",
-    "missing": [
-      "test_implementation.py",
-      "solutions/solution.py"
-    ],
-    "test_placeholders": null,
-    "solution_placeholders": null
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
   },
   {
     "topic_dir": "05-architectures/04-transformers/efficient-transformers",
-    "missing": [
-      "test_implementation.py",
-      "solutions/solution.py"
-    ],
-    "test_placeholders": null,
-    "solution_placeholders": null
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
   },
   {
     "topic_dir": "05-architectures/04-transformers/gpt-family",
-    "missing": [
-      "test_implementation.py",
-      "solutions/solution.py"
-    ],
-    "test_placeholders": null,
-    "solution_placeholders": null
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
   },
   {
     "topic_dir": "05-architectures/04-transformers/t5-family",
-    "missing": [
-      "test_implementation.py",
-      "solutions/solution.py"
-    ],
-    "test_placeholders": null,
-    "solution_placeholders": null
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
   },
   {
     "topic_dir": "05-architectures/04-transformers/vanilla-transformer",
-    "missing": [
-      "test_implementation.py",
-      "solutions/solution.py"
-    ],
-    "test_placeholders": null,
-    "solution_placeholders": null
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "05-architectures/05-graph-neural-networks/01-message-passing",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "05-architectures/05-graph-neural-networks/02-spectral-methods",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "05-architectures/05-graph-neural-networks/03-spatial-methods",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
   },
   {
     "topic_dir": "05-architectures/05-graph-neural-networks/04-gcn",
-    "missing": [
-      "solutions/solution.py"
-    ],
+    "missing": [],
     "test_placeholders": {
       "todo": 0,
       "your_code_here": 0,
       "not_implemented_error": 0,
       "pass_lines": 0
     },
-    "solution_placeholders": null
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "05-architectures/05-graph-neural-networks/05-gat",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "05-architectures/05-graph-neural-networks/06-graphsage",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "05-architectures/05-graph-neural-networks/07-equivariant-gnns",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "05-architectures/05-graph-neural-networks/08-advanced-gnns",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
   },
   {
     "topic_dir": "05-architectures/06-exotic-architectures/01-neural-ode",
-    "missing": [
-      "solutions/solution.py"
-    ],
+    "missing": [],
     "test_placeholders": {
       "todo": 0,
       "your_code_here": 0,
       "not_implemented_error": 0,
       "pass_lines": 0
     },
-    "solution_placeholders": null
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
   },
   {
     "topic_dir": "05-architectures/06-exotic-architectures/02-capsule-networks",
-    "missing": [
-      "solutions/solution.py"
-    ],
+    "missing": [],
     "test_placeholders": {
       "todo": 0,
       "your_code_here": 0,
       "not_implemented_error": 0,
       "pass_lines": 0
     },
-    "solution_placeholders": null
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "05-architectures/06-exotic-architectures/03-hypernetworks",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "05-architectures/06-exotic-architectures/04-neural-cellular-automata",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "05-architectures/06-exotic-architectures/05-implicit-networks",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
   },
   {
     "topic_dir": "06-generative-models/01-autoregressive-models",
@@ -1013,13 +1217,19 @@
   },
   {
     "topic_dir": "06-generative-models/02-variational-autoencoders/02-beta-vae",
-    "missing": [
-      "exercise.py",
-      "test_implementation.py",
-      "solutions/solution.py"
-    ],
-    "test_placeholders": null,
-    "solution_placeholders": null
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
   },
   {
     "topic_dir": "06-generative-models/02-variational-autoencoders/03-hierarchical-vae",
@@ -1055,81 +1265,1426 @@
   },
   {
     "topic_dir": "06-generative-models/02-variational-autoencoders/05-vae-theory",
-    "missing": [
-      "lesson.md",
-      "test_implementation.py",
-      "solutions/solution.py"
-    ],
-    "test_placeholders": null,
-    "solution_placeholders": null
-  },
-  {
-    "topic_dir": "06-generative-models/03-generative-adversarial-networks/01-gan-theory",
-    "missing": [
-      "solutions/solution.py"
-    ],
+    "missing": [],
     "test_placeholders": {
       "todo": 0,
       "your_code_here": 0,
       "not_implemented_error": 0,
       "pass_lines": 0
     },
-    "solution_placeholders": null
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "06-generative-models/03-generative-adversarial-networks/01-gan-theory",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
   },
   {
     "topic_dir": "06-generative-models/03-generative-adversarial-networks/02-vanilla-gan",
-    "missing": [
-      "test_implementation.py",
-      "solutions/solution.py"
-    ],
-    "test_placeholders": null,
-    "solution_placeholders": null
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
   },
   {
     "topic_dir": "06-generative-models/03-generative-adversarial-networks/03-wasserstein-gan",
-    "missing": [
-      "test_implementation.py",
-      "solutions/solution.py"
-    ],
-    "test_placeholders": null,
-    "solution_placeholders": null
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "06-generative-models/03-generative-adversarial-networks/04-stylegan",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
   },
   {
     "topic_dir": "06-generative-models/04-normalizing-flows/01-planar-flows",
-    "missing": [
-      "test_implementation.py",
-      "solutions/solution.py"
-    ],
-    "test_placeholders": null,
-    "solution_placeholders": null
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "06-generative-models/04-normalizing-flows/02-autoregressive-flows",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "06-generative-models/04-normalizing-flows/03-neural-spline-flows",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "06-generative-models/04-normalizing-flows/04-continuous-normalizing-flows",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
   },
   {
     "topic_dir": "06-generative-models/05-diffusion-models/01-ddpm",
-    "missing": [
-      "test_implementation.py",
-      "solutions/solution.py"
-    ],
-    "test_placeholders": null,
-    "solution_placeholders": null
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "06-generative-models/05-diffusion-models/02-score-based-models",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "06-generative-models/05-diffusion-models/03-stochastic-differential-equations",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "06-generative-models/05-diffusion-models/04-conditional-diffusion",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "06-generative-models/05-diffusion-models/05-latent-diffusion",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "06-generative-models/06-energy-based-models/01-hopfield-networks",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "06-generative-models/06-energy-based-models/02-boltzmann-machines",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "06-generative-models/06-energy-based-models/03-score-matching",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "06-generative-models/06-energy-based-models/04-noise-contrastive-estimation",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "06-generative-models/07-flow-matching/01-optimal-transport",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "06-generative-models/07-flow-matching/02-conditional-flow-matching",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "06-generative-models/07-flow-matching/03-riemannian-flow-matching",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
   },
   {
     "topic_dir": "07-reinforcement-learning/01-foundations/01-markov-decision-processes",
-    "missing": [
-      "exercise.py",
-      "test_implementation.py",
-      "solutions/solution.py"
-    ],
-    "test_placeholders": null,
-    "solution_placeholders": null
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
   },
   {
     "topic_dir": "07-reinforcement-learning/01-foundations/02-bellman-equations",
-    "missing": [
-      "exercise.py",
-      "test_implementation.py",
-      "solutions/solution.py"
-    ],
-    "test_placeholders": null,
-    "solution_placeholders": null
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "07-reinforcement-learning/01-foundations/03-exploration-exploitation",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "07-reinforcement-learning/02-tabular-methods/01-dynamic-programming",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "07-reinforcement-learning/02-tabular-methods/02-monte-carlo",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "07-reinforcement-learning/02-tabular-methods/03-temporal-difference",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "07-reinforcement-learning/03-function-approximation/01-linear-approximation",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "07-reinforcement-learning/03-function-approximation/02-deep-q-networks",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "07-reinforcement-learning/03-function-approximation/03-double-dqn",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "07-reinforcement-learning/04-policy-gradient-methods/01-reinforce",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "07-reinforcement-learning/04-policy-gradient-methods/02-actor-critic",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "07-reinforcement-learning/04-policy-gradient-methods/03-a2c-a3c",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "07-reinforcement-learning/04-policy-gradient-methods/04-trpo",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "07-reinforcement-learning/04-policy-gradient-methods/05-ppo",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "07-reinforcement-learning/05-model-based-rl/01-dyna",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "07-reinforcement-learning/05-model-based-rl/02-world-models",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "07-reinforcement-learning/05-model-based-rl/03-dreamer",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "07-reinforcement-learning/05-model-based-rl/04-muzero",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "07-reinforcement-learning/06-offline-rl/01-batch-constrained-q",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "07-reinforcement-learning/06-offline-rl/02-conservative-q-learning",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "07-reinforcement-learning/06-offline-rl/03-decision-transformers",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "07-reinforcement-learning/07-multi-agent-rl/01-nash-equilibria",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "07-reinforcement-learning/07-multi-agent-rl/02-mean-field-games",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "07-reinforcement-learning/07-multi-agent-rl/03-communication-protocols",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "08-advanced-optimization/01-landscape-analysis",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "08-advanced-optimization/02-mode-connectivity",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "08-advanced-optimization/03-lottery-ticket-hypothesis",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "08-advanced-optimization/04-sharpness-aware-minimization",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "08-advanced-optimization/05-federated-optimization",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "08-advanced-optimization/06-zeroth-order-optimization",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "09-theoretical-deep-learning/01-approximation-theory",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "09-theoretical-deep-learning/02-optimization-landscape",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "09-theoretical-deep-learning/03-generalization-theory",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "09-theoretical-deep-learning/04-implicit-regularization",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "09-theoretical-deep-learning/05-feature-learning",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "09-theoretical-deep-learning/06-neural-tangent-kernel",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "10-specialized-topics/01-geometric-deep-learning/clifford-algebras",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "10-specialized-topics/01-geometric-deep-learning/gauge-equivariance",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "10-specialized-topics/01-geometric-deep-learning/manifold-learning",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "10-specialized-topics/02-quantum-machine-learning",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "10-specialized-topics/03-neuromorphic-computing",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "10-specialized-topics/04-optical-neural-networks",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "10-specialized-topics/05-biological-neural-networks",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "10-specialized-topics/06-mechanistic-interpretability",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "11-advanced-topics/01-meta-learning/few-shot-learning",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "11-advanced-topics/01-meta-learning/maml",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "11-advanced-topics/01-meta-learning/neural-processes",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "11-advanced-topics/01-meta-learning/prototypical-networks",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "11-advanced-topics/02-continual-learning/elastic-weight-consolidation",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "11-advanced-topics/02-continual-learning/memory-replay",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "11-advanced-topics/02-continual-learning/progressive-neural-networks",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "11-advanced-topics/03-causal-representation-learning",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "11-advanced-topics/04-disentanglement",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "11-advanced-topics/05-neural-architecture-search",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "11-advanced-topics/06-pruning-quantization",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "12-frontier-research/01-large-language-models/chain-of-thought",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "12-frontier-research/01-large-language-models/constitutional-ai",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "12-frontier-research/01-large-language-models/emergent-abilities",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "12-frontier-research/01-large-language-models/scaling-laws",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "12-frontier-research/02-multimodal-models/clip-variants",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "12-frontier-research/02-multimodal-models/embodied-ai",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "12-frontier-research/02-multimodal-models/flamingo",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "12-frontier-research/02-multimodal-models/unified-architectures",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "12-frontier-research/03-alignment-safety/debate",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "12-frontier-research/03-alignment-safety/interpretability",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "12-frontier-research/03-alignment-safety/reward-modeling",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "12-frontier-research/03-alignment-safety/rlhf",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
+  },
+  {
+    "topic_dir": "12-frontier-research/04-open-problems",
+    "missing": [],
+    "test_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    },
+    "solution_placeholders": {
+      "todo": 0,
+      "your_code_here": 0,
+      "not_implemented_error": 0,
+      "pass_lines": 0
+    }
   }
 ]

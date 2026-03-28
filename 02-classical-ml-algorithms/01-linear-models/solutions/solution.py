@@ -90,8 +90,8 @@ class LinearRegression(LinearModel):
         self.coefficients_ = self.coefficients_[1:]
         
         # Compute metrics
-        self._compute_metrics(X, y)
         self.fitted_ = True
+        self._compute_metrics(X, y)
         
         return self
     
@@ -1044,8 +1044,8 @@ class CrossValidation:
         
         # Get model parameters (simplified)
         if hasattr(model, '__dict__'):
-            params = {k: v for k, v in model.__dict__.items() 
-                     if not k.endswith('_')}  # Exclude fitted attributes
+            params = {k: v for k, v in model.__dict__.items()
+                     if not k.endswith('_') and k != 'name'}  # Exclude fitted attributes/base metadata
             return model_class(**params)
         else:
             return model_class()

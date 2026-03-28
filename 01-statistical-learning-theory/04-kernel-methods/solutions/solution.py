@@ -9,7 +9,7 @@ from typing import List, Tuple, Optional, Dict, Callable, Union
 from abc import ABC, abstractmethod
 import matplotlib.pyplot as plt
 from scipy import linalg
-from scipy.optimize import minimize, quadratic_programming
+from scipy.optimize import minimize
 from scipy.spatial.distance import pdist, squareform
 import warnings
 
@@ -77,6 +77,17 @@ class LinearKernel(Kernel):
     def compute(self, x: np.ndarray, y: np.ndarray) -> float:
         """k(x,y) = x^T y"""
         return np.dot(x, y)
+
+
+class LaplacianKernel(Kernel):
+    """Laplacian kernel using L1 distance."""
+
+    def __init__(self, gamma: float = 1.0):
+        super().__init__(f"Laplacian(γ={gamma})")
+        self.gamma = gamma
+
+    def compute(self, x: np.ndarray, y: np.ndarray) -> float:
+        return np.exp(-self.gamma * np.linalg.norm(x - y, ord=1))
 
 
 class StringKernel(Kernel):
@@ -605,6 +616,36 @@ def kernel_alignment(kernel1: Kernel, kernel2: Kernel,
     return inner_product / (norm1 * norm2)
 
 
+def compute_kernel_alignment(K1: np.ndarray, K2: np.ndarray) -> float:
+    """Compute Frobenius alignment directly from two kernel matrices."""
+    numerator = float(np.trace(K1.T @ K2))
+    denominator = float(np.linalg.norm(K1, ord="fro") * np.linalg.norm(K2, ord="fro"))
+    if denominator == 0.0:
+        return 0.0
+    return numerator / denominator
+
+
+def kernel_matrix_approximation(K: np.ndarray, rank: int) -> Tuple[np.ndarray, np.ndarray]:
+    """Return a rank-truncated approximation of a kernel matrix."""
+    U, S, _ = np.linalg.svd(K, full_matrices=False)
+    rank = max(1, min(rank, len(S)))
+    basis = U[:, :rank]
+    approximation = basis @ np.diag(S[:rank]) @ basis.T
+    return approximation, basis
+
+
+def nystrom_approximation(
+    X: np.ndarray, kernel: Kernel, n_components: int
+) -> Tuple[np.ndarray, np.ndarray]:
+    """Construct a simple Nyström approximation using the first landmarks."""
+    n_components = max(1, min(n_components, len(X)))
+    landmarks = X[:n_components]
+    C = kernel.compute_matrix(X, landmarks)
+    W = kernel.compute_matrix(landmarks)
+    approximation = C @ np.linalg.pinv(W) @ C.T
+    return approximation, landmarks
+
+
 def reproduce_kernel_hilbert_space_demo():
     """
     Demonstrate RKHS properties.
@@ -793,11 +834,32 @@ class KernelMachine(ABC):
         ...
 
 
+KernelFunction = Kernel
+KernelRidgeRegression = RidgeRegression
+
+
 # Export all solution implementations
 __all__ = [
-    'Kernel', 'RBFKernel', 'PolynomialKernel', 'LinearKernel', 'StringKernel',
-    'KernelPCA', 'SupportVectorMachine', 'RidgeRegression', 'GaussianProcess',
-    'compute_kernel_matrix', 'kernel_centering', 'kernel_alignment',
-    'reproduce_kernel_hilbert_space_demo', 'multiple_kernel_learning',
-    'representer_theorem_verification', 'KernelMachine'
+    'Kernel',
+    'KernelFunction',
+    'RBFKernel',
+    'PolynomialKernel',
+    'LinearKernel',
+    'LaplacianKernel',
+    'StringKernel',
+    'KernelPCA',
+    'SupportVectorMachine',
+    'RidgeRegression',
+    'KernelRidgeRegression',
+    'GaussianProcess',
+    'compute_kernel_matrix',
+    'kernel_centering',
+    'kernel_alignment',
+    'compute_kernel_alignment',
+    'kernel_matrix_approximation',
+    'nystrom_approximation',
+    'reproduce_kernel_hilbert_space_demo',
+    'multiple_kernel_learning',
+    'representer_theorem_verification',
+    'KernelMachine',
 ]
