@@ -23,22 +23,29 @@ This chapter follows a **theorem-proof-application** paradigm. Each section buil
 
 ### 01. Linear Algebra
 
-**Focus**: Advanced linear algebra beyond undergraduate level, emphasizing computational and geometric perspectives.
+**Focus**: A full linear algebra pipeline for machine learning, starting from geometry and ending with decomposition-based ML projects.
 
 **Study Strategy**:
 
-1. **Vector Spaces** - Abstract vector spaces, linear independence, bases, dimension
-2. **Matrix Decompositions** - SVD, eigendecomposition, QR, Cholesky, and their ML applications
-3. **Tensor Algebra** - Multilinear algebra, tensor products, computational tensor methods
-4. **Spectral Theory** - Eigenvalue problems, matrix functions, perturbation theory
+1. **The Building Blocks** - Vectors, matrix actions, basis vectors, and special matrix families
+2. **Linear Systems** - Geometry of `Ax = b`, Gaussian elimination, and LU reuse
+3. **Vector Spaces** - Span, basis, rank, null spaces, and change of basis
+4. **Orthogonality** - Projections, Gram-Schmidt, QR, and orthogonal transforms
+5. **Spectral Methods** - Eigenvalues, eigendecomposition, and symmetric matrices
+6. **SVD** - Low-rank approximation, PCA, and pseudoinverses
+7. **Positive Definiteness** - Quadratic forms, Cholesky, and covariance geometry
+8. **Matrix Calculus** - Gradients, Hessians, Jacobians, and backprop
+9. **Numerical Stability** - Norms, conditioning, and sparse matrix computation
+10. **Capstones** - PCA, regression, attention, and a neural net from scratch
 
 **Key Skills to Develop**:
 
+- Translating between geometric intuition and algebraic formulas
 - Matrix calculus for gradient computations
-- Spectral analysis for understanding PCA, kernel methods
-- Tensor operations for deep learning architectures
+- Spectral analysis for understanding PCA, kernel methods, and Hessians
+- Numerical linear algebra habits that carry into deep learning and optimization
 
-**Time Investment**: 2-3 weeks (building on undergraduate knowledge)
+**Time Investment**: 4-6 weeks (if working carefully through both theory and implementations)
 
 ### 02. Analysis
 
@@ -143,11 +150,12 @@ This chapter follows a **theorem-proof-application** paradigm. Each section buil
 
 ### Weekly Goals
 
-- **Week 1-2**: Linear algebra, matrix decompositions, spectral theory
-- **Week 3-4**: Analysis foundations, convergence concepts
-- **Week 5-6**: Probability theory, measure theory, stochastic processes
-- **Week 7-8**: Optimization theory, convex analysis
-- **Week 9-10**: Information geometry (optional), integration and review
+- **Week 1-2**: Linear algebra Modules 1-5
+- **Week 3**: Linear algebra Modules 6-10
+- **Week 4-5**: Analysis foundations and convergence concepts
+- **Week 6-7**: Probability theory, measure theory, stochastic processes
+- **Week 8-9**: Optimization theory and convex analysis
+- **Week 10**: Information geometry (optional), integration, and review
 
 ### Assessment Strategy
 
