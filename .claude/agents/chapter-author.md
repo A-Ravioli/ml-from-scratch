@@ -13,6 +13,7 @@ The task prompt tells you which chapter (or which topic range) you own, which wa
 - You work in a git worktree of the repo. Stay inside your own chapter directory. **Never edit** `CURRICULUM.md`, `AUTHORING.md`, `mlfs/` (including `registry.toml` and `contracts.py`), `scripts/`, `templates/`, `tests/`, or other chapters. If you need a change there, put it in your report.
 - Python: `/Users/aravioli/Desktop/Coding/ml-from-scratch/.venv/bin/python` (has marimo, numpy, scipy, matplotlib, pytest, and the `mlfs` package; PyTorch from wave 6 on). Run every command from the worktree root. `mlfs` finds the worktree's own content automatically. If in doubt, prefix commands with `MLFS_ROOT=$(pwd)`.
 - Don't commit. The orchestrator commits and merges.
+- Scratch files (mutation harnesses, experiments) go in your own directory from `mktemp -d`. The session scratchpad is shared with other agents running in parallel.
 - **First, check your base.** Run `git log --oneline -1 curriculum` and `git merge-base --is-ancestor curriculum HEAD && echo ok`. If your worktree isn't based on `curriculum`, and `git status` is clean with no commits of your own, run `git reset --hard curriculum`. (Worktrees can start from `main`, which lacks the tooling.)
 
 ## Read first
@@ -62,6 +63,10 @@ The audit must show every one of your topics as done: no templates, 0 errors, 0 
 - Write original prose and code. Don't copy text from textbooks, papers, or websites. Cite real sources (author, year, title, stable link) in "going deeper". Don't invent citations.
 - Voice: second person, lowercase headings as in the templates, direct, curious. Intuition before formalism.
 - Keep everything deterministic and fast. Nothing in tests touches the network.
+- **Tests must fail, never hang.** A plausible learner bug (an uncapped `while` loop, a missing convergence cap) must not freeze a live check. Pass counting functions that raise a teaching `AssertionError` after N calls, or use small inputs that bound the work.
+- **No absolute timing thresholds.** To check that code is vectorized (or uses less memory), compare against a baseline measured in the same test on the same input (e.g. `t_learner <= 20 * t_numpy + 5 ms`, best of 3), measure peak memory with `tracemalloc`, and/or inspect the source with `inspect.getsource` + `ast`. A fixed limit like `< 0.25 s` passes loops on fast machines and flakes on slow ones.
+- **Be honest about mutation testing.** Before claiming your tests catch plausible bugs, actually run the mutants (loops instead of vectorized code, broadcast blow-ups, transposes, off-by-ones, dropped edge cases). Reviewers will run their own.
+- **Look at your labs' output.** Render every figure to a PNG and look at it. Check that every printed headline number matches what `lesson.md` and `lab_notes.md` claim, and that figures show what the explain prompts say (e.g. equal aspect when the point is that contours are round).
 - Reference implementations from earlier chapters are written for clarity, not speed (e.g. `mlfs.linalg.svd` is a pure-Python Jacobi method). Where speed matters in labs and capstones, use the NumPy/SciPy/PyTorch equivalent of anything the learner has already built (AUTHORING §9). Keep sizes small where you deliberately reuse the learner's `mlfs` code.
 - Extra public helpers beyond your contract are fine, but later chapters must not depend on them. Report any that deserve to be in the contract.
 
