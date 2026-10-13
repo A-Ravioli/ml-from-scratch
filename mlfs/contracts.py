@@ -868,7 +868,7 @@ CONTRACTS = {
             "kmeans_plus_plus": "returns initial centres (k,d) sampled by D^2 weighting",
             "silhouette_score": "mean silhouette over samples, Euclidean",
             "GaussianMixture": "Estimator; covariance_type in {'full','diag','spherical'}; weights_ (k,), means_ (k,d), covariances_ ((k,d,d) full, (k,d) diag, (k,) spherical); lower_bound_history_ list (mean log-lik per iter, non-decreasing); score_samples -> log p(x) (n,); score = mean log-lik; sample -> (X (n,d), labels (n,))",
-            "PCA": "Transformer via mlfs.linalg.svd on centred X; components_ (k,d) rows (sign: largest-|.| entry positive), explained_variance_ (k,), explained_variance_ratio_ (k,), mean_ (d,)",
+            "PCA": "Transformer via an SVD of centred X (np.linalg.svd for speed; the learner's mlfs.linalg.svd only on small data, see AUTHORING §9); components_ (k,d) rows (sign: largest-|.| entry positive), explained_variance_ (k,), explained_variance_ratio_ (k,), mean_ (d,)",
             "ProbabilisticPCA": "Transformer; closed-form MLE (Tipping & Bishop): W_ (d,k), noise_variance_, mean_; transform = posterior mean of z; score_samples -> log p(x)",
             "KernelPCA": "Transformer; centred Gram via kernels.center_gram-style centring; transform projects new points; alphas_, lambdas_",
             "MDS": "classical (Torgerson) MDS; dissimilarity in {'euclidean','precomputed'}; embedding_ (n,k)",

@@ -610,7 +610,7 @@ k-means, GMM/EM, PCA family, MDS/Isomap/t-SNE, spectral/DBSCAN/agglomerative clu
 | `GaussianMixture.score` | `(self, X, y=None)` |  |
 | `GaussianMixture.sample` | `(self, n=1, *, rng=None)` |  |
 | `GaussianMixture.bic` | `(self, X)` |  |
-| **class** `PCA` | | Transformer via mlfs.linalg.svd on centred X; components_ (k,d) rows (sign: largest-\|.\| entry positive), explained_variance_ (k,), explained_variance_ratio_ (k,), mean_ (d,) |
+| **class** `PCA` | | Transformer via an SVD of centred X (np.linalg.svd for speed; the learner's mlfs.linalg.svd only on small data, see AUTHORING §9); components_ (k,d) rows (sign: largest-\|.\| entry positive), explained_variance_ (k,), explained_variance_ratio_ (k,), mean_ (d,) |
 | `PCA.__init__` | `(self, n_components=None, *, whiten=False)` |  |
 | `PCA.fit` | `(self, X, y=None)` |  |
 | `PCA.transform` | `(self, X)` |  |
