@@ -69,7 +69,7 @@ LU/Cholesky solves, QR and least squares, eigensolvers, SVD, condition numbers
 - `02-linear-algebra/04-orthogonality-and-least-squares`: `gram_schmidt`, `qr`, `lstsq`
 - `02-linear-algebra/05-eigenvalues-and-eigenvectors`: `power_iteration`, `inverse_iteration`, `qr_algorithm`, `eigh`
 - `02-linear-algebra/06-svd-and-low-rank-approximation`: `svd`, `truncated_svd`, `low_rank_approx`, `pinv`
-- `02-linear-algebra/08-conditioning-and-stability`: `cond`, `cond_estimate`
+- `02-linear-algebra/08-conditioning-and-stability`: `matrix_norm`, `cond`, `cond_estimate`, `backward_error`
 
 | name | signature | notes |
 |---|---|---|
@@ -93,6 +93,8 @@ LU/Cholesky solves, QR and least squares, eigensolvers, SVD, condition numbers
 | `pinv` | `(A, *, rcond=1e-15)` | Moore-Penrose pseudoinverse (n,m); singular values <= rcond * s_max treated as zero |
 | `cond` | `(A)` | 2-norm condition number s_max / s_min (inf if singular) |
 | `cond_estimate` | `(A, *, max_iters=100, rng=None)` | power iteration on A^T A and inverse iteration (via lu) estimate of cond(A) |
+| `matrix_norm` | `(A, ord=2)` | induced/entrywise matrix norm: ord in {1, 2, np.inf, 'fro'}; returns float |
+| `backward_error` | `(A, x, b)` | normwise relative backward error \|\|b - Ax\|\| / (\|\|A\|\|_2 \|\|x\|\| + \|\|b\|\|) |
 
 ### mlfs.numgrad
 

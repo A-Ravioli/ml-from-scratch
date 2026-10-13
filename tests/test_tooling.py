@@ -159,3 +159,17 @@ def test_contracts_doc_is_up_to_date():
     out = subprocess.run([sys.executable, str(REPO / "scripts" / "contracts_doc.py"), "--check"],
                          capture_output=True, text=True)
     assert out.returncode == 0, out.stdout + out.stderr
+
+
+def test_stubify_turns_staged_definitions_into_stubs():
+    from stubify import stubify
+
+    src = (REPO / "templates" / "topic" / "solutions" / "exercise.py").read_text()
+    out = stubify(src)
+    assert 'raise NotImplementedError("stage1: implement mean")' in out
+    assert 'raise NotImplementedError("stage2: implement variance")' in out
+    assert "np.sum(x) / len(x)" not in out and "(reference solution)" not in out
+    multi = 'def f(x, modified=False):\n    """stage 1 (modified=False) and stage 2 (modified=True): f."""\n    return x\n'
+    stub = stubify(multi)
+    assert "if modified:" in stub and "stage2: implement f with modified=True" in stub
+    assert "stage1: implement f with modified=False" in stub

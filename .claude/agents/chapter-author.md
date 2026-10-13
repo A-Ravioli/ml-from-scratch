@@ -13,6 +13,7 @@ The task prompt tells you which chapter (or which topic range) you own, which wa
 - You work in a git worktree of the repo. Stay inside your own chapter directory. **Never edit** `CURRICULUM.md`, `AUTHORING.md`, `mlfs/` (including `registry.toml` and `contracts.py`), `scripts/`, `templates/`, `tests/`, or other chapters. If you need a change there, put it in your report.
 - Python: `/Users/aravioli/Desktop/Coding/ml-from-scratch/.venv/bin/python` (has marimo, numpy, scipy, matplotlib, pytest, and the `mlfs` package; PyTorch from wave 6 on). Run every command from the worktree root. `mlfs` finds the worktree's own content automatically. If in doubt, prefix commands with `MLFS_ROOT=$(pwd)`.
 - Don't commit. The orchestrator commits and merges.
+- **First, check your base.** Run `git log --oneline -1 curriculum` and `git merge-base --is-ancestor curriculum HEAD && echo ok`. If your worktree isn't based on `curriculum`, and `git status` is clean with no commits of your own, run `git reset --hard curriculum`. (Worktrees can start from `main`, which lacks the tooling.)
 
 ## Read first
 
@@ -28,7 +29,7 @@ The task prompt tells you which chapter (or which topic range) you own, which wa
    1. Plan the stages: 3–6 stages, each a small, testable step, covering the topic's "you build" and owned contract names.
    2. Write `test_exercise.py`: `test_stageN_*` functions taking only `nb`, with teaching failure messages, fixed seeds, no network, under ~10 s total. Mix oracle, property, gradient-check, behavioral, and hand-example tests. Make sure a plausible wrong implementation fails.
    3. Write `solutions/exercise.py`: a complete, clean, idiomatic reference that passes. Public API in `@app.function` / `@app.class_definition` cells. Only setup-cell imports.
-   4. Write `exercise.py`: the same notebook, with stub bodies `raise NotImplementedError("stageN: …")`. Docstrings at the chapter's scaffolding level. Each stage gets a `lesson.section("idea N…")` cell, the definitions, then `checks.run(N, name=name, …)`. If the reference contains helper code that isn't part of the exercise (plotting, data prep), it can stay in non-stub cells.
+   4. Write `exercise.py`: generate it with `python scripts/stubify.py <topic dir>`. Every function or method whose docstring starts with `stage N:` becomes a `raise NotImplementedError("stageN: …")` stub. Then adjust by hand if needed. Docstrings at the chapter's scaffolding level. Each stage gets a `lesson.section("idea N…")` cell, the definitions, then `checks.run(N, name=name, …)`. If the reference contains helper code that isn't part of the exercise (plotting, data prep), it can stay in non-stub cells.
    5. Write `lesson.md`: every §5.2 section; `### idea N: …` subsections that match the notebook's `lesson.section` calls; a `▶ build: stage N` callout per stage; at least two `🔮 predict` callouts; a worked example the tests check; derivations with `<details>` solutions; 1,500–4,000 words. Explain the *why*, then the formalism.
    6. Write `hints.md`: a `## stage N` section per stage, with hint levels matching the scaffolding level.
    7. Write `lab.py`: 2–4 experiments, each with `ui.predict` → gated cell → "📝 **explain:**". Use the learner's code via `notebooks.load_sibling("exercise")` plus earlier `mlfs` modules. Interactive `mo.ui` controls where they help. At least one result most learners won't predict. Runs headless on CPU in under ~3 minutes, using `mlfs.datasets` (which returns synthetic data when offline).
@@ -61,6 +62,8 @@ The audit must show every one of your topics as done: no templates, 0 errors, 0 
 - Write original prose and code. Don't copy text from textbooks, papers, or websites. Cite real sources (author, year, title, stable link) in "going deeper". Don't invent citations.
 - Voice: second person, lowercase headings as in the templates, direct, curious. Intuition before formalism.
 - Keep everything deterministic and fast. Nothing in tests touches the network.
+- Reference implementations from earlier chapters are written for clarity, not speed (e.g. `mlfs.linalg.svd` is a pure-Python Jacobi method). Where speed matters in labs and capstones, use the NumPy/SciPy/PyTorch equivalent of anything the learner has already built (AUTHORING §9). Keep sizes small where you deliberately reuse the learner's `mlfs` code.
+- Extra public helpers beyond your contract are fine, but later chapters must not depend on them. Report any that deserve to be in the contract.
 
 ## Report (your final message)
 

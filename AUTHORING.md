@@ -238,7 +238,7 @@ linalg = ["02-linear-algebra/03-solving-linear-systems", "02-linear-algebra/04-o
 | pytest / `verify.py` | **reference** solutions for every *other* module, so one bug can't break later chapters | `MLFS_REFERENCE=none` to test against your own earlier code |
 | `MLFS_SOLUTIONS=1` | every notebook resolves to its reference solution | |
 
-**contracts.** every module's public interface is frozen in `mlfs/contracts.py` (explained in `CONTRACTS.md`): names, parameter names, order, and defaults. topics that own a module must implement it exactly. later chapters may use only what the contract lists. `tests/test_contracts.py` checks reference solutions against it. changing a contract is an orchestrator decision, not a chapter decision.
+**contracts.** every module's public interface is frozen in `mlfs/contracts.py` (explained in `CONTRACTS.md`): names, parameter names, order, and defaults. topics that own a module must implement it exactly. later chapters may use only what the contract lists. `tests/test_contracts.py` checks reference solutions against it. changing a contract is an orchestrator decision, not a chapter decision. a notebook may define extra public helpers beyond its contract (marimo cells can't share `_private` names), but later chapters must not rely on them, and they must not clash with other names in the same module.
 
 register a module with `python scripts/scaffold.py topic NN MM --provides <name>` (the registry for the whole course is already filled in). names can't collide with `mlfs`'s own submodules (`notebooks`, `registry`, `checks`, `lesson`, `ui`, `pytest_plugin`, `datasets`, `contracts`). `CURRICULUM.md` lists which topic owns each module.
 
@@ -267,6 +267,7 @@ register a module with `python scripts/scaffold.py topic NN MM --provides <name>
 
 - **chapters 00–14: NumPy only.** you build your own autograd in chapter 14.
 - **chapter 15 onward:** PyTorch is allowed, under the **build-before-you-use rule**: you may use a library component only after you've implemented it yourself in an earlier topic (`nn.Conv2d` after 16.01, `nn.MultiheadAttention` after 18.01, and so on). each chapter README lists what is newly unlocked.
+- **the rule covers NumPy/SciPy too.** once a learner has built something (say `mlfs.linalg.svd`), later chapters may call the library equivalent (`np.linalg.svd`) where speed matters. reference implementations are written for clarity, not speed (the pilot's Jacobi SVD takes seconds on a 280×4096 matrix). use the learner's `mlfs` version when *reusing their code* is the point; use the library version for heavy lifting in labs and capstones.
 - **compute:** everything through chapter 21 runs on a laptop CPU. chapters 22 and 24–28 benefit from a GPU (a free Colab T4 is enough for the default configs). parts of chapter 26 (Triton) need an NVIDIA GPU. every capstone has a small config that runs on CPU.
 
 ## 10. voice & style
@@ -299,6 +300,7 @@ register a module with `python scripts/scaffold.py topic NN MM --provides <name>
 |---|---|
 | `python scripts/scaffold.py plan NN` | creates chapter NN and every topic in its plan, pre-filled from `CURRICULUM.md` (never overwrites; `--force` to override) |
 | `python scripts/scaffold.py chapter NN` / `topic NN MM [--provides name]` | one chapter skeleton / one topic (optionally registering an `mlfs` module) |
+| `python scripts/stubify.py <topic dir>...` | regenerates `exercise.py` from `solutions/exercise.py`: every function or method whose docstring starts with `stage N:` gets a `NotImplementedError` stub |
 | `python scripts/audit.py [--chapter NN] [--marimo] [--strict] [--json]` | plan coverage, structure, placeholders, stage/test/hint/callout consistency, registry, `marimo check` |
 | `python scripts/verify.py [--chapter NN \| --topic PATH] [--fast] [-j N]` | for each topic and capstone: solutions pass, stubs fail every stage, labs run headless |
 | `pytest tests` | tests for the tooling itself |

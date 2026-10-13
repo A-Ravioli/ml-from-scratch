@@ -7,3 +7,4 @@ build/
 __marimo__/
 .ipynb_checkpoints/
 reports/
+.claude/worktrees/

@@ -172,7 +172,7 @@ CONTRACTS = {
                 "power_iteration", "inverse_iteration", "qr_algorithm", "eigh"],
             "02-linear-algebra/06-svd-and-low-rank-approximation": [
                 "svd", "truncated_svd", "low_rank_approx", "pinv"],
-            "02-linear-algebra/08-conditioning-and-stability": ["cond", "cond_estimate"],
+            "02-linear-algebra/08-conditioning-and-stability": ["matrix_norm", "cond", "cond_estimate", "backward_error"],
         },
         "functions": {
             "lu": "(A)",
@@ -195,6 +195,8 @@ CONTRACTS = {
             "pinv": "(A, *, rcond=1e-15)",
             "cond": "(A)",
             "cond_estimate": "(A, *, max_iters=100, rng=None)",
+            "matrix_norm": "(A, ord=2)",
+            "backward_error": "(A, x, b)",
         },
         "classes": {},
         "notes": {
@@ -218,6 +220,8 @@ CONTRACTS = {
             "pinv": "Moore-Penrose pseudoinverse (n,m); singular values <= rcond * s_max treated as zero",
             "cond": "2-norm condition number s_max / s_min (inf if singular)",
             "cond_estimate": "power iteration on A^T A and inverse iteration (via lu) estimate of cond(A)",
+            "matrix_norm": "induced/entrywise matrix norm: ord in {1, 2, np.inf, 'fro'}; returns float",
+            "backward_error": "normwise relative backward error ||b - Ax|| / (||A||_2 ||x|| + ||b||)",
         },
     },
     "numgrad": {
