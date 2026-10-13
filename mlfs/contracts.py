@@ -90,7 +90,7 @@ CONTRACTS = {
         ],
         "summary": "vectorised distances, stable numerics, course-wide plotting, assertions and seeding",
         "by_topic": {
-            "00-python-and-numpy-for-ml/02-numpy-arrays-and-vectorization": ["pairwise_distances"],
+            "00-python-and-numpy-for-ml/02-numpy-arrays-and-vectorization": ["one_hot", "pairwise_distances"],
             "00-python-and-numpy-for-ml/03-floating-point-and-stability": [
                 "logsumexp", "softmax", "log_softmax", "sigmoid", "log_sigmoid", "softplus"],
             "00-python-and-numpy-for-ml/04-visualizing-data": [
@@ -100,6 +100,7 @@ CONTRACTS = {
         },
         "functions": {
             "pairwise_distances": "(X, Y=None, *, squared=False)",
+            "one_hot": "(labels, n_classes)",
             "logsumexp": "(x, axis=None, keepdims=False)",
             "softmax": "(x, axis=-1)",
             "log_softmax": "(x, axis=-1)",
@@ -115,7 +116,8 @@ CONTRACTS = {
         },
         "classes": {},
         "notes": {
-            "pairwise_distances": "X (n,d), Y (m,d) (default X) -> (n,m) Euclidean distances, no loops, clipped at 0 before sqrt",
+            "pairwise_distances": "X (n,d), Y (m,d) (default X) -> (n,m) Euclidean distances, no loops and no (n,m,d) intermediate, clipped at 0 before sqrt; with Y=None the result is exactly symmetric with an exactly zero diagonal",
+            "one_hot": "int labels (n,) in 0..n_classes-1 -> float (n, n_classes) with a single 1 per row",
             "logsumexp": "like scipy.special.logsumexp; finite for huge inputs, -inf for all -inf",
             "softmax": "stable (max-subtracted); rows sum to 1 along axis",
             "log_softmax": "x - logsumexp(x, axis, keepdims=True)",
@@ -125,9 +127,9 @@ CONTRACTS = {
             "plot_decision_boundary": "predict: callable (m,2)->(m,) labels or scores; X (n,2); returns the Axes",
             "image_grid": "images (N,H,W), (N,H,W,C) or (N,C,H,W) with C in {1,3}; returns the Axes",
             "plot_curves": "curves: dict label -> sequence of y, or (x, y) pair; returns the Axes",
-            "assert_close": "raises AssertionError naming the worst index, its two values, abs/rel error and shape mismatch",
+            "assert_close": "raises AssertionError naming the worst index (largest |a-e|/tol), its two values, abs/rel error; shapes must match exactly (no broadcasting); nan matches nan, inf only the same inf; complex input raises TypeError",
             "set_seed": "seeds python `random`, np.random, and torch (if importable); returns np.random.default_rng(seed)",
-            "as_rng": "None -> fresh default_rng(); int -> default_rng(int); Generator -> itself",
+            "as_rng": "None -> fresh default_rng(); int -> default_rng(int); Generator -> itself; anything else (incl. bool, float) raises TypeError",
         },
     },
     "numerics": {
@@ -266,13 +268,13 @@ CONTRACTS = {
             "Dual": {
                 "__init__": "(self, real, dual=0.0)",
                 "exp": "(self)", "log": "(self)", "sin": "(self)", "cos": "(self)",
-                "tanh": "(self)", "sqrt": "(self)",
+                "tanh": "(self)", "sqrt": "(self)", "log1p": "(self)", "expm1": "(self)",
             },
         },
         "notes": {
             "numerical_jacobian": "f: (n,) -> (m,); returns (m,n) central differences",
             "numerical_hessian": "f: (n,) -> float; returns symmetric (n,n)",
-            "Dual": "attrs .real, .dual; supports + - * / ** (scalar or Dual exponent), unary -, abs, comparisons by .real; mixes with floats; the method names make np.exp/np.log/np.sin/np.cos/np.tanh/np.sqrt work on object arrays of Duals",
+            "Dual": "attrs .real, .dual; supports + - * / ** (scalar or Dual exponent), unary -, abs, comparisons by .real; mixes with floats; the method names make np.exp/np.log/np.log1p/np.expm1/np.sin/np.cos/np.tanh/np.sqrt work on object arrays of Duals; binary operators return NotImplemented for ndarray operands (so NumPy broadcasts elementwise); bool() follows .real. NOT supported: np.logaddexp, np.tan, np.linalg.*, math.*, float(). nested Duals give higher derivatives only when built explicitly (no tagging: never close over an outer Dual inside an inner derivative)",
             "derivative": "f: R -> R built from Dual-aware ops; returns float f'(x)",
             "grad": "f: (n,) -> float; x float ndarray (n,); returns (n,) using n forward passes (seed one dual at a time)",
             "value_and_grad": "returns (f(x) float, grad (n,))",
