@@ -136,7 +136,7 @@ every module's interface is fixed in `mlfs/contracts.py` (see `CONTRACTS.md`); `
 | # | topic | core ideas | you build | lab: you'll find out… |
 |---|---|---|---|---|
 | 01 | vector spaces | span, basis, independence, dimension, subspaces | rank via row reduction; basis checker | random high-dimensional vectors are nearly orthogonal |
-| 02 | linear maps & matmul | composition, kernel/image, rank–nullity, four views of matmul | matmul three ways; benchmark against BLAS | why `np.matmul` is ~1000× faster than your loops |
+| 02 | linear maps & matmul | composition, kernel/image, rank–nullity, four views of matmul | matmul three ways; benchmark against BLAS | why `np.matmul` is thousands of times faster than your loops |
 | 03 | solving linear systems | gaussian elimination, pivoting, LU, triangular solves | LU with partial pivoting; `lu_solve` | which matrices break elimination without pivoting |
 | 04 | orthogonality & least squares | projections, gram–schmidt, QR, normal equations | modified gram–schmidt, householder QR, `lstsq` | classical GS loses orthogonality, modified GS doesn't |
 | 05 | eigenvalues & eigenvectors | diagonalization, spectral theorem, power & QR iteration | power/inverse iteration, unshifted QR algorithm | PageRank on a small web graph |
