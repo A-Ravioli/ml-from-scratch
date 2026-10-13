@@ -1,0 +1,22 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  curriculum:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install
+        run: pip install -e ".[extras]"
+      - name: tooling tests
+        run: pytest tests
+      - name: audit (structure, placeholders, notebooks)
+        run: python scripts/audit.py --marimo
+      - name: verify (solutions pass, stubs fail, labs run)
+        run: python scripts/verify.py --fast -j 4

@@ -1,0 +1,145 @@
+"""Tests for the curriculum tooling (scripts/ and mlfs/). Run with `pytest tests`."""
+from __future__ import annotations
+
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+import numpy as np
+import pytest
+
+REPO = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO / "scripts"))
+
+from _common import parse_curriculum, slugify  # noqa: E402
+
+from mlfs import checks, lesson, notebooks  # noqa: E402
+
+
+def script(name: str, *args: str, root: Path, env: dict | None = None) -> subprocess.CompletedProcess:
+    return subprocess.run([sys.executable, str(REPO / "scripts" / name), "--root", str(root), *args],
+                          capture_output=True, text=True, env=env)
+
+
+@pytest.fixture(scope="module")
+def scaffolded(tmp_path_factory) -> Path:
+    """A throwaway curriculum root with chapter 14, two topics, and one registered module."""
+    root = tmp_path_factory.mktemp("curriculum")
+    assert script("scaffold.py", "chapter", "14", root=root).returncode == 0
+    assert script("scaffold.py", "topic", "14", "2", "--provides", "demo", root=root).returncode == 0
+    assert script("scaffold.py", "topic", "14", "3", root=root).returncode == 0
+    return root
+
+
+def topic(root: Path, num: str) -> Path:
+    chapter = next(root.glob("14-*"))
+    return next(chapter.glob(f"{num}-*"))
+
+
+def test_slugify():
+    assert slugify("MDPs & bellman equations") == "mdps-and-bellman-equations"
+    assert slugify("infinite width: NTK & mean field") == "infinite-width-ntk-and-mean-field"
+
+
+def test_parse_curriculum_matches_plan():
+    plan = parse_curriculum()
+    assert sorted(plan) == [f"{i:02d}" for i in range(31)]
+    ch14 = plan["14"]
+    assert ch14.dirname == "14-neural-networks-from-scratch"
+    assert [t.num for t in ch14.topics] == ["01", "02", "03", "04", "05", "06"]
+    assert ch14.topics[2].title == "a tensor autograd engine"
+    assert "mlfs.tensor" in ch14.topics[2].build
+    assert ch14.capstone and ch14.meta.startswith("L3")
+    assert all(c.topics for n, c in plan.items() if n != "29")
+
+
+def test_lesson_extract_stops_at_same_level_and_ignores_fences():
+    text = "# t\n## a\none\n```\n## not a heading\n```\n### sub\ntwo\n## b\nthree\n"
+    got = lesson.extract(text, "a")
+    assert got.startswith("## a") and "## not a heading" in got and "### sub" in got
+    assert "three" not in got
+    assert lesson.extract(text, "missing") is None
+
+
+def test_scaffold_fills_plan_and_registers(scaffolded):
+    t = topic(scaffolded, "02")
+    assert t.name == "02-scalar-reverse-mode-autodiff"
+    assert "computational graphs, backprop" in (t / "lesson.md").read_text()
+    readme = next(scaffolded.glob("14-*")) / "README.md"
+    assert "[a tensor autograd engine](03-a-tensor-autograd-engine/)" in readme.read_text()
+    registry = (scaffolded / "mlfs" / "registry.toml").read_text()
+    assert 'demo = "14-neural-networks-from-scratch/02-scalar-reverse-mode-autodiff"' in registry
+
+
+def test_scaffold_never_overwrites(scaffolded):
+    lesson_md = topic(scaffolded, "02") / "lesson.md"
+    lesson_md.write_text("# my real lesson\n")
+    out = script("scaffold.py", "topic", "14", "2", root=scaffolded)
+    assert "skip" in out.stdout
+    assert lesson_md.read_text() == "# my real lesson\n"
+
+
+def test_registry_import_switches_between_learner_and_reference(scaffolded):
+    code = "import numpy as np; from mlfs.demo import variance; print(variance(np.array([1., 2, 3, 6])))"
+    base = dict(os.environ, MLFS_ROOT=str(scaffolded))
+    base.pop("MLFS_SOLUTIONS", None)
+    base.pop("MLFS_REFERENCE", None)
+    learner = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, env=base)
+    assert "NotImplementedError: stage2" in learner.stderr
+    ref = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True,
+                         env=dict(base, MLFS_REFERENCE="demo"))
+    assert ref.stdout.strip() == "3.5"
+
+
+def test_live_checks_report_todo_pass_and_fail(scaffolded):
+    t = topic(scaffolded, "02")
+    stub = notebooks.load(notebooks.resolve(t, "exercise", solution=False))
+    ref = notebooks.load(notebooks.resolve(t, "exercise", solution=True))
+    assert {r.status for r in checks.run_stage(t, 1, {"mean": stub.mean})} == {"todo"}
+    assert {r.status for r in checks.run_stage(t, 1, {"mean": ref.mean})} == {"pass"}
+    wrong = checks.run_stage(t, 2, {"variance": lambda x: float(np.var(x, ddof=1))})
+    assert wrong[0].status == "fail" and "n-1" in wrong[0].message
+    missing = checks.run_stage(t, 2, {})
+    assert missing[0].status == "error" and "checks.run(2" in missing[0].message
+
+
+def test_audit_reports_templates_and_errors(scaffolded):
+    out = script("audit.py", "--chapter", "14", root=scaffolded)
+    assert out.returncode == 0, out.stdout
+    assert "2/6 planned exist" in out.stdout and "still templates" in out.stdout
+    assert script("audit.py", "--chapter", "14", "--strict", root=scaffolded).returncode == 1
+
+    sol = topic(scaffolded, "03") / "solutions" / "exercise.py"
+    original = sol.read_text()
+    sol.write_text(original.replace("return float(np.sum(x) / len(x))", 'raise NotImplementedError("stage1")'))
+    try:
+        out = script("audit.py", "--chapter", "14", root=scaffolded)
+        assert out.returncode == 1 and "placeholder in reference solution" in out.stdout
+    finally:
+        sol.write_text(original)
+
+
+@pytest.mark.slow
+def test_verify_passes_clean_scaffold_and_catches_bugs(scaffolded):
+    out = script("verify.py", "--chapter", "14", "-j", "4", root=scaffolded)
+    assert out.returncode == 0, out.stdout
+    assert "3/3 verified" in out.stdout
+
+    ex = topic(scaffolded, "03") / "exercise.py"
+    original = ex.read_text()
+    ex.write_text(original.replace('raise NotImplementedError("stage2: implement variance(x)")',
+                                   "return float(np.var(x))"))
+    try:
+        rel = str(topic(scaffolded, "03").relative_to(scaffolded))
+        out = script("verify.py", "--topic", rel, "--skip-labs", root=scaffolded)
+        assert out.returncode == 1 and "stage 2 passes against the untouched" in out.stdout
+    finally:
+        ex.write_text(original)
+
+
+def test_marimo_check_accepts_templates():
+    files = [str(p) for p in (REPO / "templates").rglob("*.py") if not p.name.startswith("test_")]
+    proc = subprocess.run([sys.executable, "-m", "marimo", "check", "--strict", *files],
+                          capture_output=True, text=True)
+    assert proc.returncode == 0, proc.stdout + proc.stderr

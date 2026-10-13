@@ -1,0 +1,4 @@
+# mlfs module registry. maps `mlfs.<name>` to the topic whose exercise notebook defines it.
+# add entries with `python scripts/scaffold.py topic NN MM --provides <name>`.
+
+[modules]

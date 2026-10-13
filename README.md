@@ -1,192 +1,126 @@
 # ml-from-scratch
 
-## overview
+a hands-on machine learning curriculum that takes you from high school math to research. you learn every idea by building it: from matrix decompositions, to your own autograd engine, to a GPT, a diffusion model, and an RLHF pipeline, all checked by tests as you go.
 
-a hand on guide in machine learning, designed to take you from mathematical foundations to cutting-edge research. designed to take you from middle school to PhD. each topic includes:
+> **status:** rebuilding from scratch. the full plan is in [`CURRICULUM.md`](CURRICULUM.md) and the chapter format is in [`AUTHORING.md`](AUTHORING.md). chapters appear as they're written; run `python scripts/audit.py` to see progress.
 
-- **theoretical foundations** with rigorous mathematical treatment
-- **hands-on implementation** from scratch
-- **research connections** to current literature
-- **socratic questions** to deepen understanding
-- **curated resources** from top institutions
+## how it works
 
-## curriculum structure
+every topic follows the same loop:
 
-### year 1: mathematical foundations & classical ML
+1. **predict**: answer a few questions cold, before reading anything
+2. **learn**: read the lesson (`lesson.md`), one idea at a time
+3. **derive**: work through the key derivations on paper
+4. **build**: implement each idea in an interactive [marimo](https://marimo.io) notebook (`exercise.py`). checks under every stage turn green as soon as your code is right
+5. **experiment**: run experiments on *your own* implementation (`lab.py`). each one makes you lock in a prediction before it runs
+6. **reflect**: answer socratic questions about what you saw
 
-build rock-solid mathematical foundations and master classical machine learning.
+every chapter ends with a **capstone project** and a **checkpoint** (concept questions plus rebuilding the core algorithm from memory). passing a checkpoint also lets you skip that chapter.
 
-**quarter 1-2: mathematical foundations**
+what you build adds up to a library, `mlfs`. later chapters import your earlier code: your optimizers train your models, your autograd engine trains your networks, your bootstrap CIs grade your experiments.
 
-- real & functional analysis
-- linear algebra & matrix theory
-- probability theory & stochastic processes
-- optimization theory
+## curriculum
 
-**quarter 3-4: statistical learning & classical ML**
+31 chapters in 8 parts, about 184 topics and 29 capstones, roughly 2,500 hours (about four years at ~13 hours a week). see [`CURRICULUM.md`](CURRICULUM.md) for every topic, what you build in it, and what its lab investigates.
 
-- PAC learning & VC theory
-- kernel methods
-- tree-based methods
-- bayesian inference
+| part | chapters |
+|---|---|
+| **0 · onramp** | 00 python & numpy for ML · 01 math onramp |
+| **I · mathematical foundations** | 02 linear algebra · 03 calculus & analysis · 04 probability · 05 statistics & information theory · 06 optimization |
+| **II · classical ML** | 07 the ML workflow · 08 linear models · 09 nonparametric & kernel methods · 10 trees & ensembles · 11 unsupervised learning · 12 probabilistic & bayesian ML · 13 learning theory |
+| **III · deep learning** | 14 neural networks from scratch · 15 training deep networks · 16 convolutional networks · 17 sequence models · 18 transformers · 19 deep learning theory · 20 geometric deep learning |
+| **IV · generative models** | 21 autoregressive models, VAEs, GANs & flows · 22 energy-based models, diffusion & flow matching |
+| **V · reinforcement learning** | 23 RL foundations · 24 deep RL |
+| **VI · modern & frontier ML** | 25 self-supervised & multimodal · 26 ML systems & scale · 27 large language models · 28 interpretability, robustness & alignment |
+| **VII · research** | 29 electives (pick two) · 30 research practice & thesis |
 
-### year 2: deep learning & advanced optimization
+paper reproductions come after chapters 18, 22, and 24. chapter 30 is an original research project.
 
-master neural networks from theory to practice.
+## setup
 
-**quarter 1: neural network theory**
+you need python 3.11+. with [uv](https://docs.astral.sh/uv/) (recommended):
 
-- approximation theory
-- backpropagation calculus
-- initialization & normalization
+```bash
+uv venv --python 3.12
+```
 
-**quarter 2: architectures**
+```bash
+uv pip install -e ".[all]"
+```
 
-- CNNs, RNNs, transformers
-- graph neural networks
-- attention mechanisms
+or with pip, inside a virtual environment:
 
-**quarter 3: optimization**
+```bash
+pip install -e ".[all]"
+```
 
-- first & second-order methods
-- variance reduction
-- distributed optimization
+the editable install (`-e`) matters: it's how `mlfs` finds your notebooks. `".[all]"` adds PyTorch and the comparison libraries used from part III on. a plain `-e .` is enough for parts 0–II.
 
-**quarter 4: research project**
+## working through a topic
 
-- reproduce 3 seminal papers
-- original contribution
+```bash
+cd 02-linear-algebra/03-solving-linear-systems
+```
 
-### year 3: specialized areas
+read `lesson.md`, then open the exercise notebook:
 
-deep dive into advanced topics.
+```bash
+marimo edit exercise.py
+```
 
-**quarter 1: generative models**
+the notebook shows each part of the lesson next to the code you write, with live checks under every stage. you can also run the checks from a terminal:
 
-- VAEs, GANs, normalizing flows
-- diffusion models & score matching
-- energy-based models
-- flow matching
+```bash
+pytest test_exercise.py -k stage1
+```
 
-**quarter 2: reinforcement learning**
+when every stage is green, run the experiments:
 
-- tabular methods to deep RL
-- model-based RL
-- multi-agent systems
-- offline RL
+```bash
+marimo edit lab.py
+```
 
-**quarter 3: specialization track**
-choose your research focus area
+stuck? `hints.md` has progressive hints for every stage. reference solutions are in `solutions/`, but try on your own first.
 
-**quarter 4: research**
+if your code from an earlier chapter is broken, you can keep going by switching that module to the reference solution:
 
-- conference paper submission
+```bash
+MLFS_REFERENCE=optim marimo edit exercise.py
+```
 
-### year 4: frontier research
+## repository layout
 
-push the boundaries of ML.
-
-**quarter 1-2: advanced topics**
-
-- large language models
-- multimodal learning
-- AI alignment & safety
-- mechanistic interpretability
-
-**quarter 3-4: dissertation**
-
-- original research contributions
-- multiple paper submissions
-
-## learning philosophy
-
-1. **first principles**: derive everything from mathematical foundations
-2. **implementation first**: code before using libraries
-3. **theory ↔ practice**: connect mathematical insights to empirical results
-4. **research mindset**: question assumptions, propose extensions
-
-## how to use this curriculum
-
-1. **follow the order**: topics build on each other systematically
-2. **complete exercises**: implementation is crucial for understanding
-3. **read papers**: each lesson connects to research literature
-4. **test understanding**: answer socratic questions before moving on
-5. **build projects**: apply knowledge to increasingly complex problems
-
-## prerequisites
-
-- basic python programming
-- high school mathematics
-- dedication to deep understanding
-
-## getting started
-
-begin with `00-mathematical-foundations/01-analysis/01-real-analysis/` and work through systematically. each directory contains:
-
-- `lesson.md`: theory and concepts
-- `exercise.py`: implementation template
-- `test_implementation.py`: verify your solution
-- `solutions/`: reference implementations (try solo first!)
-
-## authoring / maintenance
-
-if you're adding topics or maintaining the curriculum, see:
-
-- `AUTHORING.md`
-- `scripts/audit_curriculum.py` (find missing files/placeholders)
-- `scripts/verify_solutions.py` (verify reference solutions without editing repo-tracked files)
-
-## topics covered
-
-### core areas
-
-- statistical learning theory
-- optimization (convex & non-convex)
-- deep learning architectures
-- generative models (VAEs, GANs, diffusion, flows)
-- reinforcement learning
-- natural language processing
-- computer vision
-
-### advanced topics
-
-- neural ODEs/SDEs
-- geometric deep learning
-- meta-learning
-- continual learning
-- causal representation learning
-- quantum machine learning
-- energy-based models
-- flow matching
-- mechanistic interpretability
-
-### theoretical foundations
-
-- approximation theory
-- optimization landscape analysis
-- generalization theory
-- information geometry
-- optimal transport
-
-## resources
-
-each lesson includes:
-
-- original papers
-- lecture notes from stanford, MIT, berkeley
-- video lectures
-- implementation tutorials
-- advanced reading for deeper dives
+```
+CURRICULUM.md        the full plan: every chapter and topic
+AUTHORING.md         the canonical chapter model (for contributors)
+NN-chapter/          a chapter: README, checkpoint, topics, capstone
+  MM-topic/          lesson.md, exercise.py, test_exercise.py, hints.md, lab.py, solutions/
+mlfs/                the runtime: notebook loading, live checks, lesson rendering, registry
+templates/           what scripts/scaffold.py copies into new chapters and topics
+scripts/             scaffold.py, audit.py, verify.py
+tests/               tests for the tooling
+```
 
 ## contributing
 
-this curriculum is a living document. contributions welcome for:
+the curriculum is a living document. contributions are welcome: new topics, clearer explanations, better experiments, bug fixes. every chapter follows [`AUTHORING.md`](AUTHORING.md). the workflow:
 
-- additional exercises
-- clearer explanations
-- new research connections
-- bug fixes in implementations
+```bash
+python scripts/scaffold.py plan 14
+```
+
+that creates chapter 14 and all its topics from the plan. replace the template content, then check your work:
+
+```bash
+python scripts/audit.py --chapter 14 --marimo
+```
+
+```bash
+python scripts/verify.py --chapter 14
+```
+
+`audit.py` checks structure and consistency. `verify.py` checks that reference solutions pass, untouched stubs fail every stage, and labs run. CI runs both on every PR.
 
 ## license
 
-MIT license - learn freely, build amazing things!
+MIT. learn freely, build amazing things.
