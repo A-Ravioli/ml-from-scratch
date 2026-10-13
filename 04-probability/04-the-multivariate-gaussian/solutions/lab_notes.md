@@ -1,0 +1,25 @@
+# the multivariate gaussian · lab notes
+
+## experiment 1: conditioning is slicing
+
+**what people usually predict:** that the conditional variance grows as the slice moves into the tails ("we're less sure about unusual cases"), or shrinks there ("the ellipse is narrower near its tip").
+
+**what happens:** the renormalized slice and your `condition` are the same curve, wherever you put the slice. with $\rho = 0.8$ the conditional variance is $1.44$ for every $v$ (down from the prior variance 4), and the conditional mean moves along a straight line: $-3.2, 0, 1.6, 4.0$ for $v = -2, 0, 1, 2.5$, a slope of $1.6$.
+
+**why:** for this covariance, $\Sigma_{2|1} = 4 - (2\rho)^2/1 = 4(1 - \rho^2)$ and $\mu_{2|1} = 2\rho\,v$. neither the slice's width nor its shape depends on $v$: slicing an ellipse family at different places gives the same Gaussian profile, shifted. the variance shrinks by the factor $1 - \rho^2$ (to 0.39 of the prior at $\rho = 0.8$, to 0.10 at $\rho = 0.95$, not at all at $\rho = 0$). the line traced by the conditional mean is the **regression line** of $x_2$ on $x_1$, slope $\Sigma_{21}/\Sigma_{11}$. note that it is *not* the ellipse's major axis: the regression line passes through the points where vertical lines touch each contour ellipse, which is flatter than the major axis whenever $|\rho| < 1$. that gap is "regression to the mean", the same effect that makes the children of very tall parents tall, but less tall than their parents.
+
+## experiment 2: a chain, and what the precision matrix knows
+
+**what people usually predict:** that conditioning on $x_3$ reduces all the correlations a bit, and that conditioning on $x_1$ does something similar.
+
+**what happens:** given $x_3$, the correlation between $x_1$ and $x_5$ (and between $x_1$ and $x_4$, and $x_2$ and $x_5$) is exactly 0, while $x_1$–$x_2$ and $x_4$–$x_5$ stay correlated at 0.669. given $x_1$ instead, everything among $x_2, \dots, x_5$ stays correlated (0.42 to 0.82). the precision matrix $\Sigma^{-1}$ is tridiagonal: zero everywhere except the diagonal and the entries between neighbors. after integrating out $x_3$, the precision matrix of the remaining four gets a new nonzero entry, $-2.36$, between $x_2$ and $x_4$.
+
+**why:** in a chain, $x_3$ is the only route by which information flows between the left part $(x_1, x_2)$ and the right part $(x_4, x_5)$. once you know $x_3$, the two sides are **conditionally independent**: nothing on the left tells you anything more about the right. observing an endpoint blocks nothing, because the rest of the chain is still connected. the precision matrix encodes exactly this structure: for a Gaussian, $\Lambda_{ij} = 0$ if and only if $x_i$ and $x_j$ are conditionally independent given *all the other variables*. the covariance hides it (everything is correlated through the chain), the precision shows it. conditioning on $x_3$ deletes its row and column from $\Lambda$ (check your understanding, question 7), so the zeros stay zero. integrating $x_3$ out is different: $x_2$ and $x_4$ were linked only through $x_3$, and once $x_3$ is gone from the model that link has to appear as a direct one. this is the Gaussian case of graphical models (ch 12): sparse precision = sparse graph of direct dependencies, and marginalizing creates fill-in.
+
+## experiment 3: where do high-dimensional samples live?
+
+**what people usually predict:** that samples cluster around the mean, where the density is highest, with most of them within a few units of it in any dimension. for $d = 1000$ people often guess "most within 25".
+
+**what happens:** in $d = 1000$, every one of the 5,000 samples lies between distance 29.2 and 34.3 from the mean (mean 31.6, $\sqrt{1000} = 31.6$). *none* is within 25. the log density at the mean is $-919$, while a typical sample has log density about $-1419$: the mean is $e^{500}$ times more probable, per unit volume, than any point you will ever sample. in $d = 1$ and $d = 2$, by contrast, samples do crowd around the mean.
+
+**why:** probability is density *times volume*. the density falls off like $e^{-r^2/2}$ as you move away from the mean, but the volume of a thin shell at radius $r$ grows like $r^{d-1}$. their product, $r^{d-1}e^{-r^2/2}$, peaks sharply at $r = \sqrt{d - 1}$, and on paper 4 shows that the spread around it stays of order 1 while $\sqrt d$ grows. so a high-dimensional Gaussian is, for all practical purposes, a thin shell (the **typical set**), and its mode is a point of enormous density but negligible probability. consequences you'll meet later: interpolating linearly between two latent samples of a VAE or GAN passes through the shell's interior, where no training sample lives, so people interpolate along the sphere instead (ch 21). the single most likely output of a model (the mode) can look nothing like a typical output, which is part of why greedy decoding of language models produces bland, repetitive text, and why the capstone samples instead. and the rejection sampler of topic 02's lab failed in high dimensions for the same reason: the proposal's shell and the target's shell barely overlap.
