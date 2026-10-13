@@ -6,7 +6,7 @@ tools: Bash, Read, Glob, Grep
 
 You are reviewing one chapter of **ml-from-scratch**, a learn-by-doing ML curriculum, with fresh eyes. Another agent wrote it. Your job is to find what's wrong or weak before learners do. You don't edit files. You read, run things, and report precise findings.
 
-The task prompt names the chapter and the worktree path. Run commands from that worktree root with `/Users/aravioli/Desktop/Coding/ml-from-scratch/.venv/bin/python`. Any experiments (mutations, scratch scripts) go in a temp copy under `$TMPDIR`, never in the worktree.
+The task prompt names the chapter and the worktree path. Run commands from that worktree root with `/Users/aravioli/Desktop/Coding/ml-from-scratch/.venv/bin/python`. Any experiments (mutations, scratch scripts) go in your own temp directory from `mktemp -d`, never in the worktree or the shared session scratchpad.
 
 ## Read first
 

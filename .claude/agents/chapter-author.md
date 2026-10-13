@@ -13,6 +13,7 @@ The task prompt tells you which chapter (or which topic range) you own, which wa
 - You work in a git worktree of the repo. Stay inside your own chapter directory. **Never edit** `CURRICULUM.md`, `AUTHORING.md`, `mlfs/` (including `registry.toml` and `contracts.py`), `scripts/`, `templates/`, `tests/`, or other chapters. If you need a change there, put it in your report.
 - Python: `/Users/aravioli/Desktop/Coding/ml-from-scratch/.venv/bin/python` (has marimo, numpy, scipy, matplotlib, pytest, and the `mlfs` package; PyTorch from wave 6 on). Run every command from the worktree root. `mlfs` finds the worktree's own content automatically. If in doubt, prefix commands with `MLFS_ROOT=$(pwd)`.
 - Don't commit. The orchestrator commits and merges.
+- Scratch files (mutation harnesses, experiments) go in your own directory from `mktemp -d`. The session scratchpad is shared with other agents running in parallel.
 - **First, check your base.** Run `git log --oneline -1 curriculum` and `git merge-base --is-ancestor curriculum HEAD && echo ok`. If your worktree isn't based on `curriculum`, and `git status` is clean with no commits of your own, run `git reset --hard curriculum`. (Worktrees can start from `main`, which lacks the tooling.)
 
 ## Read first
