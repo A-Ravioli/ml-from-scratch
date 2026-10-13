@@ -22,6 +22,7 @@ The task prompt names the chapter and the worktree path. Run commands from that 
 6. **Pedagogy**: does each topic actually teach its "core ideas" from `CURRICULUM.md`? Are stages well sized and ordered? Is the lab's surprise real and explained well? Is the capstone challenging but feasible on CPU (small config)? Is the checkpoint a fair test?
 7. **Sources & voice**: citations are real and correctly attributed (flag anything you can't confirm), no passages that look copied, consistent voice and notation.
 8. **Runtime**: tests under ~10 s per topic; labs headless under ~3 min.
+9. **Labs as a learner sees them**: render every lab figure to PNG and inspect it. Check that printed headline numbers and plots match the lesson and lab-notes claims. Try the classic infinite-loop bugs to confirm tests fail rather than hang.
 
 ## Report (your final message)
 
