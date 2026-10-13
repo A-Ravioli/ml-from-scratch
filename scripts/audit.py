@@ -33,6 +33,7 @@ from _common import (  # noqa: E402
     rel,
     topic_dirs,
 )
+from mlfs.registry import RESERVED  # noqa: E402
 
 PLACEHOLDERS = re.compile(r"NotImplementedError|\bTODO\b|YOUR CODE|TEMPLATE")
 STUB_STAGE = re.compile(r"NotImplementedError\(\s*[\"']stage(\d+)")
@@ -43,7 +44,6 @@ BUILD_CALLOUT = re.compile(r"▶ build: stage (\d+)")
 PREDICT_CALLOUT = re.compile(r"🔮 predict")
 HINT_STAGE = re.compile(r"^## stage (\d+)", re.M)
 H2 = re.compile(r"^## (.+?)\s*$", re.M)
-RESERVED = {"notebooks", "registry", "checks", "lesson", "ui", "pytest_plugin"}
 
 
 @dataclass
@@ -147,13 +147,16 @@ def audit_registry(root: Path) -> list[str]:
     except tomllib.TOMLDecodeError as e:
         return [f"mlfs/registry.toml: invalid TOML: {e}"]
     errors = []
-    for name, target in modules.items():
-        topic = root / target
+    for name, targets in modules.items():
         if name in RESERVED:
             errors.append(f"mlfs.{name}: name is reserved")
-        for f in ("exercise.py", "solutions/exercise.py"):
-            if not (topic / f).exists():
-                errors.append(f"mlfs.{name}: {target}/{f} doesn't exist")
+        for target in [targets] if isinstance(targets, str) else targets:
+            topic = root / target
+            if not topic.exists():
+                continue  # planned, not written yet
+            for f in ("exercise.py", "solutions/exercise.py"):
+                if not (topic / f).exists():
+                    errors.append(f"mlfs.{name}: {target}/{f} doesn't exist")
     return errors
 
 

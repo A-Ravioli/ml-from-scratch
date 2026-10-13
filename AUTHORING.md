@@ -222,14 +222,15 @@ the same `test_stageN_*` functions run in three places:
 
 ## 6. `mlfs`: the learner's cumulative library
 
-`mlfs/registry.toml` maps module names to the topics that build them:
+`mlfs/registry.toml` maps module names to the topics that build them. a module can merge several topics:
 
 ```toml
 [modules]
 tensor = "14-neural-networks-from-scratch/03-a-tensor-autograd-engine"
+linalg = ["02-linear-algebra/03-solving-linear-systems", "02-linear-algebra/04-orthogonality-and-least-squares"]
 ```
 
-`from mlfs.tensor import Tensor` then imports that topic's exercise notebook. which copy you get:
+`from mlfs.linalg import lu_solve` then imports the functions and classes those topics' exercise notebooks define. which copy you get:
 
 | context | default | override |
 |---|---|---|
@@ -237,9 +238,11 @@ tensor = "14-neural-networks-from-scratch/03-a-tensor-autograd-engine"
 | pytest / `verify.py` | **reference** solutions for every *other* module, so one bug can't break later chapters | `MLFS_REFERENCE=none` to test against your own earlier code |
 | `MLFS_SOLUTIONS=1` | every notebook resolves to its reference solution | |
 
-register a module with `python scripts/scaffold.py topic NN MM --provides <name>`. names can't collide with `mlfs`'s own submodules (`notebooks`, `registry`, `checks`, `lesson`, `ui`, `pytest_plugin`). `CURRICULUM.md` lists which topic owns each module.
+**contracts.** every module's public interface is frozen in `mlfs/contracts.py` (explained in `CONTRACTS.md`): names, parameter names, order, and defaults. topics that own a module must implement it exactly. later chapters may use only what the contract lists. `tests/test_contracts.py` checks reference solutions against it. changing a contract is an orchestrator decision, not a chapter decision.
 
-`mlfs` itself provides the runtime: `notebooks` (load notebooks as modules), `checks` (live checks), `lesson` (render lesson sections), `ui` (predict gates), and a pytest plugin (the `nb` fixture).
+register a module with `python scripts/scaffold.py topic NN MM --provides <name>` (the registry for the whole course is already filled in). names can't collide with `mlfs`'s own submodules (`notebooks`, `registry`, `checks`, `lesson`, `ui`, `pytest_plugin`, `datasets`, `contracts`). `CURRICULUM.md` lists which topic owns each module.
+
+`mlfs` itself provides the runtime: `notebooks` (load notebooks as modules), `checks` (live checks), `lesson` (render lesson sections), `ui` (predict gates), `datasets` (see §8), `contracts`, and a pytest plugin (the `nb` fixture).
 
 ---
 
@@ -256,7 +259,9 @@ register a module with `python scripts/scaffold.py topic NN MM --provides <name>
 ## 8. data policy
 
 - tests never download anything; they use small synthetic data generated deterministically.
-- labs and capstones download small public datasets (MNIST, CIFAR-10, Tiny Shakespeare, …) once, cached under `~/.cache/mlfs/`.
+- labs and capstones load data through `mlfs.datasets` (`mnist`, `cifar10`, `tiny_shakespeare`, `sms_spam`, `olivetti_faces`, `california_housing`), which downloads once and caches under `$MLFS_DATA` (default `~/.cache/mlfs/`).
+- with `MLFS_OFFLINE=1` (set by `verify.py` and CI), every loader returns a small deterministic synthetic stand-in with the same structure and dtypes, so labs must still run (and say something sensible) on it.
+- need another dataset? request it; don't download ad hoc from a notebook.
 
 ## 9. framework & compute policy
 

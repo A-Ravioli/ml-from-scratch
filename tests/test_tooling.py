@@ -92,6 +92,16 @@ def test_registry_import_switches_between_learner_and_reference(scaffolded):
     assert ref.stdout.strip() == "3.5"
 
 
+def test_registry_merges_several_topics_into_one_module(scaffolded):
+    for num in ("2", "3"):
+        assert script("scaffold.py", "topic", "14", num, "--provides", "multi", root=scaffolded).returncode == 0
+    code = ("from mlfs import multi; print(len(multi.__notebooks__), sorted(n for n in vars(multi) "
+            "if not n.startswith('_')))")
+    out = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True,
+                         env=dict(os.environ, MLFS_ROOT=str(scaffolded), MLFS_REFERENCE="*"))
+    assert out.stdout.strip() == "2 ['mean', 'variance']", out.stderr
+
+
 def test_live_checks_report_todo_pass_and_fail(scaffolded):
     t = topic(scaffolded, "02")
     stub = notebooks.load(notebooks.resolve(t, "exercise", solution=False))
@@ -143,3 +153,9 @@ def test_marimo_check_accepts_templates():
     proc = subprocess.run([sys.executable, "-m", "marimo", "check", "--strict", *files],
                           capture_output=True, text=True)
     assert proc.returncode == 0, proc.stdout + proc.stderr
+
+
+def test_contracts_doc_is_up_to_date():
+    out = subprocess.run([sys.executable, str(REPO / "scripts" / "contracts_doc.py"), "--check"],
+                         capture_output=True, text=True)
+    assert out.returncode == 0, out.stdout + out.stderr

@@ -12,11 +12,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: install
-        run: pip install -e ".[extras]"
-      - name: tooling tests
+      - name: install (CPU-only PyTorch)
+        run: pip install -e ".[all]" --extra-index-url https://download.pytorch.org/whl/cpu
+      - name: tooling + contract tests
         run: pytest tests
+      - name: CONTRACTS.md up to date
+        run: python scripts/contracts_doc.py --check
       - name: audit (structure, placeholders, notebooks)
         run: python scripts/audit.py --marimo
       - name: verify (solutions pass, stubs fail, labs run)
+        env:
+          MLFS_OFFLINE: "1"
         run: python scripts/verify.py --fast -j 4

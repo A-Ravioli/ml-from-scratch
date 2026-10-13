@@ -9,7 +9,8 @@ For every topic and capstone:
   1. solutions  the tests pass against the reference notebook (MLFS_SOLUTIONS=1)
   2. stubs      every stage fails against the untouched exercise notebook, so no stage
                 passes by accident (skip with --skip-stubs, e.g. after doing exercises yourself)
-  3. lab        lab.py runs headless end to end against the reference (skip with --skip-labs)
+  3. lab        lab.py runs headless end to end against the reference, with datasets in
+                offline (synthetic) mode (skip with --skip-labs)
 
 Nothing in the repo is modified.
 """
@@ -47,7 +48,7 @@ class Outcome:
 
 
 def env_for(root: Path, solutions: bool) -> dict[str, str]:
-    env = dict(os.environ, MLFS_ROOT=str(root), MPLBACKEND="Agg")
+    env = dict(os.environ, MLFS_ROOT=str(root), MPLBACKEND="Agg", MLFS_OFFLINE="1")
     env.pop("MLFS_SOLUTIONS", None)
     if solutions:
         env["MLFS_SOLUTIONS"] = "1"

@@ -17,9 +17,20 @@ _CACHE: dict[tuple[str, float], ModuleType] = {}
 
 
 def repo_root() -> Path:
-    """The curriculum root: $MLFS_ROOT if set, else the directory containing `mlfs/`."""
+    """The curriculum root.
+
+    $MLFS_ROOT if set; else the nearest directory at or above the working directory that
+    contains `CURRICULUM.md` and `mlfs/registry.toml` (so a clone or git worktree uses its
+    own content); else the checkout this package was installed from.
+    """
     env = os.environ.get("MLFS_ROOT")
-    return Path(env).resolve() if env else Path(__file__).resolve().parent.parent
+    if env:
+        return Path(env).resolve()
+    here = Path.cwd().resolve()
+    for d in (here, *here.parents):
+        if (d / "CURRICULUM.md").exists() and (d / "mlfs" / "registry.toml").exists():
+            return d
+    return Path(__file__).resolve().parent.parent
 
 
 def use_solutions() -> bool:

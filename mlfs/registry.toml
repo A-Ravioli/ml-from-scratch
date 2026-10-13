@@ -1,4 +1,224 @@
-# mlfs module registry. maps `mlfs.<name>` to the topic whose exercise notebook defines it.
-# add entries with `python scripts/scaffold.py topic NN MM --provides <name>`.
+# mlfs module registry: `mlfs.<name>` -> the topic(s) whose exercise notebooks define it.
+# generated from mlfs/contracts.py (tests/test_contracts.py keeps them in sync).
 
 [modules]
+utils = [
+    "00-python-and-numpy-for-ml/02-numpy-arrays-and-vectorization",
+    "00-python-and-numpy-for-ml/03-floating-point-and-stability",
+    "00-python-and-numpy-for-ml/04-visualizing-data",
+    "00-python-and-numpy-for-ml/05-testing-debugging-and-reproducibility",
+]
+numerics = [
+    "01-math-onramp/02-derivatives",
+    "01-math-onramp/03-integrals",
+    "01-math-onramp/05-probability-by-simulation",
+]
+linalg = [
+    "02-linear-algebra/03-solving-linear-systems",
+    "02-linear-algebra/04-orthogonality-and-least-squares",
+    "02-linear-algebra/05-eigenvalues-and-eigenvectors",
+    "02-linear-algebra/06-svd-and-low-rank-approximation",
+    "02-linear-algebra/08-conditioning-and-stability",
+]
+numgrad = "02-linear-algebra/07-matrix-calculus"
+autodiff = [
+    "03-calculus-and-analysis/02-multivariable-calculus",
+    "03-calculus-and-analysis/04-forward-mode-autodiff",
+]
+sampling = [
+    "04-probability/02-distributions-and-sampling",
+    "04-probability/03-expectation-variance-and-covariance",
+    "04-probability/04-the-multivariate-gaussian",
+    "04-probability/07-markov-chains-and-stochastic-processes",
+]
+stats = [
+    "05-statistics-and-information-theory/03-confidence-intervals-and-the-bootstrap",
+    "05-statistics-and-information-theory/04-hypothesis-testing",
+    "05-statistics-and-information-theory/05-information-theory",
+]
+optim = [
+    "06-optimization/02-gradient-descent",
+    "06-optimization/03-momentum-and-acceleration",
+    "06-optimization/04-stochastic-optimization",
+    "06-optimization/05-second-order-methods",
+    "06-optimization/06-constraints-and-duality",
+    "06-optimization/07-nonconvex-optimization",
+]
+base = "07-the-machine-learning-workflow/01-what-is-learning"
+model_selection = [
+    "07-the-machine-learning-workflow/02-splitting-and-cross-validation",
+    "07-the-machine-learning-workflow/04-bias-variance-and-complexity",
+    "07-the-machine-learning-workflow/06-hyperparameter-search",
+]
+metrics = "07-the-machine-learning-workflow/03-metrics"
+preprocessing = "07-the-machine-learning-workflow/05-features-and-preprocessing"
+linear = [
+    "08-linear-models/01-linear-regression",
+    "08-linear-models/02-regularization",
+    "08-linear-models/03-the-perceptron",
+    "08-linear-models/04-logistic-regression",
+    "08-linear-models/05-softmax-regression",
+    "08-linear-models/06-generalized-linear-models",
+]
+kernels = [
+    "09-nonparametric-and-kernel-methods/01-k-nearest-neighbors",
+    "09-nonparametric-and-kernel-methods/02-density-estimation",
+    "09-nonparametric-and-kernel-methods/03-kernels-and-rkhs",
+    "09-nonparametric-and-kernel-methods/04-support-vector-machines",
+    "09-nonparametric-and-kernel-methods/05-kernel-ridge-and-random-features",
+    "09-nonparametric-and-kernel-methods/06-gaussian-processes",
+]
+trees = [
+    "10-trees-and-ensembles/01-decision-trees",
+    "10-trees-and-ensembles/02-bagging-and-random-forests",
+    "10-trees-and-ensembles/03-boosting",
+    "10-trees-and-ensembles/04-gradient-boosting",
+]
+inspection = "10-trees-and-ensembles/05-interpreting-models"
+unsupervised = [
+    "11-unsupervised-learning/01-k-means",
+    "11-unsupervised-learning/02-gaussian-mixtures-and-em",
+    "11-unsupervised-learning/03-dimensionality-reduction",
+    "11-unsupervised-learning/04-manifold-learning",
+    "11-unsupervised-learning/05-graph-and-density-clustering",
+    "11-unsupervised-learning/06-anomaly-detection",
+]
+bayes = [
+    "12-probabilistic-and-bayesian-ml/01-bayesian-linear-regression",
+    "12-probabilistic-and-bayesian-ml/02-graphical-models",
+    "12-probabilistic-and-bayesian-ml/03-exact-inference",
+    "12-probabilistic-and-bayesian-ml/04-hidden-markov-models",
+]
+infer = [
+    "12-probabilistic-and-bayesian-ml/05-mcmc",
+    "12-probabilistic-and-bayesian-ml/06-hamiltonian-monte-carlo",
+    "12-probabilistic-and-bayesian-ml/07-variational-inference",
+]
+theory = [
+    "13-learning-theory/01-pac-learning",
+    "13-learning-theory/03-rademacher-complexity",
+    "13-learning-theory/04-bounds-in-practice",
+    "13-learning-theory/05-online-learning",
+    "13-learning-theory/06-stability-margins-and-pac-bayes",
+]
+tensor = [
+    "14-neural-networks-from-scratch/03-a-tensor-autograd-engine",
+    "14-neural-networks-from-scratch/06-backprop-in-depth",
+]
+nn = "14-neural-networks-from-scratch/04-modules-losses-and-training-loops"
+train = [
+    "15-training-deep-networks/01-initialization",
+    "15-training-deep-networks/02-normalization",
+    "15-training-deep-networks/03-regularization",
+    "15-training-deep-networks/04-optimization-in-practice",
+    "15-training-deep-networks/05-debugging-training",
+    "15-training-deep-networks/06-hyperparameters-and-experiments",
+]
+torchnn = "15-training-deep-networks/07-bridging-to-pytorch"
+cnn = [
+    "16-convolutional-networks/01-convolution",
+    "16-convolutional-networks/02-pooling-and-receptive-fields",
+    "16-convolutional-networks/03-classic-architectures",
+    "16-convolutional-networks/04-residual-networks",
+    "16-convolutional-networks/05-modern-convnets-and-transfer",
+    "16-convolutional-networks/06-detection-and-segmentation",
+]
+text = [
+    "17-sequence-models/01-language-modeling",
+    "17-sequence-models/02-tokenization",
+]
+seq = [
+    "17-sequence-models/03-embeddings",
+    "17-sequence-models/04-rnns-and-bptt",
+    "17-sequence-models/05-lstms-and-grus",
+    "17-sequence-models/06-seq2seq-and-attention",
+]
+transformer = [
+    "18-transformers/01-self-attention",
+    "18-transformers/02-positional-information",
+    "18-transformers/03-the-transformer-block",
+    "18-transformers/04-building-gpt",
+    "18-transformers/05-bert-style-encoders",
+    "18-transformers/06-efficient-attention-and-inference",
+    "18-transformers/07-vision-transformers",
+]
+dltheory = [
+    "19-deep-learning-theory/02-loss-landscapes",
+    "19-deep-learning-theory/03-infinite-width-ntk-and-mean-field",
+    "19-deep-learning-theory/05-scaling-laws",
+]
+gnn = [
+    "20-geometric-deep-learning/01-symmetry-and-equivariance",
+    "20-geometric-deep-learning/02-sets",
+    "20-geometric-deep-learning/03-graph-neural-networks",
+    "20-geometric-deep-learning/04-gnn-expressivity",
+    "20-geometric-deep-learning/05-equivariant-networks",
+]
+ode = "20-geometric-deep-learning/06-neural-odes"
+generative = [
+    "21-generative-models-i-likelihood-and-adversarial/01-evaluating-generative-models",
+    "21-generative-models-i-likelihood-and-adversarial/02-autoregressive-models",
+    "21-generative-models-i-likelihood-and-adversarial/03-variational-autoencoders",
+    "21-generative-models-i-likelihood-and-adversarial/04-discrete-latents",
+    "21-generative-models-i-likelihood-and-adversarial/05-gans",
+    "21-generative-models-i-likelihood-and-adversarial/06-stabilizing-gans",
+    "21-generative-models-i-likelihood-and-adversarial/07-normalizing-flows",
+]
+diffusion = [
+    "22-generative-models-ii-energy-score-diffusion-and-flow-matching/01-energy-based-models",
+    "22-generative-models-ii-energy-score-diffusion-and-flow-matching/02-score-matching",
+    "22-generative-models-ii-energy-score-diffusion-and-flow-matching/03-diffusion-ddpm",
+    "22-generative-models-ii-energy-score-diffusion-and-flow-matching/04-the-sde-view-and-fast-sampling",
+    "22-generative-models-ii-energy-score-diffusion-and-flow-matching/05-flow-matching-and-rectified-flow",
+    "22-generative-models-ii-energy-score-diffusion-and-flow-matching/06-conditioning-and-guidance",
+    "22-generative-models-ii-energy-score-diffusion-and-flow-matching/07-latent-diffusion-and-dit",
+]
+rl = [
+    "23-reinforcement-learning-foundations/01-bandits",
+    "23-reinforcement-learning-foundations/02-mdps-and-bellman-equations",
+    "23-reinforcement-learning-foundations/03-dynamic-programming",
+    "23-reinforcement-learning-foundations/04-monte-carlo-methods",
+    "23-reinforcement-learning-foundations/05-temporal-difference-learning",
+    "23-reinforcement-learning-foundations/06-function-approximation",
+]
+deeprl = [
+    "24-deep-reinforcement-learning/01-deep-q-networks",
+    "24-deep-reinforcement-learning/02-policy-gradients",
+    "24-deep-reinforcement-learning/03-actor-critic",
+    "24-deep-reinforcement-learning/04-trust-regions-and-ppo",
+    "24-deep-reinforcement-learning/05-continuous-control",
+    "24-deep-reinforcement-learning/06-model-based-rl-and-planning",
+    "24-deep-reinforcement-learning/07-offline-rl-and-imitation",
+]
+ssl = [
+    "25-self-supervised-and-multimodal-learning/01-evaluating-representations",
+    "25-self-supervised-and-multimodal-learning/02-contrastive-learning",
+    "25-self-supervised-and-multimodal-learning/03-non-contrastive-methods",
+    "25-self-supervised-and-multimodal-learning/04-masked-modeling",
+    "25-self-supervised-and-multimodal-learning/05-multimodal-learning",
+]
+systems = [
+    "26-ml-systems-and-scale/01-the-performance-model",
+    "26-ml-systems-and-scale/03-mixed-precision",
+    "26-ml-systems-and-scale/04-data-parallelism",
+    "26-ml-systems-and-scale/05-model-parallelism-and-memory",
+    "26-ml-systems-and-scale/06-efficient-inference",
+]
+llm = [
+    "27-large-language-models/01-pretraining-data-and-compute",
+    "27-large-language-models/02-modern-llm-architecture",
+    "27-large-language-models/03-fine-tuning",
+    "27-large-language-models/04-preference-learning",
+    "27-large-language-models/05-decoding-and-inference",
+    "27-large-language-models/06-evaluation",
+    "27-large-language-models/07-retrieval-tools-and-reasoning",
+]
+safety = [
+    "28-interpretability-robustness-and-alignment/01-attribution-and-probing",
+    "28-interpretability-robustness-and-alignment/02-mechanistic-interpretability",
+    "28-interpretability-robustness-and-alignment/03-superposition-and-dictionary-learning",
+    "28-interpretability-robustness-and-alignment/04-adversarial-robustness",
+    "28-interpretability-robustness-and-alignment/05-uncertainty-and-ood",
+    "28-interpretability-robustness-and-alignment/06-privacy-and-fairness",
+]
+research = "30-research-practice-and-thesis/03-experimental-rigor"

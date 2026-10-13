@@ -2,7 +2,7 @@
 
 the complete plan: every chapter, every topic, what you learn, what you build, and what each lab investigates. every topic follows the template in `AUTHORING.md` (lesson → staged exercise + tests → lab → reflection), and every chapter ends with a capstone and a checkpoint.
 
-**size:** 31 chapters · 184 core topics · 29 capstones · 10 electives (pick 2) · 3 research milestones + thesis · roughly 2,500–2,700 hours. at ~13 hours a week that's about four years, the length the README promises.
+**size:** 31 chapters · 184 core topics + 32 elective topics · 30 capstones · 10 electives (pick 2) · 3 research milestones + thesis · roughly 2,500–2,700 hours. at ~13 hours a week that's about four years, the length the README promises.
 
 ---
 
@@ -50,21 +50,50 @@ flowchart LR
 
 ## the `mlfs` library you build
 
-| module | built in | contents |
+every module's interface is fixed in `mlfs/contracts.py` (see `CONTRACTS.md`); `mlfs.datasets` is provided, not built.
+
+| module | chapter | contents |
 |---|---|---|
-| `mlfs.utils` | 00 | `assert_close`, `set_seed`, plotting helpers |
-| `mlfs.linalg` | 02 | LU, QR, eigen (power/QR iteration), SVD, least squares |
-| `mlfs.autodiff` | 03 | forward-mode `Dual` numbers, `grad`, `jacobian` |
-| `mlfs.random` | 04 | samplers from a uniform source, `MultivariateNormal` |
-| `mlfs.stats` | 05 | estimators, `bootstrap_ci`, permutation tests, entropy/KL |
-| `mlfs.optim` | 06 | `Optimizer` interface: GD, Momentum, Nesterov, Adam(W), L-BFGS, line search |
-| `mlfs.data`, `mlfs.metrics`, `mlfs.model_selection` | 07 | splitters, CV, scalers, pipelines, metrics, search |
-| `mlfs.models.*` | 08–13 | linear, kernel, tree, clustering, mixture, HMM, GP, … (one `fit/predict` API) |
-| `mlfs.infer` | 12 | MCMC (MH, Gibbs, HMC), VI |
-| `mlfs.tensor`, `mlfs.nn` | 14 | reverse-mode autograd `Tensor`, modules, losses, training loop |
-| `mlfs.train` | 15 | initializers, norms, schedulers, diagnostics, trainer |
-| `mlfs.torch.*` | 15→ | PyTorch implementations of everything from 16 on (build-before-you-use) |
-| `mlfs.datasets` | 00→ | cached downloaders for capstone datasets |
+| `mlfs.utils` | 00 | vectorised distances, stable numerics, course-wide plotting, assertions and seeding |
+| `mlfs.numerics` | 01 | 1-D finite differences, quadrature, and Monte Carlo estimates with standard errors |
+| `mlfs.linalg` | 02 | LU/Cholesky solves, QR and least squares, eigensolvers, SVD, condition numbers |
+| `mlfs.numgrad` | 02 | finite-difference gradients for any array-shaped input, and a gradient checker |
+| `mlfs.autodiff` | 03 | numerical Jacobians/Hessians and forward-mode autodiff with dual numbers |
+| `mlfs.sampling` | 04 | samplers built from a uniform source, running moments, the multivariate Gaussian, Markov chains |
+| `mlfs.stats` | 05 | bootstrap CIs, permutation tests, multiple-comparison control, entropy/KL/MI |
+| `mlfs.optim` | 06 | deterministic minimisers (GD, momentum, Newton, BFGS/L-BFGS, projections) and the stateful Optimizer family |
+| `mlfs.base` | 07 | the Estimator protocol, its Regressor/Classifier/Transformer bases, clone, and dummy baselines |
+| `mlfs.model_selection` | 07 | splitters, cross-validation, learning/validation curves, bias-variance, grid/random/nested search |
+| `mlfs.metrics` | 07 | classification, ranking, probabilistic, regression and calibration metrics plus scorers |
+| `mlfs.preprocessing` | 07 | scalers, encoders, imputers, polynomial features and pipelines (all Transformers) |
+| `mlfs.linear` | 08 | linear/ridge/lasso/elastic-net regression, perceptron, logistic and softmax regression, GLMs |
+| `mlfs.kernels` | 09 | kNN + KD-tree, KDE, kernel functions, SVM (SMO), kernel ridge, random features, GP regression |
+| `mlfs.trees` | 10 | CART trees, random forests with OOB, AdaBoost, XGBoost-style histogram gradient boosting |
+| `mlfs.inspection` | 10 | model-agnostic interpretation: permutation importance, partial dependence, KernelSHAP |
+| `mlfs.unsupervised` | 11 | k-means, GMM/EM, PCA family, MDS/Isomap/t-SNE, spectral/DBSCAN/agglomerative clustering, isolation forest, clustering metrics |
+| `mlfs.bayes` | 12 | Bayesian linear regression, discrete factors and d-separation, variable elimination / sum-product, HMMs |
+| `mlfs.infer` | 12 | MH, Gibbs, HMC, MCMC diagnostics (ESS, R-hat), CAVI and reparameterised VI |
+| `mlfs.theory` | 13 | sample-complexity and generalisation-bound calculators, Rademacher estimates, Hedge/OGD, PAC-Bayes |
+| `mlfs.tensor` | 14 | reverse-mode autodiff Tensor over NumPy (~25 ops), gradcheck, no_grad, gradient checkpointing |
+| `mlfs.nn` | 14 | Module/Parameter, Linear, activations, Sequential, losses, and a NumPy training loop |
+| `mlfs.train` | 15 | initialisers, norms, dropout/augmentation/early stopping, LR schedulers + finder, diagnostics, hyperband (for mlfs.nn) |
+| `mlfs.torchnn` | 15 | PyTorch bridge: mlfs.nn -> torch conversion, MLP/RMSNorm modules, loaders, fit/evaluate loop, EMA |
+| `mlfs.cnn` | 16 | NumPy conv/im2col/pooling, receptive fields, LeNet/VGG/ResNet, depthwise convs, transfer helpers, IoU/NMS/U-Net |
+| `mlfs.text` | 17 | n-gram language models and tokenizers (character, byte-level BPE): pure Python/NumPy |
+| `mlfs.seq` | 17 | word2vec, RNN/LSTM/GRU, Bahdanau attention seq2seq, generic beam search (torch) |
+| `mlfs.transformer` | 18 | attention, positional encodings, blocks, GPT (+trainer, sampling), BERT, KV cache, online-softmax attention, ViT |
+| `mlfs.dltheory` | 19 | loss-landscape slices and mode connectivity, empirical NTK, power-law scaling fits |
+| `mlfs.gnn` | 20 | equivariance tester, DeepSets, scatter ops, GCN/SAGE/GAT/GIN layers, pooling, WL test, EGNN |
+| `mlfs.ode` | 20 | fixed-step ODE solvers, the adjoint method, and a NeuralODE module (torch) |
+| `mlfs.generative` | 21 | bits/dim, FID, precision/recall; MADE/PixelCNN; VAE/ConvVAE; VQ; GAN/DCGAN; WGAN-GP; RealNVP |
+| `mlfs.diffusion` | 22 | Langevin/EBMs, score matching, DDPM, DDIM/PF-ODE, flow matching, guidance, DiT/latent diffusion |
+| `mlfs.rl` | 23 | bandits, gym-style spaces/envs (GridWorld, Blackjack, CliffWalking, MountainCar), DP, MC, TD, tile coding (NumPy) |
+| `mlfs.deeprl` | 24 | replay/DQN, REINFORCE, actor-critic + GAE, PPO loss, SAC networks, MCTS + Connect Four, Dyna-Q, CQL (torch) |
+| `mlfs.ssl` | 25 | representation evaluation (probe/kNN), InfoNCE/SimCLR, SimSiam/BYOL losses, MAE, mini-CLIP |
+| `mlfs.systems` | 26 | FLOP/roofline calculators, loss scaling, ring all-reduce simulation, ZeRO-1 + memory accounting, int8 quantisation, distillation |
+| `mlfs.llm` | 27 | MinHash dedup, Llama-style model + MoE, LoRA/SFT, reward models + DPO, speculative decoding, eval harness, retrieval |
+| `mlfs.safety` | 28 | attribution, activation caching/patching, toy superposition + SAEs, FGSM/PGD, calibration + conformal, DP-SGD, MIA, fairness |
+| `mlfs.research` | 30 | multi-seed runs, confidence intervals, paired comparisons and ablation tables |
 
 ---
 
@@ -139,7 +168,7 @@ flowchart LR
 | # | topic | core ideas | you build | lab: you'll find out… |
 |---|---|---|---|---|
 | 01 | probability & random variables | axioms, conditioning, independence, bayes' rule | discrete distribution objects (add, condition, marginalize) | the base-rate fallacy, and monty hall, by simulation |
-| 02 | distributions & sampling | common families; inverse-CDF, box–muller, rejection sampling | `mlfs.random` built only from a uniform source | your samplers match numpy's on QQ plots |
+| 02 | distributions & sampling | common families; inverse-CDF, box–muller, rejection sampling | `mlfs.sampling` built only from a uniform source | your samplers match numpy's on QQ plots |
 | 03 | expectation, variance & covariance | linearity, LOTUS, covariance matrices | welford online mean/variance; covariance estimator | the textbook variance formula fails catastrophically in floating point |
 | 04 | the multivariate gaussian | density, marginals, conditionals, cholesky sampling | `MultivariateNormal` (sample / logpdf / condition / marginal) | conditioning a gaussian is slicing it |
 | 05 | limit theorems | LLN, CLT, modes of convergence | CLT simulator | the CLT fails for the cauchy distribution |
@@ -523,20 +552,93 @@ flowchart LR
 # part VII · electives & research
 
 ## 29 · electives
-complete at least two. each elective is a mini-chapter of 3–4 topics plus a small project, following the same template.
+*goal: go deep on two or more specialized areas.* · L4 · ~60 h per elective
 
-| elective | topics |
-|---|---|
-| **causal inference** | SCMs & do-calculus · potential outcomes & IPW · double ML · causal discovery |
-| **time series & state-space models** | ARIMA · kalman filters · linear SSMs (S4) · selective SSMs (Mamba) |
-| **meta-learning** | MAML · prototypical networks · in-context learning as meta-learning |
-| **continual learning** | catastrophic forgetting · EWC · replay · evaluation protocols |
-| **optimal transport** | wasserstein distances · sinkhorn · OT in generative models |
-| **information geometry** | fisher metric · natural gradient · K-FAC |
-| **recommender systems** | matrix factorization · implicit feedback · two-tower retrieval |
-| **audio & speech** | spectrograms · CTC · neural audio codecs |
-| **federated learning** | FedAvg · heterogeneity · secure aggregation |
-| **quantum ML** | qubits & circuits · variational circuits · kernel methods on quantum states |
+complete at least two electives. each is a block of 3–4 topics in the usual format. the last topic in each block ends with a small project in its lab. topics are numbered across the whole chapter so every elective has its own range.
+
+**causal inference (01–04)**
+
+| # | topic | core ideas | you build | lab: you'll find out… |
+|---|---|---|---|---|
+| 01 | structural causal models & do-calculus | SCMs, interventions, backdoor/frontdoor criteria, do-calculus | SCM simulator + backdoor adjustment | correlation and causation disagree in a simulated world |
+| 02 | potential outcomes & weighting | ATE/ATT, ignorability, propensity scores, IPW, doubly robust estimators | IPW + AIPW estimators | IPW blows up when propensities are extreme |
+| 03 | double machine learning | orthogonalization, cross-fitting, partially linear models | DML with your part II models | naive ML-based effect estimates are biased; DML fixes it |
+| 04 | causal discovery | conditional independence tests, the PC algorithm, identifiability | PC algorithm | **project:** recover a causal graph and estimate an effect on semi-synthetic data |
+
+**time series & state-space models (05–08)**
+
+| # | topic | core ideas | you build | lab: you'll find out… |
+|---|---|---|---|---|
+| 05 | classical forecasting | stationarity, autocorrelation, AR/MA/ARIMA, backtesting | ARIMA fitting + rolling-origin evaluation | a naive seasonal baseline is hard to beat |
+| 06 | kalman filters | linear-gaussian state space, filtering, smoothing | kalman filter + RTS smoother | tracking a noisy object, and what bad noise models do |
+| 07 | linear state-space models (S4) | continuous-time SSMs, discretization, convolutional view, HiPPO | a diagonal linear SSM layer | long-range memory vs an LSTM |
+| 08 | selective state-space models | input-dependent dynamics, parallel scan, Mamba | selective SSM with a parallel scan | **project:** SSM vs transformer on a long-sequence task |
+
+**meta-learning (09–11)**
+
+| # | topic | core ideas | you build | lab: you'll find out… |
+|---|---|---|---|---|
+| 09 | MAML | bilevel optimization, inner/outer loops, first-order MAML | MAML on sine regression | how many inner steps adaptation needs |
+| 10 | prototypical networks | metric-based few-shot learning, episodic training | prototypical networks | episode design matters more than architecture |
+| 11 | in-context learning as meta-learning | transformers learning algorithms in context | a transformer that does in-context linear regression | **project:** compare in-context learning with least squares and MAML |
+
+**continual learning (12–14)**
+
+| # | topic | core ideas | you build | lab: you'll find out… |
+|---|---|---|---|---|
+| 12 | catastrophic forgetting | task sequences, evaluation protocols, backward/forward transfer | continual-learning benchmark harness | how quickly old tasks are forgotten |
+| 13 | regularization approaches | EWC, synaptic intelligence, the fisher as importance | EWC | the stability–plasticity tradeoff |
+| 14 | replay & architectural approaches | experience replay, generative replay, parameter isolation | replay buffer strategies | **project:** beat fine-tuning on split-MNIST with a fixed memory budget |
+
+**optimal transport (15–17)**
+
+| # | topic | core ideas | you build | lab: you'll find out… |
+|---|---|---|---|---|
+| 15 | wasserstein distances | monge & kantorovich problems, 1D closed form, LP formulation | exact OT via linear programming | wasserstein vs KL on non-overlapping distributions |
+| 16 | entropic OT & sinkhorn | entropic regularization, sinkhorn iterations, log-domain stability | sinkhorn (stable version) | regularization strength vs blur and speed |
+| 17 | OT in machine learning | WGAN revisited, OT flow matching, domain adaptation | minibatch OT coupling for flow matching | **project:** OT couplings straighten flow-matching paths |
+
+**information geometry (18–20)**
+
+| # | topic | core ideas | you build | lab: you'll find out… |
+|---|---|---|---|---|
+| 18 | the fisher metric | statistical manifolds, fisher information as a metric, KL locally | fisher matrices for common models | KL ≈ the fisher quadratic form for small steps |
+| 19 | natural gradient | steepest descent in distribution space, reparameterization invariance | natural gradient descent | natural gradient ignores how you parameterize the model |
+| 20 | K-FAC | kronecker-factored curvature approximation | K-FAC optimizer for MLPs | **project:** K-FAC vs adam on your ch 15 networks |
+
+**recommender systems (21–23)**
+
+| # | topic | core ideas | you build | lab: you'll find out… |
+|---|---|---|---|---|
+| 21 | matrix factorization | explicit ratings, ALS, SGD factorization, cold start | ALS + SGD matrix factorization | rank vs overfitting on ratings |
+| 22 | implicit feedback | confidence weighting, BPR, ranking metrics (recall@k, NDCG) | BPR + ranking metrics | accuracy metrics mislead for ranking |
+| 23 | two-tower retrieval | dual encoders, sampled softmax, ANN retrieval | two-tower model + ANN index | **project:** a two-stage retrieve-then-rank recommender |
+
+**audio & speech (24–26)**
+
+| # | topic | core ideas | you build | lab: you'll find out… |
+|---|---|---|---|---|
+| 24 | audio representations | sampling, STFT, mel spectrograms, MFCCs | STFT + mel filterbank | the time–frequency resolution tradeoff |
+| 25 | speech recognition with CTC | alignment-free training, the CTC loss, decoding | CTC loss + greedy/beam decoding | why the blank token is needed |
+| 26 | neural audio codecs | residual vector quantization, codec language models | an RVQ autoencoder | **project:** bitrate vs quality for your codec |
+
+**federated learning (27–29)**
+
+| # | topic | core ideas | you build | lab: you'll find out… |
+|---|---|---|---|---|
+| 27 | federated averaging | client/server training, FedAvg, communication cost | a FedAvg simulator | local steps vs communication rounds |
+| 28 | heterogeneity | non-IID clients, client drift, FedProx, personalization | FedProx + personalization | non-IID data breaks FedAvg |
+| 29 | privacy & secure aggregation | secure aggregation, DP in federated learning | secure-aggregation simulation + DP-FedAvg | **project:** the privacy–accuracy–communication triangle |
+
+**quantum ML (30–32)**
+
+| # | topic | core ideas | you build | lab: you'll find out… |
+|---|---|---|---|---|
+| 30 | qubits & circuits | state vectors, gates, measurement, entanglement | a state-vector simulator | measuring an entangled pair |
+| 31 | variational circuits | parameterized circuits, parameter-shift gradients, barren plateaus | a variational classifier trained with parameter shift | gradients vanish as circuits grow |
+| 32 | quantum kernels | feature maps into quantum states, kernel estimation | quantum-kernel SVM using your ch 09 SVM | **project:** when (if ever) quantum kernels beat classical ones |
+
+**capstone:** *elective portfolio*: for each elective you complete, a short report on its project, comparing against a classical baseline.
 
 ## 30 · research practice & thesis
 | # | topic | you do |

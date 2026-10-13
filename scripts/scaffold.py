@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import re
 import sys
+import tomllib
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -26,7 +27,7 @@ from _common import (  # noqa: E402
     rel,
 )
 
-RESERVED = {"notebooks", "registry", "checks", "lesson", "ui", "pytest_plugin"}
+from mlfs.registry import RESERVED  # noqa: E402
 
 
 def render(text: str, tokens: dict[str, str]) -> str:
@@ -103,17 +104,35 @@ def scaffold_topic(root: Path, chapter: PlannedChapter, topic: PlannedTopic, for
 
 
 def register(root: Path, name: str, topic: Path) -> None:
+    """Add `topic` to mlfs.<name> in the registry (a module can merge several topics)."""
     if not re.fullmatch(r"[a-z_][a-z0-9_]*", name) or name in RESERVED:
         sys.exit(f"invalid mlfs module name {name!r}")
     registry = root / "mlfs" / "registry.toml"
     text = registry.read_text(encoding="utf-8") if registry.exists() else "[modules]\n"
-    if re.search(rf"^{re.escape(name)}\s*=", text, flags=re.M):
-        print(f"  mlfs.{name} already registered")
+    modules = tomllib.loads(text).get("modules", {})
+    target = topic.relative_to(root).as_posix()
+    topics = [modules[name]] if isinstance(modules.get(name), str) else list(modules.get(name, []))
+    if target in topics:
+        print(f"  mlfs.{name} already includes {target}")
         return
+    modules[name] = topics + [target]
+    header = text[: text.index("[modules]")] if "[modules]" in text else ""
     registry.parent.mkdir(parents=True, exist_ok=True)
-    line = f'{name} = "{topic.relative_to(root).as_posix()}"\n'
-    registry.write_text(text.rstrip("\n") + "\n" + line, encoding="utf-8")
-    print(f"  register mlfs.{name} -> {topic.relative_to(root).as_posix()}")
+    registry.write_text(header + format_registry(modules), encoding="utf-8")
+    print(f"  register mlfs.{name} -> {target}")
+
+
+def format_registry(modules: dict) -> str:
+    lines = ["[modules]"]
+    for key, value in modules.items():
+        topics = [value] if isinstance(value, str) else value
+        if len(topics) == 1:
+            lines.append(f'{key} = "{topics[0]}"')
+        else:
+            lines.append(f"{key} = [")
+            lines += [f'    "{t}",' for t in topics]
+            lines.append("]")
+    return "\n".join(lines) + "\n"
 
 
 def main(argv: list[str] | None = None) -> None:
