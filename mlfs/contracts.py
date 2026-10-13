@@ -20,8 +20,12 @@ CONTRACTS[module] = {
 Signatures are compared by parameter name, kind, order and default (annotations ignored, so
 reference code may annotate freely). Tuple defaults must be tuples, never lists. Properties and
 plain attributes are not methods: they are described in `notes`, never listed under `classes`.
-Methods inherited unchanged from a contracted base class are not repeated. Helpers not listed
-here are allowed but private by convention (prefix `_`), so they can't collide when topics merge.
+Methods inherited unchanged from a contracted base class are not repeated. A notebook may define
+extra public helpers (marimo makes `_` names cell-private, so stage functions can't be private),
+but they must not collide with other names in the same module, and later chapters must not rely
+on anything that isn't listed here. Reference implementations favour clarity over speed (e.g.
+linalg.svd/eigh are pure-Python Jacobi methods, seconds at n ~ 300): later chapters use the
+NumPy/SciPy equivalent where speed matters (AUTHORING.md §9).
 
 Loading / import rules
 ----------------------
