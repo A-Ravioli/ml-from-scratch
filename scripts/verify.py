@@ -28,6 +28,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(1, str(Path(__file__).resolve().parent.parent))  # this checkout's mlfs, not the installed one
 from _common import chapter_dirs, rel, topic_dirs  # noqa: E402
 
 PYTEST = [sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider",

@@ -22,6 +22,7 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(1, str(Path(__file__).resolve().parent.parent))  # this checkout's mlfs, not the installed one
 from _common import (  # noqa: E402
     CHAPTER_FILES,
     CURRICULUM,
@@ -35,7 +36,7 @@ from _common import (  # noqa: E402
 )
 from mlfs.registry import RESERVED  # noqa: E402
 
-PLACEHOLDERS = re.compile(r"NotImplementedError|\bTODO\b|YOUR CODE|TEMPLATE")
+PLACEHOLDERS = re.compile(r"NotImplementedError\(\s*[\"']stage\d|\bTODO\b|YOUR CODE|TEMPLATE")
 STUB_STAGE = re.compile(r"NotImplementedError\(\s*[\"']stage(\d+)")
 TEST_STAGE = re.compile(r"^def (test_stage(\d+)_\w*)\(", re.M)
 ANY_TEST = re.compile(r"^def (test_\w*)\(", re.M)

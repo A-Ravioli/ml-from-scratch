@@ -9,7 +9,9 @@ import argparse
 import sys
 from pathlib import Path
 
-from mlfs.contracts import CONTRACTS, CONVENTIONS
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # this checkout's mlfs
+
+from mlfs.contracts import CONTRACTS, CONVENTIONS  # noqa: E402
 
 OUT = Path(__file__).resolve().parent.parent / "CONTRACTS.md"
 
