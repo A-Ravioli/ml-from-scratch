@@ -206,27 +206,27 @@ deterministic minimisers (GD, momentum, Newton, BFGS/L-BFGS, projections) and th
 
 | name | signature | notes |
 |---|---|---|
-| `backtracking_line_search` | `(f, x, fx, gx, direction, *, alpha0=1.0, rho=0.5, c=0.0001, max_iters=50)` | Armijo: largest alpha0*rho^j with f(x + a d) <= fx + c a gx.d; returns alpha (float) |
+| `backtracking_line_search` | `Armijo: largest alpha0*rho^j with f(x + a d) <= fx + c a gx.d; returns alpha (float), or 0.0 if no trial passes within max_iters (callers stop on this sentinel)` | Armijo: largest alpha0*rho^j with f(x + a d) <= fx + c a gx.d; returns alpha (float) |
 | `gradient_descent` | `(f, grad, x0, *, lr=0.01, line_search=False, max_iters=1000, tol=1e-06, callback=None)` | f(x)->float, grad(x)->ndarray like x; line_search=True uses backtracking with alpha0=lr; callback(x, k) after each iter; returns OptimResult |
 | `heavy_ball` | `(f, grad, x0, *, lr=0.01, momentum=0.9, max_iters=1000, tol=1e-06, callback=None)` | Polyak momentum; returns OptimResult |
 | `nesterov` | `(f, grad, x0, *, lr=0.01, momentum=None, max_iters=1000, tol=1e-06, callback=None)` | momentum=None uses the (k-1)/(k+2) schedule, a float uses a constant; returns OptimResult |
 | `minibatch_indices` | `(n, batch_size, *, shuffle=True, drop_last=False, rng=None)` | yields int index arrays covering range(n) once per call (one epoch) |
-| `newton` | `(f, grad, hess, x0, *, damping=0.0, line_search=True, max_iters=100, tol=1e-08, callback=None)` | hess(x) -> (n,n); solves (H + damping I) d = -g with mlfs.linalg; returns OptimResult |
-| `bfgs` | `(f, grad, x0, *, max_iters=500, tol=1e-06, callback=None)` | dense inverse-Hessian BFGS with Wolfe/Armijo backtracking; returns OptimResult |
-| `lbfgs` | `(f, grad, x0, *, history_size=10, max_iters=500, tol=1e-06, callback=None)` | two-loop recursion with history_size pairs; returns OptimResult |
+| `newton` | `hess(x) -> (x.size, x.size); solves (H + damping I) d = -g with mlfs.linalg; falls back to d = -g when the solve raises LinAlgError or (line_search=True) d is not a finite descent direction; stops (converged=False) when the line search returns 0.0; x0 may have any shape (raveled internally); returns OptimResult` | hess(x) -> (n,n); solves (H + damping I) d = -g with mlfs.linalg; returns OptimResult |
+| `bfgs` | `dense inverse-Hessian BFGS with a weak-Wolfe line search (c1=1e-4, c2=0.9); H0 rescaled by (s.y)/(y.y) before the first update; skips updates with s.y <= 0; stops (converged=False) if the line search fails; x0 may have any shape; returns OptimResult` | dense inverse-Hessian BFGS with Wolfe/Armijo backtracking; returns OptimResult |
+| `lbfgs` | `two-loop recursion over the most recent history_size (s, y) pairs, re-seeded with gamma I = (s.y)/(y.y) each iteration; weak-Wolfe line search; stops (converged=False) if it fails; x0 may have any shape; returns OptimResult` | two-loop recursion with history_size pairs; returns OptimResult |
 | `minimize` | `(f, grad, x0, *, method='lbfgs', hess=None, max_iters=1000, tol=1e-06, callback=None, **options)` | method in {'gd','heavy_ball','nesterov','newton','bfgs','lbfgs'}; **options forwarded (lr, momentum, ...); returns OptimResult |
 | `project_simplex` | `(v)` | Euclidean projection onto {x >= 0, sum x = 1} (sort-based, Duchi et al. 2008) |
 | `project_l2_ball` | `(v, radius=1.0)` | projection onto {\|\|x\|\|_2 <= radius} |
 | `project_box` | `(v, lower, upper)` | np.clip(v, lower, upper) |
-| `projected_gradient_descent` | `(f, grad, project, x0, *, lr=0.01, max_iters=1000, tol=1e-06, callback=None)` | x <- project(x - lr grad(x)); stops when \|\|x_new - x\|\| <= tol*lr; returns OptimResult |
+| `projected_gradient_descent` | `x <- project(x - lr grad(x)) (the final step is taken); stops when \|\|x_new - x\|\| <= tol*lr (gradient-mapping test; this defines converged); x0 used as given, so history[0] = f(x0) even if infeasible; returns OptimResult` | x <- project(x - lr grad(x)); stops when \|\|x_new - x\|\| <= tol*lr; returns OptimResult |
 | `solve_eq_qp` | `(Q, c, A, b)` | min 1/2 x^T Q x + c^T x s.t. A x = b via the KKT system; returns (x, lam) |
 | `rosenbrock` | `(x, a=1.0, b=100.0)` | x (n,) generalised Rosenbrock, min 0 at ones |
 | `rosenbrock_grad` | `(x, a=1.0, b=100.0)` |  |
 | `rastrigin` | `(x, A=10.0)` | x (n,), min 0 at zeros |
 | `rastrigin_grad` | `(x, A=10.0)` |  |
-| `perturbed_gradient_descent` | `(f, grad, x0, *, lr=0.01, noise_radius=0.1, grad_threshold=0.001, max_iters=1000, rng=None, callback=None)` | adds uniform-ball noise of noise_radius when \|\|grad\|\| < grad_threshold; returns OptimResult |
+| `perturbed_gradient_descent` | `adds uniform-ball noise of noise_radius when \|\|grad\|\| < grad_threshold; no tol: runs all max_iters steps and returns the BEST iterate (fun = min(history), so history[-1] may differ); converged means \|\|grad(x_best)\|\| < grad_threshold; returns OptimResult` | adds uniform-ball noise of noise_radius when \|\|grad\|\| < grad_threshold; returns OptimResult |
 | `loss_landscape_2d` | `(f, x0, d1, d2, *, span=1.0, resolution=51)` | returns (alphas (r,), betas (r,), Z (r,r)) with Z[i,j] = f(x0 + alphas[i] d1 + betas[j] d2), alphas in [-span, span] |
-| **class** `OptimResult` | | plain record: x (final ndarray), fun (final f), n_iters (int), converged (bool, \|\|grad\|\| <= tol), history (list of f values, starting with f(x0)) |
+| **class** `OptimResult` | | plain record: x (final ndarray, same shape as x0), fun (final f), n_iters (int), converged (bool, \|\|grad\|\| <= tol unless a method's note says otherwise), history (list of f values, starting with f(x0)). callbacks are called as callback(x, k) with k = 1, 2, ... after each step; their return value is ignored (no early stopping) |
 | `OptimResult.__init__` | `(self, x, fun, n_iters, converged, history)` |  |
 | **class** `Param` | | minimal parameter: .data = float64 copy of data, .grad = None |
 | `Param.__init__` | `(self, data)` |  |
