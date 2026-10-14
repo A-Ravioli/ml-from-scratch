@@ -17,6 +17,7 @@ import tomllib
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(1, str(Path(__file__).resolve().parent.parent))  # this checkout's mlfs, not the installed one
 from _common import (  # noqa: E402
     CURRICULUM,
     TEMPLATES,

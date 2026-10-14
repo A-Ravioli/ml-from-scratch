@@ -201,3 +201,23 @@ def test_bounded_stops_runaway_loops_and_restores_tracer():
         bounded(forever, budget=10_000, what="forever")
     assert sys.gettrace() is before
     assert bounded(lambda a, b=0: a + b, 2, b=3) == 5
+
+
+def test_live_checks_accept_dict_parameters(tmp_path):
+    (tmp_path / "test_exercise.py").write_text(
+        "import pytest\n"
+        "@pytest.mark.parametrize('cfg', [{'a': 1}, {'a': 2}])\n"
+        "def test_stage1_cfg(nb, cfg):\n"
+        "    assert nb.get(cfg) == cfg['a']\n")
+    results = checks.run_stage(tmp_path, 1, {"get": lambda c: c["a"]})
+    assert [r.status for r in results] == ["pass", "pass"], results
+
+
+def test_audit_allows_abstract_not_implemented_but_flags_stage_stubs():
+    import re
+
+    from audit import PLACEHOLDERS
+
+    assert not PLACEHOLDERS.search('        raise NotImplementedError("subclasses implement fit")')
+    assert PLACEHOLDERS.search('    raise NotImplementedError("stage2: implement fit")')
+    assert PLACEHOLDERS.search("    # TODO finish")
