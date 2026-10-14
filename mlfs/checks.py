@@ -71,7 +71,8 @@ def _param_sets(fn: Callable) -> list[dict[str, Any]]:
         names = [n.strip() for n in names.split(",")] if isinstance(names, str) else list(names)
         rows = []
         for v in values:
-            v = getattr(v, "values", v)  # pytest.param(...) -> its values
+            if type(v).__name__ == "ParameterSet":  # pytest.param(...) -> its values
+                v = v.values
             if len(names) == 1 and not (isinstance(v, tuple) and len(v) == 1):
                 v = (v,)
             rows.append(dict(zip(names, v)))
