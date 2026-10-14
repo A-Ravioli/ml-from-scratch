@@ -226,7 +226,7 @@ deterministic minimisers (GD, momentum, Newton, BFGS/L-BFGS, projections) and th
 | `rastrigin_grad` | `(x, A=10.0)` |  |
 | `perturbed_gradient_descent` | `(f, grad, x0, *, lr=0.01, noise_radius=0.1, grad_threshold=0.001, max_iters=1000, rng=None, callback=None)` | adds uniform-ball noise of noise_radius when \|\|grad\|\| < grad_threshold; no tol: runs all max_iters steps and returns the BEST iterate (fun = min(history), so history[-1] may differ); converged means \|\|grad(x_best)\|\| < grad_threshold; returns OptimResult |
 | `loss_landscape_2d` | `(f, x0, d1, d2, *, span=1.0, resolution=51)` | returns (alphas (r,), betas (r,), Z (r,r)) with Z[i,j] = f(x0 + alphas[i] d1 + betas[j] d2), alphas in [-span, span] |
-| **class** `OptimResult` | | plain record: x (final ndarray, same shape as x0), fun (final f), n_iters (int), converged (bool, \|\|grad\|\| <= tol unless a method's note says otherwise), history (list of f values, starting with f(x0)). callbacks are called as callback(x, k) with k = 1, 2, ... after each step; their return value is ignored (no early stopping) |
+| **class** `OptimResult` | | plain record: x (final ndarray, same shape as x0), fun (final f), n_iters (int), converged (bool, \|\|grad\|\| <= tol unless a method's note says otherwise), history (list of f values, starting with f(x0)). callbacks are called as callback(x, k) with x in x0's shape with k = 1, 2, ... after each step; their return value is ignored (no early stopping) |
 | `OptimResult.__init__` | `(self, x, fun, n_iters, converged, history)` |  |
 | **class** `Param` | | minimal parameter: .data = float64 copy of data, .grad = None |
 | `Param.__init__` | `(self, data)` |  |

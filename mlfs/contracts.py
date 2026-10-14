@@ -447,7 +447,7 @@ CONTRACTS = {
             "AdamW": {"__init__": "(self, params, lr=0.001, betas=(0.9, 0.999), eps=1e-08, weight_decay=0.01)", "step": "(self)"},
         },
         "notes": {
-            "OptimResult": "plain record: x (final ndarray, same shape as x0), fun (final f), n_iters (int), converged (bool, ||grad|| <= tol unless a method's note says otherwise), history (list of f values, starting with f(x0)). callbacks are called as callback(x, k) with k = 1, 2, ... after each step; their return value is ignored (no early stopping)",
+            "OptimResult": "plain record: x (final ndarray, same shape as x0), fun (final f), n_iters (int), converged (bool, ||grad|| <= tol unless a method's note says otherwise), history (list of f values, starting with f(x0)). callbacks are called as callback(x, k) with x in x0's shape with k = 1, 2, ... after each step; their return value is ignored (no early stopping)",
             "backtracking_line_search": "Armijo: largest alpha0*rho^j with f(x + a d) <= fx + c a gx.d; returns alpha (float), or 0.0 if no trial passes within max_iters (callers stop on this sentinel)",
             "gradient_descent": "f(x)->float, grad(x)->ndarray like x; line_search=True uses backtracking with alpha0=lr; callback(x, k) after each iter; returns OptimResult",
             "heavy_ball": "Polyak momentum; returns OptimResult",
