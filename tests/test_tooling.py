@@ -185,3 +185,19 @@ def test_live_checks_expand_parametrized_tests(tmp_path):
     results = checks.run_stage(tmp_path, 1, {"add": lambda x, y: x + y})
     assert len(results) == 4 and {r.status for r in results} == {"pass"}, results
     assert "a=1" in results[0].name and "c=" in results[0].name
+
+
+def test_bounded_stops_runaway_loops_and_restores_tracer():
+    import sys
+
+    from mlfs.testing import bounded
+
+    def forever():
+        while True:
+            pass
+
+    before = sys.gettrace()
+    with pytest.raises(AssertionError, match="didn't finish"):
+        bounded(forever, budget=10_000, what="forever")
+    assert sys.gettrace() is before
+    assert bounded(lambda a, b=0: a + b, 2, b=3) == 5

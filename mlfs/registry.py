@@ -26,7 +26,7 @@ from mlfs import notebooks
 
 # names that are real submodules of `mlfs` and so can't be registry entries
 RESERVED = frozenset({"notebooks", "registry", "checks", "lesson", "ui", "pytest_plugin",
-                      "datasets", "contracts"})
+                      "datasets", "contracts", "testing"})
 
 
 def registry_path() -> Path:

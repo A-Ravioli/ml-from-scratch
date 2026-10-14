@@ -183,7 +183,7 @@ bootstrap CIs, permutation tests, multiple-comparison control, entropy/KL/MI
 | name | signature | notes |
 |---|---|---|
 | `bootstrap_ci` | `(data, statistic, *, n_boot=10000, alpha=0.05, method='percentile', rng=None)` | data: array (resampled along axis 0) or tuple of equal-length arrays resampled JOINTLY (paired); statistic(*resampled) -> float; method in {'percentile','bca'}; returns (lo, hi) |
-| `permutation_test` | `(x, y, statistic=None, *, n_permutations=10000, alternative='two-sided', paired=False, rng=None)` | statistic(x, y) -> float, default mean(x) - mean(y); paired=True flips signs of x - y; alternative in {'two-sided','greater','less'}; returns (observed, p) with p = (1 + #as-extreme) / (1 + n_permutations) |
+| `permutation_test` | `(x, y, statistic=None, *, n_permutations=10000, alternative='two-sided', paired=False, rng=None)` | statistic(x, y) -> float, default mean(x) - mean(y); paired=True flips signs of x - y; alternative in {'two-sided','greater','less'}; returns (observed, p) with p = (1 + #as-extreme) / (1 + n_permutations); alternative='two-sided' uses \|T\| >= \|t_obs\|, which requires a statistic centred at 0 under H0 (e.g. differences of means or metrics); for other statistics use a one-sided alternative |
 | `bonferroni` | `(p_values, alpha=0.05)` | returns bool reject mask, p <= alpha / m |
 | `benjamini_hochberg` | `(p_values, alpha=0.05)` | returns bool reject mask controlling FDR at alpha (step-up) |
 | `entropy` | `(p, *, base=None)` | discrete p (k,) (normalised internally); 0 log 0 = 0; nats unless base given (base=2 -> bits) |
