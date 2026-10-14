@@ -173,3 +173,31 @@ def test_stubify_turns_staged_definitions_into_stubs():
     stub = stubify(multi)
     assert "if modified:" in stub and "stage2: implement f with modified=True" in stub
     assert "stage1: implement f with modified=False" in stub
+
+
+def test_live_checks_expand_parametrized_tests(tmp_path):
+    (tmp_path / "test_exercise.py").write_text(
+        "import pytest\n"
+        "@pytest.mark.parametrize('a,b', [(1, 2), (3, 4)])\n"
+        "@pytest.mark.parametrize('c', [10, pytest.param(20)])\n"
+        "def test_stage1_add(nb, a, b, c):\n"
+        "    assert nb.add(a, b) == a + b and c in (10, 20)\n")
+    results = checks.run_stage(tmp_path, 1, {"add": lambda x, y: x + y})
+    assert len(results) == 4 and {r.status for r in results} == {"pass"}, results
+    assert "a=1" in results[0].name and "c=" in results[0].name
+
+
+def test_bounded_stops_runaway_loops_and_restores_tracer():
+    import sys
+
+    from mlfs.testing import bounded
+
+    def forever():
+        while True:
+            pass
+
+    before = sys.gettrace()
+    with pytest.raises(AssertionError, match="didn't finish"):
+        bounded(forever, budget=10_000, what="forever")
+    assert sys.gettrace() is before
+    assert bounded(lambda a, b=0: a + b, 2, b=3) == 5
