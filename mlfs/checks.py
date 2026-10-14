@@ -61,15 +61,37 @@ def _is_slow(fn: Callable) -> bool:
     return any(getattr(m, "name", None) == "slow" for m in getattr(fn, "pytestmark", []))
 
 
-def _call(fn: Callable, impl: _Impl, stage: int) -> Result:
+def _param_sets(fn: Callable) -> list[dict[str, Any]]:
+    """Expand @pytest.mark.parametrize marks into keyword-argument sets (cartesian product)."""
+    sets: list[dict[str, Any]] = [{}]
+    for mark in getattr(fn, "pytestmark", []):
+        if getattr(mark, "name", None) != "parametrize":
+            continue
+        names, values = mark.args[0], mark.args[1]
+        names = [n.strip() for n in names.split(",")] if isinstance(names, str) else list(names)
+        rows = []
+        for v in values:
+            v = getattr(v, "values", v)  # pytest.param(...) -> its values
+            if len(names) == 1 and not (isinstance(v, tuple) and len(v) == 1):
+                v = (v,)
+            rows.append(dict(zip(names, v)))
+        sets = [{**a, **b} for a in sets for b in rows]
+    return sets
+
+
+def _call(fn: Callable, impl: _Impl, stage: int, params: dict[str, Any] | None = None) -> Result:
     name = fn.__name__.removeprefix(f"test_stage{stage}_").replace("_", " ")
+    if params:
+        name += " [" + ", ".join(f"{k}={v!r}" for k, v in params.items()) + "]"
     if _is_slow(fn):
         return Result(name, "skip", "slow check: run it with pytest")
     try:
-        if inspect.signature(fn).parameters:
-            fn(impl)
+        params = params or {}
+        positional = [p for p in inspect.signature(fn).parameters if p not in params]
+        if positional:
+            fn(impl, **params)
         else:
-            fn()
+            fn(**params)
     except NotImplementedError as e:
         return Result(name, "todo", str(e) or "not implemented yet")
     except AssertionError as e:
@@ -89,11 +111,12 @@ def _call(fn: Callable, impl: _Impl, stage: int) -> Result:
 
 def run_stage(directory: str | Path, stage: int, defs: dict[str, Any],
               tests: str = "test_exercise.py") -> list[Result]:
-    """Run one stage's checks against `defs`. Usable outside marimo (returns raw results)."""
+    """Run one stage's checks against `defs`. Usable outside marimo (returns raw results).
+    Tests parametrized with @pytest.mark.parametrize run once per parameter set."""
     tests_path = notebooks.topic_dir(directory) / tests
-    fns = collect(tests_path, stage)
     impl = _Impl(stage, defs)
-    return [_call(fn, impl, stage) for fn in fns]
+    return [_call(fn, impl, stage, params) for fn in collect(tests_path, stage)
+            for params in _param_sets(fn)]
 
 
 _ICON = {"pass": "✅", "fail": "❌", "error": "💥", "todo": "⬜", "skip": "⏭️"}
