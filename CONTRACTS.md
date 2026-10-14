@@ -758,7 +758,7 @@ reverse-mode autodiff Tensor over NumPy (~25 ops), gradcheck, no_grad, gradient 
 | `gradcheck` | `(f, inputs, *, eps=1e-06, atol=1e-05, rtol=0.001)` | f(*inputs) -> Tensor (any shape; reduced with .sum() of f * fixed random weights); compares analytic vs central-difference grads for every input with requires_grad; returns True/False and prints the worst entry on failure |
 | `is_grad_enabled` | `()` | False inside no_grad |
 | `checkpoint` | `(fn, *inputs)` | returns fn(*inputs) as a Tensor whose backward recomputes fn instead of storing its intermediates; gradients identical to the plain call |
-| **class** `Tensor` | | data: float64 ndarray (anything array-like is converted); .grad ndarray\|None same shape; .requires_grad; properties shape, ndim, size, T (not methods); operands may be Tensor/ndarray/scalar (non-Tensors are constants); broadcasting gradients are summed back to each operand's shape. Satisfies the mlfs.optim parameter protocol (.data/.grad) |
+| **class** `Tensor` | | data: float64 ndarray (anything array-like is converted); .grad ndarray\|None same shape; .requires_grad; properties shape, ndim, size, T (not methods); operands may be Tensor/ndarray/scalar (non-Tensors are constants); broadcasting gradients are summed back to each operand's shape. Satisfies the mlfs.optim parameter protocol (.data/.grad); Tensor.from_op(data, parents, vjp) (staticmethod) is the public custom-op extension point: builds a result Tensor whose vjp(g) returns one gradient (or None) per parent; backward on a Tensor that doesn't require grad raises RuntimeError |
 | `Tensor.__init__` | `(self, data, requires_grad=False)` |  |
 | `Tensor.backward` | `(self, grad=None)` | grad default ones (only for size-1 tensors, else ValueError); topological order; ACCUMULATES (+=) into .grad of leaves with requires_grad (non-leaf grads not retained) |
 | `Tensor.detach` | `(self)` |  |
@@ -788,6 +788,7 @@ reverse-mode autodiff Tensor over NumPy (~25 ops), gradcheck, no_grad, gradient 
 | `Tensor.tanh` | `(self)` |  |
 | `Tensor.sigmoid` | `(self)` |  |
 | `Tensor.relu` | `(self)` |  |
+| `Tensor.from_op` | `(data, parents, vjp)` |  |
 | **class** `no_grad` | | context manager; inside it new ops record no graph (results have requires_grad=False) |
 | `no_grad.__enter__` | `(self)` |  |
 | `no_grad.__exit__` | `(self, *exc)` |  |
@@ -800,13 +801,13 @@ Module/Parameter, Linear, activations, Sequential, losses, and a NumPy training 
 
 | name | signature | notes |
 |---|---|---|
-| `mse_loss` | `(pred, target)` | mean over all elements; target Tensor or ndarray |
+| `mse_loss` | `(pred, target)` | mean over all elements; target Tensor or ndarray; raises ValueError if shapes differ (no broadcasting) |
 | `cross_entropy` | `(logits, targets)` | logits (n,k) Tensor, targets int ndarray (n,); mean NLL via logsumexp (stable) |
 | `binary_cross_entropy_with_logits` | `(logits, targets)` | logits (n,) Tensor, targets {0,1} (n,); mean, stable |
 | `fit` | `(model, loss_fn, optimizer, X, y, *, epochs=10, batch_size=32, X_val=None, y_val=None, shuffle=True, rng=None, callback=None)` | minibatches via mlfs.optim.minibatch_indices; loop zero_grad -> forward -> loss -> backward -> step; model.train() during, eval() for validation; callback(epoch, history) after each epoch (return True to stop); returns history {'train_loss': [...], 'val_loss': [...]} (per-epoch means) |
 | `evaluate` | `(model, loss_fn, X, y, *, batch_size=256)` | mean loss under no_grad, eval mode |
 | `predict` | `(model, X, *, batch_size=256)` | model outputs as ndarray (n, ...) under no_grad, eval mode |
-| **class** `Module` | | attributes that are Parameter, Module, or list/tuple of Modules are discovered in assignment order; parameters() -> list (deduplicated); named_parameters() -> list of (dotted name, Parameter); .training flag set recursively by train/eval; state_dict -> {name: ndarray copy}; load_state_dict copies in place (shape-checked) |
+| **class** `Module` | | attributes that are Parameter, Module, or list/tuple of Modules are discovered in assignment order; parameters() -> list (deduplicated); named_parameters() -> list of (dotted name, Parameter); .training flag set recursively by train/eval; state_dict -> {name: ndarray copy}; load_state_dict copies in place (shape-checked); Sequential stores layer i as attribute str(i), so state_dict keys match torch (0.weight); load_state_dict raises KeyError for missing/unexpected names and ValueError for wrong shapes |
 | `Module.__init__` | `(self)` |  |
 | `Module.__call__` | `(self, *args, **kwargs)` |  |
 | `Module.forward` | `(self, *args, **kwargs)` |  |
