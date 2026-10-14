@@ -1348,14 +1348,14 @@ bandits, gym-style spaces/envs (GridWorld, Blackjack, CliffWalking, MountainCar)
 | `Box.__init__` | `(self, low, high, shape=None)` |  |
 | `Box.sample` | `(self, rng=None)` |  |
 | `Box.contains` | `(self, x)` |  |
-| **class** `Env` | | gymnasium protocol (see CONVENTIONS['rl']); reset seeds self.np_random (a Generator); subclasses set observation_space, action_space |
+| **class** `Env` | | gymnasium-style protocol (see CONVENTIONS['rl']); reset seeds self.np_random (a Generator); subclasses set observation_space, action_space. follows the reset/step API but is NOT a drop-in gymnasium.Env (no close/metadata/dtype); ch24 wraps real Gymnasium envs itself |
 | `Env.reset` | `(self, *, seed=None)` |  |
 | `Env.step` | `(self, action)` |  |
-| **class** `GridWorld` | | tabular; obs = row * width + col; actions 0 up, 1 right, 2 down, 3 left; goal default bottom-right, terminating with reward 0; slip = prob of a uniformly random action; truncated after max_steps; exposes n_states, n_actions, P (S,A,S'), R (S,A) |
+| **class** `GridWorld` | | tabular; obs = row * width + col; actions 0 up, 1 right, 2 down, 3 left; goal default bottom-right: the step INTO the goal costs step_reward and terminates, and the goal is absorbing with reward 0 (so with step_reward=-1, V*(s) = -Manhattan distance); slip = prob of a uniformly random action; truncated after max_steps unless that step also terminated (never both); exposes n_states, n_actions, P (S,A,S'), R (S,A), terminal (S,) bool, start_state |
 | `GridWorld.__init__` | `(self, height=4, width=4, *, start=(0, 0), goal=None, walls=(), slip=0.0, step_reward=-1.0, max_steps=100)` |  |
 | `GridWorld.reset` | `(self, *, seed=None)` |  |
 | `GridWorld.step` | `(self, action)` |  |
-| **class** `Blackjack` | | Sutton & Barto rules, infinite deck; Discrete obs encoding (player_sum 4..21, dealer_card 1..10, usable_ace) -> int, static method decode(obs) -> tuple; actions 0 stick, 1 hit |
+| **class** `Blackjack` | | Sutton & Barto rules except no special payout for naturals (keeps the obs Markov; optimum about -0.0466 per unit bet), infinite deck; Discrete obs encoding (player_sum 4..21, dealer_card 1..10, usable_ace) -> int, static method decode(obs) -> tuple; after a bust the obs clips player_sum to 21 (true sum in info); actions 0 stick, 1 hit |
 | `Blackjack.__init__` | `(self)` |  |
 | `Blackjack.reset` | `(self, *, seed=None)` |  |
 | `Blackjack.step` | `(self, action)` |  |
@@ -1363,7 +1363,7 @@ bandits, gym-style spaces/envs (GridWorld, Blackjack, CliffWalking, MountainCar)
 | `CliffWalking.__init__` | `(self)` |  |
 | `CliffWalking.reset` | `(self, *, seed=None)` |  |
 | `CliffWalking.step` | `(self, action)` |  |
-| **class** `TileCoder` | | obs (d,) in the box [low, high] -> active feature indices (n_tilings,) int; attr n_features (= n_tilings * tiles_per_dim**d, offset tilings) |
+| **class** `TileCoder` | | obs (d,) in the box [low, high] -> active feature indices (n_tilings,) int; attr n_features (= n_tilings * tiles_per_dim**d, offset tilings). rng=None gives DETERMINISTIC asymmetric offsets ((1, 3, 5, ...)/n_tilings, Sutton & Barto) so tile coding is reproducible by default; pass rng for random offsets (an intentional exception to the rng=None -> fresh generator convention) |
 | `TileCoder.__init__` | `(self, low, high, *, n_tilings=8, tiles_per_dim=8, rng=None)` |  |
 | `TileCoder.__call__` | `(self, obs)` |  |
 | **class** `MountainCar` | | classic (Sutton & Barto 10.1) dynamics; Box(2) obs, Discrete(3) actions, reward -1 per step, truncated at max_steps |
