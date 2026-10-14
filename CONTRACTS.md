@@ -258,7 +258,7 @@ the Estimator protocol, its Regressor/Classifier/Transformer bases, clone, and d
 
 | name | signature | notes |
 |---|---|---|
-| `clone` | `(estimator)` | unfitted copy: type(est)(**est.get_params()) with nested estimators cloned recursively |
+| `clone` | `(estimator)` | unfitted copy: type(est)(**est.get_params()) with nested estimators cloned recursively; composite get_params may include nested name__param keys; clone ignores any key containing '__' (they are reconstructed from the cloned sub-estimators) |
 | `check_X_y` | `(X, y=None)` | returns (X as 2-D float64, y as 1-D array or None); raises ValueError on shape mismatch / NaN |
 | **class** `Estimator` | | no __init__ of its own; get_params reads the subclass __init__ signature and returns {name: getattr(self, name)}; set_params(**p) setattrs and returns self; fit/predict raise NotImplementedError |
 | `Estimator.fit` | `(self, X, y=None)` |  |
@@ -322,10 +322,11 @@ splitters, cross-validation, learning/validation curves, bias-variance, grid/ran
 | `ParameterGrid.__init__` | `(self, param_grid)` |  |
 | `ParameterGrid.__iter__` | `(self)` |  |
 | `ParameterGrid.__len__` | `(self)` |  |
-| **class** `GridSearchCV` | | Estimator; attrs best_params_, best_score_, best_estimator_ (if refit), cv_results_ (dict of lists: 'params', 'mean_test_score', 'std_test_score') |
+| **class** `GridSearchCV` | | Estimator; attrs best_params_, best_score_, best_estimator_ (if refit), cv_results_ (dict of lists: 'params', 'mean_test_score', 'std_test_score'); predict_proba delegates to best_estimator_, and a classes_ property mirrors it (so roc_auc scoring works in nested CV) |
 | `GridSearchCV.__init__` | `(self, estimator, param_grid, *, cv=5, scoring=None, refit=True)` |  |
 | `GridSearchCV.fit` | `(self, X, y=None)` |  |
 | `GridSearchCV.predict` | `(self, X)` |  |
+| `GridSearchCV.predict_proba` | `(self, X)` |  |
 | `GridSearchCV.score` | `(self, X, y=None)` |  |
 | **class** `RandomizedSearchCV` | | param_distributions values: list (uniform choice) or callable(rng) -> value; same attrs as GridSearchCV |
 | `RandomizedSearchCV.__init__` | `(self, estimator, param_distributions, *, n_iter=20, cv=5, scoring=None, refit=True, rng=None)` |  |
@@ -392,13 +393,15 @@ scalers, encoders, imputers, polynomial features and pipelines (all Transformers
 | `PolynomialFeatures.__init__` | `(self, degree=2, *, include_bias=True, interaction_only=False)` |  |
 | `PolynomialFeatures.fit` | `(self, X, y=None)` |  |
 | `PolynomialFeatures.transform` | `(self, X)` |  |
-| **class** `Pipeline` | | steps: list of (name, estimator); all but last are Transformers; get_params/set_params support 'name__param'; named_steps dict attr |
+| **class** `Pipeline` | | steps: list of (name, estimator); all but last are Transformers; get_params/set_params support 'name__param'; named_steps dict attr; also exposes decision_function and fit_transform when the final step supports them, and a classes_ property from the final step |
 | `Pipeline.__init__` | `(self, steps)` |  |
 | `Pipeline.fit` | `(self, X, y=None)` |  |
 | `Pipeline.predict` | `(self, X)` |  |
 | `Pipeline.predict_proba` | `(self, X)` |  |
 | `Pipeline.transform` | `(self, X)` |  |
 | `Pipeline.score` | `(self, X, y=None)` |  |
+| `Pipeline.decision_function` | `(self, X)` |  |
+| `Pipeline.fit_transform` | `(self, X, y=None)` |  |
 
 ### mlfs.linear
 
