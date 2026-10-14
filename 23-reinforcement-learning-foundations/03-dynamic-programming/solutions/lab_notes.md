@@ -1,0 +1,25 @@
+# dynamic programming · lab notes
+
+## experiment 1: iterations versus $\gamma$
+
+**what people usually predict:** that both algorithms slow down as $\gamma \to 1$, policy iteration perhaps less.
+
+**what happens:** value iteration needs **28, 177, 1,839, 18,460** iterations for $\gamma = 0.5, 0.9, 0.99, 0.999$: a factor of 10 for every factor of 10 in the horizon, lying on the line $\ln(10^8)/(1 - \gamma)$. modified policy iteration with $m = 10$ needs about 10 times fewer greedy steps (5, 21, 208, 2,077) and $m = 100$ about 100 times fewer (3, 5, 24, 232). policy iteration evaluates exactly **4** policies at every $\gamma$ (the random one it starts from, then three greedy ones).
+
+**why:** value iteration's error shrinks by a factor $\gamma$ per sweep (the contraction), so reaching $10^{-8}$ takes $\ln(10^8)/\ln(1/\gamma) \approx 18.4/(1 - \gamma)$ sweeps: slope 1 on the log–log plot. in a continuing MDP nothing short-circuits that: the values are sums over an infinite horizon, and each sweep adds one more step of it. policy iteration's improvement steps don't depend on $\gamma$ in the same way: each one fixes the policy in every state at once, and the number of distinct policies it visits is tiny (for a fixed $\gamma$ the number of improvements is even strongly polynomial: Ye, 2011, "The simplex and policy-iteration methods are strongly polynomial for the Markov decision problem with a fixed discount rate", *Mathematics of Operations Research* 36(4)). but the work hasn't vanished, it has moved: each of those 4 evaluations is itself an iterative `policy_evaluation` that needs about $18.4/(1 - \gamma)$ sweeps, so at $\gamma = 0.999$ policy iteration also does tens of thousands of sweeps in total. MPI's greedy steps fall like $1/m$, but each costs $m$ sweeps: total work roughly the same, the trade-off is how often you pay for the max over actions. with a direct linear solve for the evaluation ($O(S^3)$, independent of $\gamma$) policy iteration really is insensitive to $\gamma$, which is why it's preferred for small, nearly undiscounted problems.
+
+## experiment 2: the policy converges first
+
+**what people usually predict:** that the greedy policy becomes optimal somewhere in the middle, a few hundred backups in, as the values get close.
+
+**what happens:** the greedy policy is optimal from backup **3** on and never changes again, while the values are still off by **101.75** (the optimal values all lie between 103.3 and 107.2: after 3 backups $V_3$ is only a few units). the error drops below $10^{-6}$ only at backup **1,838**.
+
+**why:** the greedy policy only needs the *differences* $Q(s, a) - Q(s, a')$ to have the right sign, not the values themselves. in a continuing MDP with $\gamma$ close to 1, every state's value is dominated by the same large term (the long-run average reward divided by $1 - \gamma$, about 105 here), which is the slow part to converge, but it's (almost) the same for every action and cancels in the argmax. the parts that differ between actions (the next few rewards) converge in a few backups. so the policy is right long before the values are. this is the core idea behind relative value iteration and the average-reward formulation, and it's also why approximate methods (topic 06, ch 24) can find good policies with poor value estimates. the catch: you can't *see* that the policy is done; the stopping bound $2\gamma\epsilon/(1 - \gamma)$ is still huge after 3 backups. if you can afford an evaluation, policy iteration's test (one greedy step changes nothing) is the only exact certificate.
+
+## experiment 3: near and small, or far and big?
+
+**what people usually predict:** a single threshold $\gamma$ above which the agent goes for the $+10$, the same for every state; some expect the agent to always go right "because 10 > 1".
+
+**what happens:** the switching point depends on where you start: state 1 goes right from $\gamma \approx 0.750$, state 2 from **0.685** (theory $0.1^{1/6} = 0.681$; the scan's grid step is 0.005), state 3 from 0.565, state 4 from 0.320, and states 5 and beyond always go right. the right panel shows $V^*$ for the slider's $\gamma$: the values rise steeply towards the $+10$.
+
+**why:** from state $s$, the $+1$ arrives after $s$ steps (worth $\gamma^{s-1}$) and the $+10$ after $10 - s$ steps (worth $10\gamma^{9-s}$). left wins when $\gamma^{s-1} > 10\gamma^{9-s}$, i.e. $\gamma^{10-2s} < 0.1$, so $\gamma < 0.1^{1/(10-2s)}$: $0.750, 0.681, 0.562, 0.316$ for $s = 1, \dots, 4$, and never for $s \ge 5$ (the $+10$ is at least as close). there's no $\gamma$ for which every state goes left. a small $\gamma$ makes the agent short-sighted, and "short-sighted" is relative to how far away things are. $\gamma$ is part of the problem specification: choosing it changes what "optimal" means, not just how fast an algorithm converges. in practice it's often treated as a hyperparameter (e.g. 0.99 in DQN), which is a reminder that the optimal policy of the training objective isn't necessarily the behaviour you wanted.
