@@ -234,3 +234,38 @@ def test_toy_generators_shapes_and_determinism():
     Xs, t = d.make_swiss_roll(80, rng=3)
     assert Xs.shape == (80, 3) and t.shape == (80,)
     assert d.eight_gaussians(40, rng=4).shape == (40, 2)
+
+
+def test_load_topic_falls_back_only_for_unfinished_learner_code(scaffolded, monkeypatch):
+    import numpy as np
+
+    monkeypatch.setenv("MLFS_ROOT", str(scaffolded))
+    monkeypatch.delenv("MLFS_SOLUTIONS", raising=False)
+    monkeypatch.delenv("MLFS_REFERENCE", raising=False)
+    t3 = topic(scaffolded, "03")
+
+    def smoke(m):
+        m.variance(np.array([1.0, 2.0, 3.0, 6.0]))
+
+    learner = notebooks.load_topic(t3.name, key="demo3", smoke=smoke)  # the template's stubs are unfinished
+    assert learner.fallback and "stage" in learner.reason
+    assert learner.module.variance(np.array([1.0, 2.0, 3.0, 6.0])) == pytest.approx(3.5)
+    assert learner.callout() is not None
+
+    no_smoke = notebooks.load_topic(t3, key="demo3")  # no smoke test: the learner's code, as is
+    assert not no_smoke.fallback and no_smoke.callout() is None
+    with pytest.raises(NotImplementedError):
+        no_smoke.module.variance(np.array([1.0, 2.0]))
+
+    monkeypatch.setenv("MLFS_REFERENCE", "demo3")
+    ref = notebooks.load_topic(t3.name, key="demo3", smoke=smoke)
+    assert not ref.fallback and ref.module.variance(np.array([1.0, 2.0, 3.0, 6.0])) == pytest.approx(3.5)
+
+    def broken(m):
+        raise ValueError("wrong answer")
+
+    monkeypatch.delenv("MLFS_REFERENCE")
+    with pytest.raises(ValueError):
+        notebooks.load_topic(t3.name, key="demo3", smoke=broken)
+    with pytest.raises(FileNotFoundError):
+        notebooks.load_topic("99-no-such-topic", key="x")
