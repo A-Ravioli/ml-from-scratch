@@ -881,7 +881,7 @@ initialisers, norms, dropout/augmentation/early stopping, LR schedulers + finder
 | **class** `Dropout` | | inverted dropout in train mode, identity in eval |
 | `Dropout.__init__` | `(self, p=0.5, *, rng=None)` |  |
 | `Dropout.forward` | `(self, x)` |  |
-| **class** `EarlyStopping` | | framework-agnostic; step(value) -> True when patience is exhausted; attrs best, best_step, should_stop; mode in {'min','max'} |
+| **class** `EarlyStopping` | | framework-agnostic; step(value) -> True when patience is exhausted; attrs best, best_step, should_stop; mode in {'min','max'}; patience >= 1 (ValueError otherwise) |
 | `EarlyStopping.__init__` | `(self, patience=5, *, min_delta=0.0, mode='min')` |  |
 | `EarlyStopping.step` | `(self, value)` |  |
 | **class** `LRScheduler` | | framework-agnostic (uses set_lr); records base_lr = get_lr(optimizer) and sets lr_at(0) at construction; step() increments the step counter and sets lr_at(counter); call once per optimizer step |
@@ -918,7 +918,7 @@ PyTorch bridge: mlfs.nn -> torch conversion, MLP/RMSNorm modules, loaders, fit/e
 | **class** `MLP` | | Linear -> [norm] -> activation -> [dropout] per hidden layer, plain Linear output; activation in {'relu','gelu','tanh','silu'}; norm in {None,'layer','batch'} |
 | `MLP.__init__` | `(self, in_features, hidden_sizes, out_features, *, activation='relu', dropout=0.0, norm=None)` |  |
 | `MLP.forward` | `(self, x)` |  |
-| **class** `RMSNorm` | | torch module, normalises the last dim; weight init ones; computed in float32 then cast back |
+| **class** `RMSNorm` | | torch module, normalises the last dim; weight init ones; float16/bfloat16 inputs normalised in float32 and cast back; float32/float64 inputs computed in their own dtype |
 | `RMSNorm.__init__` | `(self, dim, eps=1e-06)` |  |
 | `RMSNorm.forward` | `(self, x)` |  |
 

@@ -1165,7 +1165,7 @@ CONTRACTS = {
             "LayerNorm": "normalises the last dim; weight, bias Parameters",
             "RMSNorm": "x / sqrt(mean(x^2, -1) + eps) * weight; no bias",
             "Dropout": "inverted dropout in train mode, identity in eval",
-            "EarlyStopping": "framework-agnostic; step(value) -> True when patience is exhausted; attrs best, best_step, should_stop; mode in {'min','max'}",
+            "EarlyStopping": "framework-agnostic; step(value) -> True when patience is exhausted; attrs best, best_step, should_stop; mode in {'min','max'}; patience >= 1 (ValueError otherwise)",
             "label_smoothing_cross_entropy": "mlfs.tensor version: logits Tensor (n,k), targets int (n,); target dist (1-s) one-hot + s/k",
             "random_crop": "images ndarray NCHW; zero-pad by padding then crop size x size per image",
             "random_horizontal_flip": "images ndarray NCHW; flips each image with prob p",
@@ -1205,7 +1205,7 @@ CONTRACTS = {
         "notes": {
             "to_torch": "mlfs.nn module tree (Sequential/Linear/ReLU/Tanh/Sigmoid + train.Dropout/LayerNorm/BatchNorm1d) -> equivalent torch.nn module with copied weights in float64 (call .float() yourself); used for the gradient-parity test",
             "MLP": "Linear -> [norm] -> activation -> [dropout] per hidden layer, plain Linear output; activation in {'relu','gelu','tanh','silu'}; norm in {None,'layer','batch'}",
-            "RMSNorm": "torch module, normalises the last dim; weight init ones; computed in float32 then cast back",
+            "RMSNorm": "torch module, normalises the last dim; weight init ones; float16/bfloat16 inputs normalised in float32 and cast back; float32/float64 inputs computed in their own dtype",
             "get_device": "prefer None -> 'cuda' if available else 'mps' if available else 'cpu'; returns torch.device",
             "count_parameters": "sum of numel",
             "make_loader": "ndarrays -> DataLoader of (x, y) (or (x,) if y None); X -> float32, integer y -> int64 else float32; seed fixes shuffling",
