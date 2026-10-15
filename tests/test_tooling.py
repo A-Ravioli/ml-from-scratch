@@ -221,3 +221,16 @@ def test_audit_allows_abstract_not_implemented_but_flags_stage_stubs():
     assert not PLACEHOLDERS.search('        raise NotImplementedError("subclasses implement fit")')
     assert PLACEHOLDERS.search('    raise NotImplementedError("stage2: implement fit")')
     assert PLACEHOLDERS.search("    # TODO finish")
+
+
+def test_toy_generators_shapes_and_determinism():
+    from mlfs import datasets as d
+
+    X, y = d.make_blobs(100, 4, rng=0)
+    assert X.shape == (100, 2) and set(y) == {0, 1, 2, 3}
+    assert np.array_equal(d.make_moons(50, rng=1)[0], d.make_moons(50, rng=1)[0])
+    Xc, yc = d.make_circles(60, rng=2)
+    assert Xc.shape == (60, 2) and yc.sum() == 30
+    Xs, t = d.make_swiss_roll(80, rng=3)
+    assert Xs.shape == (80, 3) and t.shape == (80,)
+    assert d.eight_gaussians(40, rng=4).shape == (40, 2)
