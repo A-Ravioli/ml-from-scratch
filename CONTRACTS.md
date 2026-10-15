@@ -500,7 +500,7 @@ kNN + KD-tree, KDE, kernel functions, SVM (SMO), kernel ridge, random features, 
 | `SVC.fit` | `(self, X, y)` |  |
 | `SVC.predict` | `(self, X)` |  |
 | `SVC.decision_function` | `(self, X)` |  |
-| **class** `KernelRidge` | | Regressor; dual_coef_ = (K + alpha I)^-1 y, no intercept |
+| **class** `KernelRidge` | | Regressor; dual_coef_ = (K + alpha I)^-1 y, no intercept; fitted attributes X_fit_, dual_coef_, kernel_; kernel may be a name or a callable (via get_kernel); alpha=0 falls back to least squares |
 | `KernelRidge.__init__` | `(self, alpha=1.0, *, kernel='rbf', gamma=1.0, degree=3, coef0=1.0)` |  |
 | `KernelRidge.fit` | `(self, X, y)` |  |
 | `KernelRidge.predict` | `(self, X)` |  |
@@ -512,7 +512,7 @@ kNN + KD-tree, KDE, kernel functions, SVM (SMO), kernel ridge, random features, 
 | `Nystroem.__init__` | `(self, n_components=100, *, kernel='rbf', gamma=1.0, degree=3, coef0=1.0, rng=None)` |  |
 | `Nystroem.fit` | `(self, X, y=None)` |  |
 | `Nystroem.transform` | `(self, X)` |  |
-| **class** `GaussianProcessRegressor` | | Regressor; kernel in {'rbf','matern32','matern52'} with lengthscale & variance, Gaussian noise variance `noise`; zero mean on y centred by its training mean; optimize=True maximises log marginal likelihood over theta = log([lengthscale, variance, noise]) with mlfs.optim.lbfgs (analytic gradients); predict returns mean, or (mean, std) / (mean, cov); unfitted sample_y draws from the prior; sample_y -> (n_samples, m) |
+| **class** `GaussianProcessRegressor` | | Regressor; kernel in {'rbf','matern32','matern52'} with lengthscale & variance, Gaussian noise variance `noise`; zero mean on y centred by its training mean; optimize=True maximises log marginal likelihood over theta = log([lengthscale, variance, noise]) with mlfs.optim.lbfgs (analytic gradients); predict returns mean, or (mean, std) / (mean, cov); unfitted sample_y draws from the prior; sample_y -> (n_samples, m); predict's std/cov are for the latent f (observation noise excluded; add noise_ yourself for predictive intervals on y); a 1e-8 jitter is added to the noise; fitted attributes X_train_, y_mean_, y_train_, theta_, lengthscale_, variance_, noise_, L_, alpha_; the kernel is chosen by name (no callable kernels) |
 | `GaussianProcessRegressor.__init__` | `(self, *, kernel='rbf', lengthscale=1.0, variance=1.0, noise=0.01, optimize=True, n_restarts=0, rng=None)` |  |
 | `GaussianProcessRegressor.fit` | `(self, X, y)` |  |
 | `GaussianProcessRegressor.predict` | `(self, X, *, return_std=False, return_cov=False)` |  |
