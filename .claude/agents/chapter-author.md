@@ -68,6 +68,15 @@ The audit must show every one of your topics as done: no templates, 0 errors, 0 
 - **Seed-sweep every randomized or learning check.** Before reporting, run your topic tests against the reference under 100+ seed offsets (a temporary conftest in a copy that shifts every `np.random.default_rng`/`PCG64`/`torch.manual_seed` seed) and fix anything that fails more than very rarely. A check that only passes at the shipped seed also fails correct learner code that draws random numbers in a different order. Prefer exact hand-computed updates (tiny MDPs, α=1, fixed draws), and aggregate stochastic learning checks over ≥5 seeds (median or any-of).
 - **No absolute timing thresholds.** To check that code is vectorized (or uses less memory), compare against a baseline measured in the same test on the same input (e.g. `t_learner <= 20 * t_numpy + 5 ms`, best of 3), measure peak memory with `tracemalloc`, and/or inspect the source with `inspect.getsource` + `ast`. A fixed limit like `< 0.25 s` passes loops on fast machines and flakes on slow ones.
 - **Be honest about mutation testing.** Before claiming your tests catch plausible bugs, actually run the mutants (loops instead of vectorized code, broadcast blow-ups, transposes, off-by-ones, dropped edge cases). Reviewers will run their own.
+- **Write one mutant per spec clause.** Reviewers consistently find surviving bugs where a docstring promises something no test observes. Common examples:
+  - config options that are silently ignored (a `mode=`/`alpha=`/`double=` argument, label smoothing, warmup);
+  - off-by-one in sampling (reservoir `integers(0, n)` vs `n+1`);
+  - state leaking across calls (a cached optimizer, a stale cache);
+  - `train()`/`eval()` never called;
+  - set-valued inputs only tested with singletons;
+  - signs never exercised (an update that is only ever positive in the tests).
+
+  Go through every sentence of every spec and ask: "which test fails if this is violated?" Statistical properties need tests with enough power to see a few-percent bias (χ² over many seeds, small capacities). Never let a lesson claim that "the checks catch X" unless you ran the X mutant.
 - **Look at your labs' output.** Render every figure to a PNG and look at it. Check that every printed headline number matches what `lesson.md` and `lab_notes.md` claim, and that figures show what the explain prompts say (e.g. equal aspect when the point is that contours are round).
 - Reference implementations from earlier chapters are written for clarity, not speed (e.g. `mlfs.linalg.svd` is a pure-Python Jacobi method). Where speed matters in labs and capstones, use the NumPy/SciPy/PyTorch equivalent of anything the learner has already built (AUTHORING §9). Keep sizes small where you deliberately reuse the learner's `mlfs` code.
 - Extra public helpers beyond your contract are fine, but later chapters must not depend on them. Report any that deserve to be in the contract.
