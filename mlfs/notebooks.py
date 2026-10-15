@@ -95,3 +95,60 @@ def load_sibling(name: str, *, solution: bool | None = None) -> ModuleType:
     if here is None:
         raise RuntimeError("load_sibling() must be called from inside a marimo notebook")
     return load(resolve(here, name, solution=solution))
+
+
+class TopicLoad:
+    """Result of `load_topic`: the module, and whether the reference replaced the learner's code."""
+
+    def __init__(self, module: ModuleType, fallback: bool, reason: str | None, topic: str):
+        self.module, self.fallback, self.reason, self.topic = module, fallback, reason, topic
+
+    def callout(self):
+        """A marimo callout explaining the fallback, or None if the learner's code is in use."""
+        if not self.fallback:
+            return None
+        import marimo as mo
+
+        return mo.callout(
+            mo.md(f"your `{self.topic}` notebook isn't finished ({self.reason}), so this notebook is using "
+                  f"the **reference** version. finish `{self.topic}` to run on your own code."),
+            kind="warn",
+        )
+
+
+def find_topic(topic: str | Path) -> Path:
+    """A topic directory: an existing path, or a unique `<chapter>/<topic>` name under the repo root."""
+    p = Path(topic)
+    if p.is_dir():
+        return p.resolve()
+    hits = [d for d in repo_root().glob(f"*/{p.name}") if d.is_dir()]
+    if len(hits) != 1:
+        raise FileNotFoundError(f"expected exactly one topic directory named {p.name!r}, found {len(hits)}")
+    return hits[0]
+
+
+def load_topic(topic: str | Path, name: str = "exercise", *, key: str, smoke=None) -> TopicLoad:
+    """Load an earlier topic's notebook that this one builds on (for blocks outside the mlfs registry).
+
+    - `registry.wants_reference(key)` (pytest, verify, MLFS_SOLUTIONS=1, or MLFS_REFERENCE naming `key`):
+      the reference solution.
+    - otherwise the learner's notebook; if `smoke(module)` raises NotImplementedError (an unfinished
+      stage), fall back to the reference and record why. Other exceptions propagate: a *wrong*
+      implementation should be visible, not silently replaced.
+
+    `topic` is a directory path or a unique topic directory name like "30-qubits-and-circuits".
+    Show `result.callout()` in the notebook so the learner knows when the reference is in use.
+    """
+    from . import registry
+
+    directory = find_topic(topic)
+    label = directory.name
+    if registry.wants_reference(key):
+        return TopicLoad(load(resolve(directory, name, solution=True)), False, None, label)
+    module = load(resolve(directory, name, solution=False))
+    if smoke is not None:
+        try:
+            smoke(module)
+        except NotImplementedError as e:
+            return TopicLoad(load(resolve(directory, name, solution=True)), True, str(e) or "not started", label)
+    return TopicLoad(module, False, None, label)
