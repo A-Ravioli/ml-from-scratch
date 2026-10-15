@@ -124,7 +124,7 @@ numerical Jacobians/Hessians and forward-mode autodiff with dual numbers
 | `value_and_grad` | `(f, x)` | returns (f(x) float, grad (n,)) |
 | `jacobian` | `(f, x)` | f: (n,) -> (m,); returns (m,n) |
 | `jvp` | `(f, x, v)` | returns (f(x), J(x) @ v) in one forward pass |
-| **class** `Dual` | | attrs .real, .dual; supports + - * / ** (scalar or Dual exponent), unary -, abs, comparisons by .real; mixes with floats; the method names make np.exp/np.log/np.log1p/np.expm1/np.sin/np.cos/np.tanh/np.sqrt work on object arrays of Duals; binary operators return NotImplemented for ndarray operands (so NumPy broadcasts elementwise); bool() follows .real. NOT supported: np.logaddexp, np.tan, np.linalg.*, math.*, float(). nested Duals give higher derivatives only when built explicitly (no tagging: never close over an outer Dual inside an inner derivative) |
+| **class** `Dual` | | attrs .real, .dual; supports + - * / ** (scalar or Dual exponent), unary -, abs, comparisons by .real; mixes with floats; the method names make np.exp/np.log/np.log1p/np.expm1/np.sin/np.cos/np.tanh/np.sqrt work on object arrays of Duals; binary operators return NotImplemented for ndarray operands (so NumPy broadcasts elementwise); bool() follows .real. NOT supported: np.logaddexp, np.tan, np.linalg.*, math.*, float(). nested Duals give higher derivatives only when built explicitly (no tagging: never close over an outer Dual inside an inner derivative); .dual may also be an ndarray of tangents (one per input direction), so one forward pass with a vector tangent gives a whole gradient; every operation must work elementwise on such a .dual (chapter 12's PPL relies on this) |
 | `Dual.__init__` | `(self, real, dual=0.0)` |  |
 | `Dual.exp` | `(self)` |  |
 | `Dual.log` | `(self)` |  |
