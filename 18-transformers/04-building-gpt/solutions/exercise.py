@@ -110,7 +110,10 @@ class GPT(nn.Module):
         if offset + T > self.block_size:
             raise ValueError(f"sequence of {offset + T} tokens is longer than block_size={self.block_size}")
         pos = torch.arange(offset, offset + T, device=idx.device)
-        x = self.tok_emb(idx) + (self.pos_emb(pos) if self.pos_emb is not None else self.pe[pos])
+        if self.pos_emb is not None:
+            x = self.tok_emb(idx) + self.pos_emb(pos)
+        else:  # Vaswani et al.: scale the 0.02-std embeddings by sqrt(d) so unit-size sinusoids don't drown them
+            x = self.tok_emb(idx) * math.sqrt(self.tok_emb.embedding_dim) + self.pe[pos]
         x = self.drop(x)
         for i, block in enumerate(self.blocks):
             x = block(x, is_causal=True, cache=None if cache is None else cache[i])

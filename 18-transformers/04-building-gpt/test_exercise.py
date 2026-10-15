@@ -416,3 +416,22 @@ def test_stage5_schedule_optimizer_and_seed(nb):
     short = nb.train_lm(nb.GPT(6, block_size=8, n_layers=1, n_heads=2, d_model=16), data, 8, batch_size=4,
                         max_steps=10, warmup_steps=100, eval_interval=5, eval_batches=1)
     assert len(short["step"]) == 2, "warmup_steps longer than max_steps must still run (clamp the warmup)"
+
+
+def test_stage2_sinusoidal_input_scales_the_embeddings(nb):
+    torch.manual_seed(5)
+    m = _gpt(nb, pos_encoding="sinusoidal").eval()
+    idx = torch.randint(0, 11, (2, 7))
+    seen = []
+    h = m.blocks[0].register_forward_pre_hook(lambda mod, args, kwargs: seen.append(args[0].detach()), with_kwargs=True)
+    try:
+        m(idx)
+    finally:
+        h.remove()
+    d = m.tok_emb.embedding_dim
+    from mlfs.transformer import sinusoidal_positions
+    want = m.tok_emb(idx).detach() * math.sqrt(d) + sinusoidal_positions(7, d)
+    assert seen and _close(seen[0], want, atol=1e-5), (
+        "with pos_encoding='sinusoidal' the first block's input must be sqrt(d_model) * tok_emb(idx) + PE(t) "
+        "(Vaswani et al.). GPT-2's init makes embeddings ~0.02 in size; adding unit-size sinusoids unscaled drowns the "
+        "token identity and the model can't learn even a previous-token task")
