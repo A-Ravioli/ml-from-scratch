@@ -1,0 +1,27 @@
+# sequences, limits & convergence · lab notes
+
+## experiment 1: a race between three root finders
+
+**what people usually predict:** Newton wins by a mile; bisection takes around 40 steps; the secant method is "somewhere between", often guessed as linear (it has no derivative) or as quadratic (it's "basically Newton").
+
+**what happens:** to reach an error below $10^{-12}$, Newton needs **5** iterations, the secant method **7**, and bisection **37**. Newton's order estimates settle at 1.99–2.00; the secant method's settle at **1.61–1.62**, the golden ratio $\varphi = (1 + \sqrt5)/2$. bisection's order estimates are garbage (values like $-26$, $-0.7$, $1.25$), even though its average error ratio over the run is $0.496$, almost exactly $\tfrac12$.
+
+**why:** bisection halves the *bracket* exactly every step, and the bracket width is an upper bound on the error. the actual error depends on where the root sits inside the bracket, so it can drop sharply on one step and grow on the next (a midpoint that lands very close to the root is followed by one that doesn't). on average it's linear with rate $\tfrac12$, but step-by-step ratios are noise, and ratios of logs of noise are worse. this is a general lesson: the order estimator assumes a regular asymptotic regime, and methods without one need a different summary (here, the geometric-mean ratio, or the bracket width).
+
+the secant method's error obeys $e_{k+1} \approx Ce_ke_{k-1}$, and the only power law consistent with that recursion has $q^2 = q + 1$ (on paper 3). counting work rather than iterations reverses the ranking with Newton: Newton needs $f$ and $f'$ per step (two evaluations, $2^{1/2} \approx 1.41$ times more digits per evaluation), the secant method one ($1.618$). that's why derivative-free superlinear methods (secant, Brent, and later quasi-Newton methods like BFGS in chapter 06) are so widely used.
+
+## experiment 2: Newton at a repeated root
+
+**what people usually predict:** Newton is quadratic, so it stays quadratic, maybe a little slower. very few people predict a precise linear rate, and almost nobody predicts the accuracy floor.
+
+**what happens:** for $m = 1$ it converges in 6 steps (quadratic). for $m = 2$ the order estimates sit at **1.000** and the rate at **0.500**; for $m = 3, 4, 5$ the rates are **0.667, 0.750, 0.800**, exactly $(m - 1)/m$. in factored form it still reaches errors around $10^{-15}$, just slowly (55 steps for $m = 2$; all 200 steps for $m \ge 3$). in **expanded** form, the best error stalls at about **$5 \times 10^{-9}$ for $m = 2$** and **$5 \times 10^{-6}$ for $m = 3$**, roughly $\varepsilon^{1/m}$, and the iteration wanders or stops there.
+
+**why:** near a root of multiplicity $m$, $f/f' \approx (x - r)/m$, so each step removes only a fraction $1/m$ of the error (on paper 2). quadratic convergence needed $f'(x^*) \ne 0$, and here $f'(x^*) = 0$. the accuracy floor is about conditioning, not the iteration: in expanded form $f$ is a sum of terms of size about 1 that cancel, so it's computed with an absolute error of about $\varepsilon \approx 10^{-16}$. but $|f(x)| \approx 3|x - 1|^m$ near the root, so once $3|x - 1|^m$ drops below $10^{-16}$, the computed $f$ is pure rounding noise and carries no information about where the root is: $|x - 1| \approx \varepsilon^{1/m}$. in factored form, $x - 1$ is computed exactly, so there's no cancellation and no floor. a multiple root is an ill-conditioned problem: a perturbation of size $\delta$ in $f$ moves the root by about $\delta^{1/m}$. you'll see the same effect with eigenvalues of non-normal matrices and with flat minima in optimization.
+
+## experiment 3: can a computer tell that a sequence converges?
+
+**what people usually predict:** with a million terms you can surely tell; or, conversely, that it's hopeless because the gaps all look alike.
+
+**what happens:** the last consecutive gap is about $1/K$ for both the harmonic and the alternating series, and tiny for $\sum 1/n^2$. so gaps can't separate the divergent harmonic series from the convergent alternating one. the tail diameter from $N = 100$ can: for $\sum 1/n^2$ it's **0.0090, 0.0099, 0.0099, 0.0099** as $K$ grows from $10^3$ to $10^6$, for the alternating series **0.0099** throughout, but for the harmonic series it's **2.30, 4.60, 6.90, 9.21**: it grows by $\log 10 \approx 2.30$ every time $K$ is multiplied by 10.
+
+**why:** the harmonic tail diameter within the window is $H_K - H_{100} \approx \log(K/100)$, which grows without bound in $K$. the convergent series have tail diameters bounded by about $1/N$ no matter how large $K$ is (for $\sum 1/n^2$ the tail sum is $\sum_{n > N}1/n^2 \approx 1/N$; for the alternating series, the partial sums bracket the limit and the diameter is the first omitted term). at any fixed window, the harmonic diameters *do* shrink to zero as $N \to K$, which is why a finite computation can never prove convergence. what you can do is watch how the diameters behave as the window grows: the Cauchy condition is about all $m, n$, and the honest numerical proxy is "the tail spread doesn't grow when I compute more terms". the practical moral for stopping rules: "the last step was small" is only meaningful together with a rate. for a method with linear rate $C$, a step of size $s$ means the remaining error is at most about $sC/(1 - C)$. for sublinear methods there's no such bound, and small steps prove nothing.
