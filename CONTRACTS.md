@@ -607,7 +607,7 @@ k-means, GMM/EM, PCA family, MDS/Isomap/t-SNE, spectral/DBSCAN/agglomerative clu
 | `KMeans.fit_predict` | `(self, X, y=None)` |  |
 | `KMeans.transform` | `(self, X)` |  |
 | `KMeans.score` | `(self, X, y=None)` |  |
-| **class** `GaussianMixture` | | Estimator; covariance_type in {'full','diag','spherical'}; weights_ (k,), means_ (k,d), covariances_ ((k,d,d) full, (k,d) diag, (k,) spherical); lower_bound_history_ list (mean log-lik per iter, non-decreasing); score_samples -> log p(x) (n,); score = mean log-lik; sample -> (X (n,d), labels (n,)) |
+| **class** `GaussianMixture` | | Estimator; covariance_type in {'full','diag','spherical'}; weights_ (k,), means_ (k,d), covariances_ ((k,d,d) full, (k,d) diag, (k,) spherical); lower_bound_history_ list (mean log-lik per iter, non-decreasing when reg_covar=0 (with reg_covar > 0 the M-step is regularized and tiny decreases are possible)); score_samples -> log p(x) (n,); score = mean log-lik; sample -> (X (n,d), labels (n,)) |
 | `GaussianMixture.__init__` | `(self, n_components=1, *, covariance_type='full', max_iters=100, tol=1e-06, reg_covar=1e-06, init='kmeans', rng=None)` |  |
 | `GaussianMixture.fit` | `(self, X, y=None)` |  |
 | `GaussianMixture.predict` | `(self, X)` |  |
