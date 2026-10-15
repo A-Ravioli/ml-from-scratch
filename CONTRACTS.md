@@ -500,7 +500,7 @@ kNN + KD-tree, KDE, kernel functions, SVM (SMO), kernel ridge, random features, 
 | `SVC.fit` | `(self, X, y)` |  |
 | `SVC.predict` | `(self, X)` |  |
 | `SVC.decision_function` | `(self, X)` |  |
-| **class** `KernelRidge` | | Regressor; dual_coef_ = (K + alpha I)^-1 y, no intercept |
+| **class** `KernelRidge` | | Regressor; dual_coef_ = (K + alpha I)^-1 y, no intercept; fitted attributes X_fit_, dual_coef_, kernel_; kernel may be a name or a callable (via get_kernel); alpha=0 falls back to least squares |
 | `KernelRidge.__init__` | `(self, alpha=1.0, *, kernel='rbf', gamma=1.0, degree=3, coef0=1.0)` |  |
 | `KernelRidge.fit` | `(self, X, y)` |  |
 | `KernelRidge.predict` | `(self, X)` |  |
@@ -512,7 +512,7 @@ kNN + KD-tree, KDE, kernel functions, SVM (SMO), kernel ridge, random features, 
 | `Nystroem.__init__` | `(self, n_components=100, *, kernel='rbf', gamma=1.0, degree=3, coef0=1.0, rng=None)` |  |
 | `Nystroem.fit` | `(self, X, y=None)` |  |
 | `Nystroem.transform` | `(self, X)` |  |
-| **class** `GaussianProcessRegressor` | | Regressor; kernel in {'rbf','matern32','matern52'} with lengthscale & variance, Gaussian noise variance `noise`; zero mean on y centred by its training mean; optimize=True maximises log marginal likelihood over theta = log([lengthscale, variance, noise]) with mlfs.optim.lbfgs (analytic gradients); predict returns mean, or (mean, std) / (mean, cov); unfitted sample_y draws from the prior; sample_y -> (n_samples, m) |
+| **class** `GaussianProcessRegressor` | | Regressor; kernel in {'rbf','matern32','matern52'} with lengthscale & variance, Gaussian noise variance `noise`; zero mean on y centred by its training mean; optimize=True maximises log marginal likelihood over theta = log([lengthscale, variance, noise]) with mlfs.optim.lbfgs (analytic gradients); predict returns mean, or (mean, std) / (mean, cov); unfitted sample_y draws from the prior; sample_y -> (n_samples, m); predict's std/cov are for the latent f (observation noise excluded; add noise_ yourself for predictive intervals on y); a 1e-8 jitter is added to the noise; fitted attributes X_train_, y_mean_, y_train_, theta_, lengthscale_, variance_, noise_, L_, alpha_; the kernel is chosen by name (no callable kernels) |
 | `GaussianProcessRegressor.__init__` | `(self, *, kernel='rbf', lengthscale=1.0, variance=1.0, noise=0.01, optimize=True, n_restarts=0, rng=None)` |  |
 | `GaussianProcessRegressor.fit` | `(self, X, y)` |  |
 | `GaussianProcessRegressor.predict` | `(self, X, *, return_std=False, return_cov=False)` |  |
@@ -607,7 +607,7 @@ k-means, GMM/EM, PCA family, MDS/Isomap/t-SNE, spectral/DBSCAN/agglomerative clu
 | `KMeans.fit_predict` | `(self, X, y=None)` |  |
 | `KMeans.transform` | `(self, X)` |  |
 | `KMeans.score` | `(self, X, y=None)` |  |
-| **class** `GaussianMixture` | | Estimator; covariance_type in {'full','diag','spherical'}; weights_ (k,), means_ (k,d), covariances_ ((k,d,d) full, (k,d) diag, (k,) spherical); lower_bound_history_ list (mean log-lik per iter, non-decreasing); score_samples -> log p(x) (n,); score = mean log-lik; sample -> (X (n,d), labels (n,)) |
+| **class** `GaussianMixture` | | Estimator; covariance_type in {'full','diag','spherical'}; weights_ (k,), means_ (k,d), covariances_ ((k,d,d) full, (k,d) diag, (k,) spherical); lower_bound_history_ list (mean log-lik per iter, non-decreasing when reg_covar=0 (with reg_covar > 0 the M-step is regularized and tiny decreases are possible)); score_samples -> log p(x) (n,); score = mean log-lik; sample -> (X (n,d), labels (n,)) |
 | `GaussianMixture.__init__` | `(self, n_components=1, *, covariance_type='full', max_iters=100, tol=1e-06, reg_covar=1e-06, init='kmeans', rng=None)` |  |
 | `GaussianMixture.fit` | `(self, X, y=None)` |  |
 | `GaussianMixture.predict` | `(self, X)` |  |
