@@ -196,6 +196,12 @@ def _(p1):
 - at least one result should surprise most learners.
 - headless (`python lab.py`, which `verify.py` runs against the reference solution) it must finish without errors in a few minutes.
 - `solutions/lab_notes.md` gives, for each experiment, what people usually predict, what actually happens, and why.
+- **building on an earlier topic that isn't an `mlfs` module** (elective blocks): load it with
+  `prev = notebooks.load_topic("30-qubits-and-circuits", key="qsim", smoke=lambda m: m.run_circuit(...))`.
+  It gives the reference under pytest/verify (or `MLFS_REFERENCE=qsim`), and the learner's notebook otherwise. If the
+  smoke test hits an unfinished stage, it falls back to the reference. Show `prev.callout()` so the learner sees when
+  that happened, and use `prev.module`. Exercises whose own checks depend on the earlier topic use the same call in
+  their setup cell, so an unfinished earlier topic never shows up as "not started" in this topic's checks.
 
 ### 5.7 `checks` in practice
 
