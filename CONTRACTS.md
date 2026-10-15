@@ -1392,7 +1392,7 @@ replay/DQN, REINFORCE, actor-critic + GAE, PPO loss, SAC networks, MCTS + Connec
 | `dqn_loss` | `(q_net, target_net, batch, *, gamma=0.99, double=False, huber=True)` | batch from ReplayBuffer.sample; target r + gamma (1 - terminated) max_a' Q_target(s', a') (double: argmax from q_net); Huber (smooth L1) or MSE; target updates use torchnn.ema_update or load_state_dict |
 | `discounted_returns` | `(rewards, gamma)` | rewards 1-D (one episode, ndarray or tensor) -> G_t same type/shape |
 | `reinforce_loss` | `(log_probs, returns, *, baseline=None)` | -(mean((returns - baseline) * log_probs)); baseline tensor/float or None |
-| `compute_gae` | `(rewards, values, terminated, last_value, *, gamma=0.99, lam=0.95)` | torch tensors (T,) or (T, N); terminated same shape (1 = episode ended after step t, cuts bootstrapping); last_value () or (N,) bootstraps the final step; returns (advantages, returns = advantages + values) |
+| `compute_gae` | `(rewards, values, terminated, last_value, *, gamma=0.99, lam=0.95)` | torch tensors (T,) or (T, N); terminated same shape (1 = cut bootstrapping after step t: a true terminal, or a time-limit truncation whose gamma*V(s_cut) the caller has already folded into rewards[t]); last_value () or (N,) bootstraps the final step; returns (advantages, returns = advantages + values) |
 | `ppo_clip_loss` | `(log_probs, old_log_probs, advantages, *, clip_eps=0.2)` | -mean(min(r A, clip(r, 1-eps, 1+eps) A)), r = exp(log_probs - old_log_probs); returns (loss, info dict with float 'clip_frac', 'approx_kl'); used by RLHF in ch27 |
 | `explained_variance` | `(values, returns)` | 1 - Var(returns - values) / Var(returns) |
 | `dyna_q` | `(env, n_episodes, *, n_planning=10, alpha=0.1, gamma=0.95, epsilon=0.1, rng=None)` | tabular Dyna-Q on a Discrete env (mlfs.rl conventions); returns (Q (S,A), episode_returns) |
@@ -1409,11 +1409,11 @@ replay/DQN, REINFORCE, actor-critic + GAE, PPO loss, SAC networks, MCTS + Connec
 | `CategoricalPolicy.__init__` | `(self, obs_dim, n_actions, *, hidden_sizes=(64, 64))` |  |
 | `CategoricalPolicy.forward` | `(self, obs)` |  |
 | `CategoricalPolicy.act` | `(self, obs)` |  |
-| **class** `ActorCritic` | | act_dim = n_actions when discrete; forward -> (distribution (Categorical, or Normal over act_dim if continuous), value (B,)); act(obs ndarray) -> (action, log_prob float, value float) |
+| **class** `ActorCritic` | | act_dim = n_actions when discrete; forward -> (distribution (Categorical, or Independent(Normal(mean, std), 1) if continuous so log_prob is (B,)), value (B,)); act(obs ndarray) -> (action, log_prob float, value float) |
 | `ActorCritic.__init__` | `(self, obs_dim, act_dim, *, hidden_sizes=(64, 64), continuous=False)` |  |
 | `ActorCritic.forward` | `(self, obs)` |  |
 | `ActorCritic.act` | `(self, obs)` |  |
-| **class** `SquashedGaussianActor` | | tanh-squashed Gaussian; returns (action (B, act_dim) scaled by act_limit, log_prob (B,) with the tanh correction) |
+| **class** `SquashedGaussianActor` | | tanh-squashed Gaussian; returns (action (B, act_dim) scaled by act_limit, log_prob (B,) with the tanh correction; like Spinning Up it omits the constant -act_dim*log(act_limit)) |
 | `SquashedGaussianActor.__init__` | `(self, obs_dim, act_dim, *, hidden_sizes=(256, 256), act_limit=1.0)` |  |
 | `SquashedGaussianActor.forward` | `(self, obs, deterministic=False)` |  |
 | **class** `TwinQ` | | returns (q1 (B,), q2 (B,)) |
