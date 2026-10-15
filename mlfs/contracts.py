@@ -998,7 +998,7 @@ CONTRACTS = {
             "finite_class_sample_complexity": "smallest int m: realizable ln(|H|/delta)/eps, agnostic ln(2|H|/delta)/(2 eps^2)",
             "empirical_rademacher": "predictions (n_hypotheses, n) outputs of a finite class on the sample; Monte Carlo E_sigma max_h (1/n) sum sigma_i h(x_i)",
             "finite_class_bound": "emp_risk + sqrt((ln|H| + ln(1/delta)) / (2n)) (Hoeffding + union bound)",
-            "vc_bound": "emp_risk + sqrt((8/n)(d ln(2en/d) + ln(4/delta))) (state the constant used in the docstring)",
+            "vc_bound": "emp_risk + sqrt((8/n)(G + ln(4/delta))) with G = min(d ln(2en/d), 2n ln 2) (the growth-function log bound; using the min keeps the bound valid for 2n < d and monotone in n); state the constant used in the docstring",
             "Hedge": "multiplicative weights; predict -> distribution (n_experts,); update(losses (n_experts,) in [0,1])",
             "OnlineGradientDescent": "predict -> current x (dim,); update(grad) steps with lr/sqrt(t) (decay='sqrt') or lr (decay=None), then project(x) if given",
             "kl_bernoulli": "kl(q || p) for Bernoulli parameters, nats",
