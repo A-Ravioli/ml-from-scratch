@@ -979,7 +979,7 @@ n-gram language models and tokenizers (character, byte-level BPE): pure Python/N
 
 | name | signature | notes |
 |---|---|---|
-| **class** `NGramLM` | | sequences: list of token lists (any hashable tokens); pads with '<s>'/'</s>'; smoothing in {'add_k','interpolated'} (lambdas default uniform / tuned on held-out); logprob natural log of P(token \| last n-1 of context); perplexity over all tokens incl. '</s>'; sample returns a list of tokens |
+| **class** `NGramLM` | | sequences: list of token lists (any hashable tokens); pads with '<s>'/'</s>'; smoothing in {'add_k','interpolated'} (lambdas default uniform / tuned on held-out); logprob natural log of P(token \| last n-1 of context); perplexity over all tokens incl. '</s>'; sample returns a list of tokens; vocab includes '</s>' and '<unk>' (unseen tokens score as '<unk>'); lambdas[j] weighs the estimate with context length j (j = 0..n-1, non-negative, sum 1; interpolation backs off to order j-1 for an unseen context) |
 | `NGramLM.__init__` | `(self, n=3, *, smoothing='interpolated', add_k=1.0, lambdas=None)` |  |
 | `NGramLM.fit` | `(self, sequences)` |  |
 | `NGramLM.logprob` | `(self, context, token)` |  |
@@ -990,7 +990,7 @@ n-gram language models and tokenizers (character, byte-level BPE): pure Python/N
 | `CharTokenizer.train` | `(self, text)` |  |
 | `CharTokenizer.encode` | `(self, text)` |  |
 | `CharTokenizer.decode` | `(self, ids)` |  |
-| **class** `BPETokenizer` | | byte-level BPE (base vocab = 256 bytes, so any text encodes); train(text) learns vocab_size - 256 - len(special_tokens) merges greedily by pair count (ties -> smallest (id1, id2)), returns self; special tokens get the last ids and are matched literally in encode; decode(encode(t)) == t; attrs merges (list of pairs, in order), vocab (id -> bytes), property vocab_size; save writes JSON; load is a classmethod -> BPETokenizer |
+| **class** `BPETokenizer` | | byte-level BPE (base vocab = 256 bytes, so any text encodes); train(text) learns vocab_size - 256 - len(special_tokens) merges greedily by pair count (ties -> smallest (id1, id2)), returns self; special tokens get the last ids and are matched literally in encode (never merged); train and encode first split text with a GPT-2-style regex pretokenizer, so merges never cross chunks; pair counts include overlaps and merge_pair scans left to right; encode repeatedly merges the lowest-rank pair; training stops early when no pair remains (vocab_size then reports the actual size; the request is kept as target_vocab_size); decode(encode(t)) == t for valid Unicode (decode replaces invalid bytes with U+FFFD); attrs merges (list of pairs, in order), vocab (id -> bytes), property vocab_size; save writes JSON; load is a classmethod -> BPETokenizer |
 | `BPETokenizer.__init__` | `(self, vocab_size=512, *, special_tokens=())` |  |
 | `BPETokenizer.train` | `(self, text)` |  |
 | `BPETokenizer.encode` | `(self, text)` |  |
@@ -1013,7 +1013,7 @@ word2vec, RNN/LSTM/GRU, Bahdanau attention seq2seq, generic beam search (torch)
 | `sample_negatives` | `(counts, n, *, power=0.75, generator=None)` | counts (V,) unigram counts; returns int64 tensor (n,) from counts**power (normalised) |
 | `most_similar` | `(embeddings, idx, k=10)` | embeddings (V,D) tensor or ndarray; cosine; returns (indices (k,), sims (k,)) excluding idx |
 | `analogy` | `(embeddings, a, b, c, k=1)` | nearest to b - a + c by cosine, excluding a, b, c; returns indices (k,) |
-| `beam_search` | `(step_fn, bos_id, eos_id, *, beam_size=5, max_len=50, length_penalty=1.0)` | step_fn(prefixes: list[list[int]]) -> log-probs (len(prefixes), V) (tensor or ndarray) for the next token; returns list of (tokens list incl. bos/eos, score) sorted best first; score = sum logp / len**length_penalty |
+| `beam_search` | `(step_fn, bos_id, eos_id, *, beam_size=5, max_len=50, length_penalty=1.0)` | step_fn(prefixes: list[list[int]]) -> log-probs (len(prefixes), V) (tensor or ndarray) for the next token; returns list of (tokens list incl. bos/eos, score) sorted best first; score = sum logp / len**length_penalty where len = tokens after bos; pruning uses the raw sum and normalisation applies only to the final ranking; finished hypotheses keep their slots (the beam shrinks); ties -> earlier beam, then smaller token id; hypotheses unfinished at max_len are included |
 | **class** `SkipGram` | | input embeddings `in_embed`, output `out_embed` (nn.Embedding); forward(center (B,), context (B,), negatives (B,K)) -> scalar negative-sampling loss; property `embeddings` -> in_embed.weight |
 | `SkipGram.__init__` | `(self, vocab_size, embed_dim)` |  |
 | `SkipGram.forward` | `(self, center, context, negatives)` |  |
@@ -1392,7 +1392,7 @@ replay/DQN, REINFORCE, actor-critic + GAE, PPO loss, SAC networks, MCTS + Connec
 | `dqn_loss` | `(q_net, target_net, batch, *, gamma=0.99, double=False, huber=True)` | batch from ReplayBuffer.sample; target r + gamma (1 - terminated) max_a' Q_target(s', a') (double: argmax from q_net); Huber (smooth L1) or MSE; target updates use torchnn.ema_update or load_state_dict |
 | `discounted_returns` | `(rewards, gamma)` | rewards 1-D (one episode, ndarray or tensor) -> G_t same type/shape |
 | `reinforce_loss` | `(log_probs, returns, *, baseline=None)` | -(mean((returns - baseline) * log_probs)); baseline tensor/float or None |
-| `compute_gae` | `(rewards, values, terminated, last_value, *, gamma=0.99, lam=0.95)` | torch tensors (T,) or (T, N); terminated same shape (1 = episode ended after step t, cuts bootstrapping); last_value () or (N,) bootstraps the final step; returns (advantages, returns = advantages + values) |
+| `compute_gae` | `(rewards, values, terminated, last_value, *, gamma=0.99, lam=0.95)` | torch tensors (T,) or (T, N); terminated same shape (1 = cut bootstrapping after step t: a true terminal, or a time-limit truncation whose gamma*V(s_cut) the caller has already folded into rewards[t]); last_value () or (N,) bootstraps the final step; returns (advantages, returns = advantages + values) |
 | `ppo_clip_loss` | `(log_probs, old_log_probs, advantages, *, clip_eps=0.2)` | -mean(min(r A, clip(r, 1-eps, 1+eps) A)), r = exp(log_probs - old_log_probs); returns (loss, info dict with float 'clip_frac', 'approx_kl'); used by RLHF in ch27 |
 | `explained_variance` | `(values, returns)` | 1 - Var(returns - values) / Var(returns) |
 | `dyna_q` | `(env, n_episodes, *, n_planning=10, alpha=0.1, gamma=0.95, epsilon=0.1, rng=None)` | tabular Dyna-Q on a Discrete env (mlfs.rl conventions); returns (Q (S,A), episode_returns) |
@@ -1409,11 +1409,11 @@ replay/DQN, REINFORCE, actor-critic + GAE, PPO loss, SAC networks, MCTS + Connec
 | `CategoricalPolicy.__init__` | `(self, obs_dim, n_actions, *, hidden_sizes=(64, 64))` |  |
 | `CategoricalPolicy.forward` | `(self, obs)` |  |
 | `CategoricalPolicy.act` | `(self, obs)` |  |
-| **class** `ActorCritic` | | act_dim = n_actions when discrete; forward -> (distribution (Categorical, or Normal over act_dim if continuous), value (B,)); act(obs ndarray) -> (action, log_prob float, value float) |
+| **class** `ActorCritic` | | act_dim = n_actions when discrete; forward -> (distribution (Categorical, or Independent(Normal(mean, std), 1) if continuous so log_prob is (B,)), value (B,)); act(obs ndarray) -> (action, log_prob float, value float) |
 | `ActorCritic.__init__` | `(self, obs_dim, act_dim, *, hidden_sizes=(64, 64), continuous=False)` |  |
 | `ActorCritic.forward` | `(self, obs)` |  |
 | `ActorCritic.act` | `(self, obs)` |  |
-| **class** `SquashedGaussianActor` | | tanh-squashed Gaussian; returns (action (B, act_dim) scaled by act_limit, log_prob (B,) with the tanh correction) |
+| **class** `SquashedGaussianActor` | | tanh-squashed Gaussian; returns (action (B, act_dim) scaled by act_limit, log_prob (B,) with the tanh correction; like Spinning Up it omits the constant -act_dim*log(act_limit)) |
 | `SquashedGaussianActor.__init__` | `(self, obs_dim, act_dim, *, hidden_sizes=(256, 256), act_limit=1.0)` |  |
 | `SquashedGaussianActor.forward` | `(self, obs, deterministic=False)` |  |
 | **class** `TwinQ` | | returns (q1 (B,), q2 (B,)) |
