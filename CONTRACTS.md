@@ -1125,9 +1125,9 @@ equivariance tester, DeepSets, scatter ops, GCN/SAGE/GAT/GIN layers, pooling, WL
 
 - `20-geometric-deep-learning/01-symmetry-and-equivariance`: `equivariance_error`
 - `20-geometric-deep-learning/02-sets`: `DeepSets`
-- `20-geometric-deep-learning/03-graph-neural-networks`: `scatter_sum`, `scatter_mean`, `scatter_max`, `add_self_loops`, `GCNConv`, `SAGEConv`, `GATConv`, `global_add_pool`, `global_mean_pool`
-- `20-geometric-deep-learning/04-gnn-expressivity`: `wl_test`, `GINConv`
-- `20-geometric-deep-learning/05-equivariant-networks`: `EGNNLayer`
+- `20-geometric-deep-learning/03-graph-neural-networks`: `scatter_sum`, `scatter_mean`, `scatter_max`, `add_self_loops`, `GCNConv`, `SAGEConv`, `GATConv`, `global_add_pool`, `global_mean_pool`, `batch_graphs`
+- `20-geometric-deep-learning/04-gnn-expressivity`: `wl_test`, `GINConv`, `GIN`
+- `20-geometric-deep-learning/05-equivariant-networks`: `radius_graph`, `EGNNLayer`, `EGNN`
 
 | name | signature | notes |
 |---|---|---|
@@ -1139,6 +1139,8 @@ equivariance tester, DeepSets, scatter ops, GCN/SAGE/GAT/GIN layers, pooling, WL
 | `global_add_pool` | `(x, batch, num_graphs=None)` | x (N,F), batch (N,) -> (num_graphs, F) |
 | `global_mean_pool` | `(x, batch, num_graphs=None)` |  |
 | `wl_test` | `(graph1, graph2, *, n_iters=3)` | graph = (edge_index, num_nodes) (int64 tensor or ndarray); 1-WL colour refinement; returns False if certainly non-isomorphic, True if indistinguishable |
+| `batch_graphs` | `(graphs)` | list of (x (N_g,F), edge_index (2,E_g)) -> (x (N,F), edge_index (2,E) with node ids offset per graph, batch (N,) int64) |
+| `radius_graph` | `(pos, cutoff, batch=None)` | every ordered pair (j, i), i != j, in the same graph (batch) with \|pos_i - pos_j\| < cutoff (strict); (2, E) int64 sorted by source then target |
 | **class** `DeepSets` | | x (B,N,F), mask (B,N) bool True = present; rho(agg(phi(x))) with aggregation in {'sum','mean','max'} -> (B,out_dim) |
 | `DeepSets.__init__` | `(self, in_dim, hidden_dim, out_dim, *, aggregation='sum')` |  |
 | `DeepSets.forward` | `(self, x, mask=None)` |  |
@@ -1148,7 +1150,7 @@ equivariance tester, DeepSets, scatter ops, GCN/SAGE/GAT/GIN layers, pooling, WL
 | **class** `SAGEConv` | | W1 x_i + W2 mean_{j->i} x_j |
 | `SAGEConv.__init__` | `(self, in_dim, out_dim)` |  |
 | `SAGEConv.forward` | `(self, x, edge_index)` |  |
-| **class** `GATConv` | | attention over incoming edges incl. self-loops; output (N, heads*out_dim) if concat else (N, out_dim) |
+| **class** `GATConv` | | attention over incoming edges incl. self-loops (LeakyReLU slope 0.2 on additive scores); attrs lin, att_src, att_dst, bias (as PyG); output (N, heads*out_dim) if concat else the mean over heads (N, out_dim) |
 | `GATConv.__init__` | `(self, in_dim, out_dim, *, heads=1, concat=True, dropout=0.0)` |  |
 | `GATConv.forward` | `(self, x, edge_index)` |  |
 | **class** `GINConv` | | MLP((1 + eps) x_i + sum_{j->i} x_j) |
@@ -1157,6 +1159,12 @@ equivariance tester, DeepSets, scatter ops, GCN/SAGE/GAT/GIN layers, pooling, WL
 | **class** `EGNNLayer` | | Satorras et al. (2021): h (N,hidden), pos (N,3) -> (h, pos); E(n)-equivariant in pos, invariant in h |
 | `EGNNLayer.__init__` | `(self, hidden_dim, *, edge_dim=0)` |  |
 | `EGNNLayer.forward` | `(self, h, pos, edge_index, edge_attr=None)` |  |
+| **class** `GIN` | | attrs convs (ModuleList of GINConv, ReLU between), head (Linear from in_dim + n_layers*hidden_dim); graph embedding concatenates the sum readout of the input and of every layer -> (num_graphs, out_dim) |
+| `GIN.__init__` | `(self, in_dim, hidden_dim, out_dim, *, n_layers=3)` |  |
+| `GIN.forward` | `(self, x, edge_index, batch, num_graphs=None)` |  |
+| **class** `EGNN` | | attrs embed, layers (ModuleList of EGNNLayer), head; sum readout over each graph's nodes -> (num_graphs, out_dim), invariant to E(3) and node relabelling; for equivariant (coordinate) outputs use EGNNLayer directly |
+| `EGNN.__init__` | `(self, in_dim, hidden_dim, out_dim, *, n_layers=4, edge_dim=0)` |  |
+| `EGNN.forward` | `(self, x, pos, edge_index, batch, num_graphs=None, edge_attr=None)` |  |
 
 ### mlfs.ode
 
