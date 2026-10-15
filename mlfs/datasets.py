@@ -210,5 +210,59 @@ def california_housing(*, offline: bool | None = None) -> tuple[np.ndarray, np.n
     return np.array(X), np.array(y), names
 
 
+# --- toy generators (always offline, deterministic given rng) --------------------------------
+
+
+def _rng(rng):
+    return rng if isinstance(rng, np.random.Generator) else np.random.default_rng(rng)
+
+
+def make_blobs(n: int = 300, centers=3, *, std: float = 1.0, box: float = 10.0, rng=None):
+    """Isotropic Gaussian blobs. centers: int (drawn uniformly in [-box, box]^2) or an array (k, d).
+    Returns X (n, d) float64 and y (n,) int64 (cluster index), balanced up to rounding."""
+    g = _rng(rng)
+    C = g.uniform(-box, box, size=(centers, 2)) if np.isscalar(centers) else np.asarray(centers, float)
+    y = np.arange(n) % len(C)
+    g.shuffle(y)
+    return C[y] + std * g.normal(size=(n, C.shape[1])), y.astype(np.int64)
+
+
+def make_moons(n: int = 300, *, noise: float = 0.1, rng=None):
+    """Two interleaving half circles. Returns X (n, 2), y (n,) in {0, 1}."""
+    g = _rng(rng)
+    n0 = n // 2
+    t0, t1 = np.linspace(0, np.pi, n0), np.linspace(0, np.pi, n - n0)
+    X = np.vstack([np.c_[np.cos(t0), np.sin(t0)], np.c_[1 - np.cos(t1), 0.5 - np.sin(t1)]])
+    y = np.r_[np.zeros(n0), np.ones(n - n0)].astype(np.int64)
+    return X + noise * g.normal(size=X.shape), y
+
+
+def make_circles(n: int = 300, *, noise: float = 0.05, factor: float = 0.5, rng=None):
+    """A small circle inside a large one. Returns X (n, 2), y (n,) (1 = inner circle)."""
+    g = _rng(rng)
+    n0 = n // 2
+    t0 = np.linspace(0, 2 * np.pi, n0, endpoint=False)
+    t1 = np.linspace(0, 2 * np.pi, n - n0, endpoint=False)
+    X = np.vstack([np.c_[np.cos(t0), np.sin(t0)], factor * np.c_[np.cos(t1), np.sin(t1)]])
+    y = np.r_[np.zeros(n0), np.ones(n - n0)].astype(np.int64)
+    return X + noise * g.normal(size=X.shape), y
+
+
+def make_swiss_roll(n: int = 1000, *, noise: float = 0.0, rng=None):
+    """3-D swiss roll. Returns X (n, 3) and t (n,), the position along the roll."""
+    g = _rng(rng)
+    t = 1.5 * np.pi * (1 + 2 * g.random(n))
+    X = np.c_[t * np.cos(t), 21 * g.random(n), t * np.sin(t)]
+    return X + noise * g.normal(size=X.shape), t
+
+
+def eight_gaussians(n: int = 1000, *, radius: float = 2.0, std: float = 0.1, rng=None):
+    """The classic 2-D generative-model toy density: 8 Gaussians on a circle. Returns X (n, 2)."""
+    g = _rng(rng)
+    angles = 2 * np.pi * g.integers(0, 8, size=n) / 8
+    return radius * np.c_[np.cos(angles), np.sin(angles)] + std * g.normal(size=(n, 2))
+
+
 __all__ = ["cache_dir", "fetch", "is_offline", "mnist", "cifar10", "CIFAR10_CLASSES",
-           "tiny_shakespeare", "sms_spam", "olivetti_faces", "california_housing"]
+           "tiny_shakespeare", "sms_spam", "olivetti_faces", "california_housing",
+           "make_blobs", "make_moons", "make_circles", "make_swiss_roll", "eight_gaussians"]
