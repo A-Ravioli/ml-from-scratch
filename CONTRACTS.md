@@ -946,9 +946,9 @@ NumPy conv/im2col/pooling, receptive fields, LeNet/VGG/ResNet, depthwise convs, 
 | `receptive_field` | `(layers)` | layers: sequence of (kernel_size, stride, dilation); returns (rf, jump) of the last layer w.r.t. the input |
 | `resnet18` | `(num_classes=10, *, in_channels=3, residual=True)` | ResNet((2,2,2,2), ...) |
 | `replace_head` | `(model, num_classes)` | replaces model.fc (or model.head) with a fresh Linear to num_classes; returns model |
-| `freeze_backbone` | `(model, *, head_name='fc')` | requires_grad=False for every parameter outside the submodule named head_name; returns model |
+| `freeze_backbone` | `(model, *, head_name='fc')` | requires_grad=False for every parameter outside the submodule named head_name (ValueError if there is no such submodule); does not touch BatchNorm train/eval mode; returns model |
 | `box_iou` | `(boxes1, boxes2)` | torch; boxes (N,4),(M,4) xyxy -> (N,M) |
-| `nms` | `(boxes, scores, iou_threshold=0.5)` | torch; returns int64 indices kept, sorted by decreasing score |
+| `nms` | `(boxes, scores, iou_threshold=0.5)` | torch; returns int64 indices kept (on boxes.device), sorted by decreasing score |
 | `dice_loss` | `(logits, targets, *, eps=1.0)` | binary segmentation; logits/targets (B,1,H,W); 1 - soft Dice, mean over batch |
 | **class** `LeNet` | | torch; LeNet-5 for 28x28 (pads to 32) inputs, returns logits |
 | `LeNet.__init__` | `(self, num_classes=10, in_channels=1)` |  |
@@ -959,14 +959,14 @@ NumPy conv/im2col/pooling, receptive fields, LeNet/VGG/ResNet, depthwise convs, 
 | **class** `BasicBlock` | | torch; two 3x3 convs with BN; 1x1 projection shortcut when shape changes; residual=False gives the plain block |
 | `BasicBlock.__init__` | `(self, in_channels, out_channels, stride=1, *, residual=True)` |  |
 | `BasicBlock.forward` | `(self, x)` |  |
-| **class** `ResNet` | | torch; small_input=True uses a 3x3 stem without maxpool (CIFAR), else 7x7/2 + maxpool; attrs fc (Linear head), feature_dim; forward_features -> pooled (B, feature_dim) |
+| **class** `ResNet` | | torch; small_input=True uses a 3x3 stem without maxpool (CIFAR), else 7x7/2 + maxpool; attrs stem, layers (nn.Sequential of the 4 stages, so model.layers[-1] is the last stage), pool, fc (Linear head), feature_dim; forward_features -> pooled (B, feature_dim) |
 | `ResNet.__init__` | `(self, block_counts=(2, 2, 2, 2), num_classes=10, *, in_channels=3, base_width=64, residual=True, small_input=True)` |  |
 | `ResNet.forward` | `(self, x)` |  |
 | `ResNet.forward_features` | `(self, x)` |  |
 | **class** `DepthwiseSeparableConv` | |  |
 | `DepthwiseSeparableConv.__init__` | `(self, in_channels, out_channels, kernel_size=3, stride=1)` |  |
 | `DepthwiseSeparableConv.forward` | `(self, x)` |  |
-| **class** `UNet` | | torch; depth down/up levels with skip concatenation; returns logits (B, out_channels, H, W); H, W divisible by 2**depth |
+| **class** `UNet` | | torch; depth down/up levels with skip concatenation; returns logits (B, out_channels, H, W); H, W divisible by 2**depth (ValueError otherwise); final 1x1 conv is attr out_conv |
 | `UNet.__init__` | `(self, in_channels=1, out_channels=1, *, base_channels=32, depth=3)` |  |
 | `UNet.forward` | `(self, x)` |  |
 
