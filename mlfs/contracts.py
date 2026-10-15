@@ -1307,9 +1307,9 @@ CONTRACTS = {
             },
         },
         "notes": {
-            "NGramLM": "sequences: list of token lists (any hashable tokens); pads with '<s>'/'</s>'; smoothing in {'add_k','interpolated'} (lambdas default uniform / tuned on held-out); logprob natural log of P(token | last n-1 of context); perplexity over all tokens incl. '</s>'; sample returns a list of tokens",
+            "NGramLM": "sequences: list of token lists (any hashable tokens); pads with '<s>'/'</s>'; smoothing in {'add_k','interpolated'} (lambdas default uniform / tuned on held-out); logprob natural log of P(token | last n-1 of context); perplexity over all tokens incl. '</s>'; sample returns a list of tokens; vocab includes '</s>' and '<unk>' (unseen tokens score as '<unk>'); lambdas[j] weighs the estimate with context length j (j = 0..n-1, non-negative, sum 1; interpolation backs off to order j-1 for an unseen context)",
             "CharTokenizer": "vocab = sorted unique chars of the training text; train returns self; encode -> list[int]; decode -> str; property vocab_size",
-            "BPETokenizer": "byte-level BPE (base vocab = 256 bytes, so any text encodes); train(text) learns vocab_size - 256 - len(special_tokens) merges greedily by pair count (ties -> smallest (id1, id2)), returns self; special tokens get the last ids and are matched literally in encode; decode(encode(t)) == t; attrs merges (list of pairs, in order), vocab (id -> bytes), property vocab_size; save writes JSON; load is a classmethod -> BPETokenizer",
+            "BPETokenizer": "byte-level BPE (base vocab = 256 bytes, so any text encodes); train(text) learns vocab_size - 256 - len(special_tokens) merges greedily by pair count (ties -> smallest (id1, id2)), returns self; special tokens get the last ids and are matched literally in encode (never merged); train and encode first split text with a GPT-2-style regex pretokenizer, so merges never cross chunks; pair counts include overlaps and merge_pair scans left to right; encode repeatedly merges the lowest-rank pair; training stops early when no pair remains (vocab_size then reports the actual size; the request is kept as target_vocab_size); decode(encode(t)) == t for valid Unicode (decode replaces invalid bytes with U+FFFD); attrs merges (list of pairs, in order), vocab (id -> bytes), property vocab_size; save writes JSON; load is a classmethod -> BPETokenizer",
         },
     },
     "seq": {
@@ -1357,7 +1357,7 @@ CONTRACTS = {
             "GRU": "x (B,T,D) -> (outputs (B,T,H), h_n (num_layers,B,H))",
             "BahdanauAttention": "additive; query (B,Dq), keys (B,T,Dk), mask (B,T) bool True = valid -> (context (B,Dk), weights (B,T))",
             "Seq2Seq": "GRU encoder/decoder, teacher forcing: src (B,S), tgt_in (B,T) int64 -> logits (B,T,V_tgt); attrs encoder, decoder; last_attention (B,T,S) after forward when attention=True",
-            "beam_search": "step_fn(prefixes: list[list[int]]) -> log-probs (len(prefixes), V) (tensor or ndarray) for the next token; returns list of (tokens list incl. bos/eos, score) sorted best first; score = sum logp / len**length_penalty",
+            "beam_search": "step_fn(prefixes: list[list[int]]) -> log-probs (len(prefixes), V) (tensor or ndarray) for the next token; returns list of (tokens list incl. bos/eos, score) sorted best first; score = sum logp / len**length_penalty where len = tokens after bos; pruning uses the raw sum and normalisation applies only to the final ranking; finished hypotheses keep their slots (the beam shrinks); ties -> earlier beam, then smaller token id; hypotheses unfinished at max_len are included",
         },
     },
     "transformer": {
