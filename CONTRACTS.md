@@ -730,7 +730,7 @@ sample-complexity and generalisation-bound calculators, Rademacher estimates, He
 | `finite_class_sample_complexity` | `(class_size, epsilon, delta, *, realizable=True)` | smallest int m: realizable ln(\|H\|/delta)/eps, agnostic ln(2\|H\|/delta)/(2 eps^2) |
 | `empirical_rademacher` | `(predictions, *, n_draws=1000, rng=None)` | predictions (n_hypotheses, n) outputs of a finite class on the sample; Monte Carlo E_sigma max_h (1/n) sum sigma_i h(x_i) |
 | `finite_class_bound` | `(n, class_size, delta, emp_risk=0.0)` | emp_risk + sqrt((ln\|H\| + ln(1/delta)) / (2n)) (Hoeffding + union bound) |
-| `vc_bound` | `(n, vc_dim, delta, emp_risk=0.0)` | emp_risk + sqrt((8/n)(d ln(2en/d) + ln(4/delta))) (state the constant used in the docstring) |
+| `vc_bound` | `(n, vc_dim, delta, emp_risk=0.0)` | emp_risk + sqrt((8/n)(G + ln(4/delta))) with G = min(d ln(2en/d), 2n ln 2) (the growth-function log bound; using the min keeps the bound valid for 2n < d and monotone in n); state the constant used in the docstring |
 | `kl_bernoulli` | `(q, p)` | kl(q \|\| p) for Bernoulli parameters, nats |
 | `kl_inverse` | `(q, c, *, tol=1e-10)` | max p in [q, 1] with kl_bernoulli(q, p) <= c, by bisection |
 | `pac_bayes_bound` | `(emp_risk, kl, n, delta)` | Maurer/Seeger: kl_inverse(emp_risk, (kl + ln(2 sqrt(n)/delta)) / n) |
