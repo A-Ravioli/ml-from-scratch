@@ -1048,22 +1048,24 @@ attention, positional encodings, blocks, GPT (+trainer, sampling), BERT, KV cach
 - `18-transformers/03-the-transformer-block`: `FeedForward`, `TransformerBlock`
 - `18-transformers/04-building-gpt`: `GPT`, `sample_next_token`, `get_batch`, `estimate_loss`, `train_lm`
 - `18-transformers/05-bert-style-encoders`: `BERT`, `mask_tokens`
-- `18-transformers/06-efficient-attention-and-inference`: `LayerKVCache`, `KVCache`, `online_softmax_attention`, `generate_cached`
+- `18-transformers/06-efficient-attention-and-inference`: `LayerKVCache`, `KVCache`, `online_softmax_attention`, `generate_cached`, `repeat_kv`, `kv_cache_bytes`
 - `18-transformers/07-vision-transformers`: `PatchEmbedding`, `ViT`
 
 | name | signature | notes |
 |---|---|---|
-| `scaled_dot_product_attention` | `(q, k, v, *, mask=None, is_causal=False, dropout_p=0.0)` | q (...,Tq,d), k/v (...,Tk,d); mask bool broadcastable to (...,Tq,Tk), True = attend; is_causal aligns to the END when Tq < Tk (query i sees keys <= Tk-Tq+i); returns (out (...,Tq,d_v), weights (...,Tq,Tk)); matches F.scaled_dot_product_attention |
+| `scaled_dot_product_attention` | `(q, k, v, *, mask=None, is_causal=False, dropout_p=0.0)` | q (...,Tq,d), k/v (...,Tk,d); mask bool broadcastable to (...,Tq,Tk), True = attend, or float = additive bias (combined with is_causal when both given); rows with no allowed key return zeros (finite grads); returned weights are pre-dropout; is_causal aligns to the END when Tq < Tk (query i sees keys <= Tk-Tq+i); returns (out (...,Tq,d_v), weights (...,Tq,Tk)); matches F.scaled_dot_product_attention except for that end alignment |
 | `causal_mask` | `(T, *, device=None)` | (T,T) bool lower-triangular, True = attend |
 | `sinusoidal_positions` | `(n_positions, d_model)` | (T, d) float32 tensor, Vaswani et al. (sin on even, cos on odd dims) |
 | `alibi_bias` | `(n_heads, T, *, device=None)` | (H,T,T) additive bias -slope_h * (i-j) for j<=i (Press et al. slopes), -inf above the diagonal |
 | `sample_next_token` | `(logits, *, temperature=1.0, top_k=None, top_p=None, generator=None)` | logits (B,V) -> (B,) int64; temperature 0 -> argmax; top_k then top_p (nucleus, keep smallest set with mass >= p) filtering |
 | `get_batch` | `(data, block_size, batch_size, *, generator=None, device='cpu')` | data 1-D int ndarray or int64 tensor of token ids; returns (x, y) (B,T) int64 with y = x shifted by one (pre-shifted targets) |
 | `estimate_loss` | `(model, data, block_size, *, batch_size=32, n_batches=20, device='cpu')` | mean loss over n_batches random batches, eval mode, no_grad; model follows the causal-LM protocol |
-| `train_lm` | `(model, train_data, block_size, *, val_data=None, batch_size=32, max_steps=1000, lr=0.0003, weight_decay=0.1, warmup_steps=100, grad_clip=1.0, eval_interval=100, eval_batches=20, device='cpu', seed=0)` | AdamW (decay on >=2-D weights only) + linear warmup/cosine, grad clipping; returns history dict {'step', 'train_loss', 'val_loss'} lists sampled every eval_interval |
+| `train_lm` | `(model, train_data, block_size, *, val_data=None, batch_size=32, max_steps=1000, lr=0.0003, weight_decay=0.1, warmup_steps=100, grad_clip=1.0, eval_interval=100, eval_batches=20, device='cpu', seed=0)` | AdamW (decay on >=2-D weights only) + linear warmup/cosine, grad clipping; betas (0.9, 0.95); lr: linear warmup from 0 over warmup_steps, then cosine to lr/10 at max_steps; seed drives batch sampling; returns history dict {'step', 'train_loss', 'val_loss' (NaN without val_data), 'lr'} lists sampled every eval_interval; leaves the model in eval mode |
 | `mask_tokens` | `(idx, *, mask_token_id, vocab_size, mask_prob=0.15, special_ids=(), generator=None)` | returns (inputs, labels): selects mask_prob of non-special positions, of which 80% -> mask_token_id, 10% random, 10% kept; labels = original id at selected positions, -100 elsewhere |
 | `online_softmax_attention` | `(q, k, v, *, block_size=64, is_causal=False)` | tiles keys/values in block_size chunks with running max / normaliser (FlashAttention forward); returns out only, equal to SDPA's out |
-| `generate_cached` | `(model, idx, max_new_tokens, *, temperature=1.0, top_k=None, top_p=None, generator=None)` | prefill idx then one token per step through model(idx_step, cache=cache); works for any causal-LM with .blocks and cache support (GPT, llm.Llama); same sampling as GPT.generate; returns (B, T + max_new_tokens) |
+| `generate_cached` | `(model, idx, max_new_tokens, *, temperature=1.0, top_k=None, top_p=None, generator=None)` | prefill idx then one token per step through model(idx_step, cache=cache); works for any causal-LM with .blocks and cache support (GPT, llm.Llama); same sampling as GPT.generate (identical tokens for the same generator); puts the model in eval mode; ValueError if T + max_new_tokens exceeds model.block_size when the model has one; returns (B, T + max_new_tokens) |
+| `repeat_kv` | `(x, n_rep)` | (B, H_kv, T, dh) -> (B, H_kv*n_rep, T, dh), each kv head repeated n_rep times consecutively (HF order 0,0,1,1,...); n_rep=1 returns x itself |
+| `kv_cache_bytes` | `(n_layers, n_kv_heads, head_dim, seq_len, *, batch_size=1, bytes_per_value=2)` | int: 2 (k and v) * n_layers * n_kv_heads * head_dim * seq_len * batch_size * bytes_per_value |
 | **class** `MultiHeadAttention` | | submodules q_proj, k_proj, v_proj, out_proj (nn.Linear d->d); x (B,T,d); context (B,S,d) -> cross-attention; cache: a LayerKVCache-like object -> k, v = cache.update(k, v) (heads layout (B,H,T,dh)) before attending; attribute save_weights=False, when True stores last_weights (B,H,Tq,Tk) detached |
 | `MultiHeadAttention.__init__` | `(self, d_model, n_heads, *, dropout=0.0, bias=True)` |  |
 | `MultiHeadAttention.forward` | `(self, x, context=None, *, mask=None, is_causal=False, cache=None)` |  |
@@ -1073,9 +1075,9 @@ attention, positional encodings, blocks, GPT (+trainer, sampling), BERT, KV cach
 | **class** `FeedForward` | | fc1 (d->d_ff, default 4d) -> activation ('gelu'\|'relu') -> fc2 -> dropout |
 | `FeedForward.__init__` | `(self, d_model, d_ff=None, *, dropout=0.0, activation='gelu')` |  |
 | `FeedForward.forward` | `(self, x)` |  |
-| **class** `TransformerBlock` | | submodules ln1, attn, [ln_cross, cross_attn], ln2, mlp; norm_first=True is pre-LN x + attn(ln1(x)), False is post-LN |
+| **class** `TransformerBlock` | | submodules ln1, attn, [ln_cross, cross_attn], ln2, mlp; norm_first=True is pre-LN x + attn(ln1(x)), False is post-LN; context_mask (bool, broadcastable to (B,H,T,S), True = attend) masks cross-attention keys (e.g. source padding); ValueError if context or context_mask is given to a block without cross-attention |
 | `TransformerBlock.__init__` | `(self, d_model, n_heads, *, d_ff=None, dropout=0.0, norm_first=True, cross_attention=False)` |  |
-| `TransformerBlock.forward` | `(self, x, context=None, *, mask=None, is_causal=False, cache=None)` |  |
+| `TransformerBlock.forward` | `(self, x, context=None, *, mask=None, is_causal=False, cache=None, context_mask=None)` |  |
 | **class** `GPT` | | causal-LM protocol (see CONVENTIONS['torch']); submodules tok_emb, pos_emb (learned only), blocks (ModuleList of TransformerBlock, is_causal=True), ln_f, lm_head (weight tied to tok_emb if tie_weights); pos_encoding in {'learned','sinusoidal'}; loss = cross-entropy with ignore_index=-100; cache: a KVCache (duck-typed) -> block i gets cache[i] and positions start at cache.seq_len; T <= block_size; generate crops context to block_size (no cache) and uses sample_next_token; attr n_layers |
 | `GPT.__init__` | `(self, vocab_size, *, block_size=256, n_layers=4, n_heads=4, d_model=128, d_ff=None, dropout=0.0, pos_encoding='learned', tie_weights=True)` |  |
 | `GPT.forward` | `(self, idx, targets=None, *, cache=None)` |  |
