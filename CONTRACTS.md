@@ -946,9 +946,9 @@ NumPy conv/im2col/pooling, receptive fields, LeNet/VGG/ResNet, depthwise convs, 
 | `receptive_field` | `(layers)` | layers: sequence of (kernel_size, stride, dilation); returns (rf, jump) of the last layer w.r.t. the input |
 | `resnet18` | `(num_classes=10, *, in_channels=3, residual=True)` | ResNet((2,2,2,2), ...) |
 | `replace_head` | `(model, num_classes)` | replaces model.fc (or model.head) with a fresh Linear to num_classes; returns model |
-| `freeze_backbone` | `(model, *, head_name='fc')` | requires_grad=False for every parameter outside the submodule named head_name; returns model |
+| `freeze_backbone` | `(model, *, head_name='fc')` | requires_grad=False for every parameter outside the submodule named head_name (ValueError if there is no such submodule); does not touch BatchNorm train/eval mode; returns model |
 | `box_iou` | `(boxes1, boxes2)` | torch; boxes (N,4),(M,4) xyxy -> (N,M) |
-| `nms` | `(boxes, scores, iou_threshold=0.5)` | torch; returns int64 indices kept, sorted by decreasing score |
+| `nms` | `(boxes, scores, iou_threshold=0.5)` | torch; returns int64 indices kept (on boxes.device), sorted by decreasing score |
 | `dice_loss` | `(logits, targets, *, eps=1.0)` | binary segmentation; logits/targets (B,1,H,W); 1 - soft Dice, mean over batch |
 | **class** `LeNet` | | torch; LeNet-5 for 28x28 (pads to 32) inputs, returns logits |
 | `LeNet.__init__` | `(self, num_classes=10, in_channels=1)` |  |
@@ -959,14 +959,14 @@ NumPy conv/im2col/pooling, receptive fields, LeNet/VGG/ResNet, depthwise convs, 
 | **class** `BasicBlock` | | torch; two 3x3 convs with BN; 1x1 projection shortcut when shape changes; residual=False gives the plain block |
 | `BasicBlock.__init__` | `(self, in_channels, out_channels, stride=1, *, residual=True)` |  |
 | `BasicBlock.forward` | `(self, x)` |  |
-| **class** `ResNet` | | torch; small_input=True uses a 3x3 stem without maxpool (CIFAR), else 7x7/2 + maxpool; attrs fc (Linear head), feature_dim; forward_features -> pooled (B, feature_dim) |
+| **class** `ResNet` | | torch; small_input=True uses a 3x3 stem without maxpool (CIFAR), else 7x7/2 + maxpool; attrs stem, layers (nn.Sequential of the 4 stages, so model.layers[-1] is the last stage), pool, fc (Linear head), feature_dim; forward_features -> pooled (B, feature_dim) |
 | `ResNet.__init__` | `(self, block_counts=(2, 2, 2, 2), num_classes=10, *, in_channels=3, base_width=64, residual=True, small_input=True)` |  |
 | `ResNet.forward` | `(self, x)` |  |
 | `ResNet.forward_features` | `(self, x)` |  |
 | **class** `DepthwiseSeparableConv` | |  |
 | `DepthwiseSeparableConv.__init__` | `(self, in_channels, out_channels, kernel_size=3, stride=1)` |  |
 | `DepthwiseSeparableConv.forward` | `(self, x)` |  |
-| **class** `UNet` | | torch; depth down/up levels with skip concatenation; returns logits (B, out_channels, H, W); H, W divisible by 2**depth |
+| **class** `UNet` | | torch; depth down/up levels with skip concatenation; returns logits (B, out_channels, H, W); H, W divisible by 2**depth (ValueError otherwise); final 1x1 conv is attr out_conv |
 | `UNet.__init__` | `(self, in_channels=1, out_channels=1, *, base_channels=32, depth=3)` |  |
 | `UNet.forward` | `(self, x)` |  |
 
@@ -1125,9 +1125,9 @@ equivariance tester, DeepSets, scatter ops, GCN/SAGE/GAT/GIN layers, pooling, WL
 
 - `20-geometric-deep-learning/01-symmetry-and-equivariance`: `equivariance_error`
 - `20-geometric-deep-learning/02-sets`: `DeepSets`
-- `20-geometric-deep-learning/03-graph-neural-networks`: `scatter_sum`, `scatter_mean`, `scatter_max`, `add_self_loops`, `GCNConv`, `SAGEConv`, `GATConv`, `global_add_pool`, `global_mean_pool`
-- `20-geometric-deep-learning/04-gnn-expressivity`: `wl_test`, `GINConv`
-- `20-geometric-deep-learning/05-equivariant-networks`: `EGNNLayer`
+- `20-geometric-deep-learning/03-graph-neural-networks`: `scatter_sum`, `scatter_mean`, `scatter_max`, `add_self_loops`, `GCNConv`, `SAGEConv`, `GATConv`, `global_add_pool`, `global_mean_pool`, `batch_graphs`
+- `20-geometric-deep-learning/04-gnn-expressivity`: `wl_test`, `GINConv`, `GIN`
+- `20-geometric-deep-learning/05-equivariant-networks`: `radius_graph`, `EGNNLayer`, `EGNN`
 
 | name | signature | notes |
 |---|---|---|
@@ -1139,6 +1139,8 @@ equivariance tester, DeepSets, scatter ops, GCN/SAGE/GAT/GIN layers, pooling, WL
 | `global_add_pool` | `(x, batch, num_graphs=None)` | x (N,F), batch (N,) -> (num_graphs, F) |
 | `global_mean_pool` | `(x, batch, num_graphs=None)` |  |
 | `wl_test` | `(graph1, graph2, *, n_iters=3)` | graph = (edge_index, num_nodes) (int64 tensor or ndarray); 1-WL colour refinement; returns False if certainly non-isomorphic, True if indistinguishable |
+| `batch_graphs` | `(graphs)` | list of (x (N_g,F), edge_index (2,E_g)) -> (x (N,F), edge_index (2,E) with node ids offset per graph, batch (N,) int64) |
+| `radius_graph` | `(pos, cutoff, batch=None)` | every ordered pair (j, i), i != j, in the same graph (batch) with \|pos_i - pos_j\| < cutoff (strict); (2, E) int64 sorted by source then target |
 | **class** `DeepSets` | | x (B,N,F), mask (B,N) bool True = present; rho(agg(phi(x))) with aggregation in {'sum','mean','max'} -> (B,out_dim) |
 | `DeepSets.__init__` | `(self, in_dim, hidden_dim, out_dim, *, aggregation='sum')` |  |
 | `DeepSets.forward` | `(self, x, mask=None)` |  |
@@ -1148,7 +1150,7 @@ equivariance tester, DeepSets, scatter ops, GCN/SAGE/GAT/GIN layers, pooling, WL
 | **class** `SAGEConv` | | W1 x_i + W2 mean_{j->i} x_j |
 | `SAGEConv.__init__` | `(self, in_dim, out_dim)` |  |
 | `SAGEConv.forward` | `(self, x, edge_index)` |  |
-| **class** `GATConv` | | attention over incoming edges incl. self-loops; output (N, heads*out_dim) if concat else (N, out_dim) |
+| **class** `GATConv` | | attention over incoming edges incl. self-loops (LeakyReLU slope 0.2 on additive scores); attrs lin, att_src, att_dst, bias (as PyG); output (N, heads*out_dim) if concat else the mean over heads (N, out_dim) |
 | `GATConv.__init__` | `(self, in_dim, out_dim, *, heads=1, concat=True, dropout=0.0)` |  |
 | `GATConv.forward` | `(self, x, edge_index)` |  |
 | **class** `GINConv` | | MLP((1 + eps) x_i + sum_{j->i} x_j) |
@@ -1157,6 +1159,12 @@ equivariance tester, DeepSets, scatter ops, GCN/SAGE/GAT/GIN layers, pooling, WL
 | **class** `EGNNLayer` | | Satorras et al. (2021): h (N,hidden), pos (N,3) -> (h, pos); E(n)-equivariant in pos, invariant in h |
 | `EGNNLayer.__init__` | `(self, hidden_dim, *, edge_dim=0)` |  |
 | `EGNNLayer.forward` | `(self, h, pos, edge_index, edge_attr=None)` |  |
+| **class** `GIN` | | attrs convs (ModuleList of GINConv, ReLU between), head (Linear from in_dim + n_layers*hidden_dim); graph embedding concatenates the sum readout of the input and of every layer -> (num_graphs, out_dim) |
+| `GIN.__init__` | `(self, in_dim, hidden_dim, out_dim, *, n_layers=3)` |  |
+| `GIN.forward` | `(self, x, edge_index, batch, num_graphs=None)` |  |
+| **class** `EGNN` | | attrs embed, layers (ModuleList of EGNNLayer), head; sum readout over each graph's nodes -> (num_graphs, out_dim), invariant to E(3) and node relabelling; for equivariant (coordinate) outputs use EGNNLayer directly |
+| `EGNN.__init__` | `(self, in_dim, hidden_dim, out_dim, *, n_layers=4, edge_dim=0)` |  |
+| `EGNN.forward` | `(self, x, pos, edge_index, batch, num_graphs=None, edge_attr=None)` |  |
 
 ### mlfs.ode
 
