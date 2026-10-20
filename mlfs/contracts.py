@@ -1447,9 +1447,10 @@ CONTRACTS = {
         "summary": "loss-landscape slices and mode connectivity, empirical NTK, power-law scaling fits",
         "by_topic": {
             "19-deep-learning-theory/02-loss-landscapes": [
-                "filter_normalized_direction", "loss_surface_2d", "linear_interpolation"],
+                "filter_normalized_direction", "loss_surface_2d", "linear_interpolation", "hessian_vector_product",
+                "top_hessian_eigenvalue"],
             "19-deep-learning-theory/03-infinite-width-ntk-and-mean-field": ["empirical_ntk", "kernel_regression_predict"],
-            "19-deep-learning-theory/05-scaling-laws": ["fit_power_law", "power_law", "compute_optimal"],
+            "19-deep-learning-theory/05-scaling-laws": ["fit_power_law", "power_law", "compute_optimal", "non_embedding_params"],
         },
         "functions": {
             "filter_normalized_direction": "(model, *, generator=None)",
@@ -1460,12 +1461,18 @@ CONTRACTS = {
             "fit_power_law": "(x, y, *, offset=True)",
             "power_law": "(x, a, b, c=0.0)",
             "compute_optimal": "(compute, *, tokens_per_param=20.0)",
+            "hessian_vector_product": "(loss_fn, params, vector)",
+            "top_hessian_eigenvalue": "(model, loss_fn, *, n_iters=20, generator=None)",
+            "non_embedding_params": "(model)",
         },
         "classes": {},
         "notes": {
             "filter_normalized_direction": "Li et al. (2018): random direction dict name -> tensor shaped like each parameter, rescaled per filter to the parameter's filter norms; 1-D params (biases, norms) zeroed",
-            "loss_surface_2d": "eval_loss(model) -> float; evaluates theta + a d1 + b d2 on a resolution x resolution grid in [-span, span]^2, restores weights; returns (alphas, betas, Z ndarray (r,r))",
-            "linear_interpolation": "loads (1-a) state_a + a state_b (float tensors only) for a in linspace(0,1,n_points); restores weights; returns (alphas ndarray, losses ndarray)",
+            "loss_surface_2d": "eval_loss(model) -> float; evaluates theta + a d1 + b d2 on a resolution x resolution grid in [-span, span]^2, restores weights even if eval_loss raises; returns (alphas, betas, Z ndarray (r,r)) with Z[i, j] at alphas[i], betas[j] (plot contour(alphas, betas, Z.T)); names missing from d1/d2 contribute nothing",
+            "linear_interpolation": "loads (1-a) state_a + a state_b (float tensors only) for a in linspace(0,1,n_points); state_a/state_b may be live state_dicts (copied first, never modified); non-float entries come from state_a; restores weights; returns (alphas ndarray, losses ndarray)",
+            "hessian_vector_product": "double backprop: loss_fn() -> scalar, params list, vector list shaped like params -> detached list H v; zeros for params the loss doesn't use",
+            "top_hessian_eigenvalue": "power iteration over the model's trainable params from a random start drawn with generator; loss_fn() called exactly n_iters times; returns the signed Rayleigh quotient (float); doesn't touch params or .grad",
+            "non_embedding_params": "parameter count excluding tok_emb.weight and pos_emb.weight (if present; ch18 GPT names); tied tensors counted once; buffers excluded",
             "empirical_ntk": "scalar-output model (outputs (n,) or (n,1)); K[i,j] = <d f(x1_i)/d theta, d f(x2_j)/d theta>; returns (n1,n2) tensor",
             "kernel_regression_predict": "K_test_train @ solve(K_train + ridge I, y_train); tensors or ndarrays",
             "fit_power_law": "fits y = a x^(-b) + c (c = 0 if offset False) by least squares in log space / scipy.optimize; returns (a, b, c)",
@@ -1897,11 +1904,11 @@ CONTRACTS = {
                 "extract_features", "linear_probe", "knn_eval"],
             "25-self-supervised-and-multimodal-learning/02-contrastive-learning": [
                 "info_nce_loss", "ProjectionHead", "SimCLRAugment"],
-            "25-self-supervised-and-multimodal-learning/03-non-contrastive-methods": ["simsiam_loss", "byol_loss"],
+            "25-self-supervised-and-multimodal-learning/03-non-contrastive-methods": ["simsiam_loss", "byol_loss", "collapse_metrics"],
             "25-self-supervised-and-multimodal-learning/04-masked-modeling": [
                 "patchify", "unpatchify", "random_masking", "MAE"],
             "25-self-supervised-and-multimodal-learning/05-multimodal-learning": [
-                "clip_loss", "MiniCLIP", "zero_shot_predict"],
+                "clip_loss", "MiniCLIP", "zero_shot_predict", "class_embeddings"],
         },
         "functions": {
             "extract_features": "(encoder, loader, *, device='cpu')",
@@ -1915,6 +1922,8 @@ CONTRACTS = {
             "random_masking": "(x, mask_ratio, *, generator=None)",
             "clip_loss": "(image_emb, text_emb, logit_scale)",
             "zero_shot_predict": "(image_emb, class_emb)",
+            "collapse_metrics": "(z)",
+            "class_embeddings": "(model, class_names, templates, tokenize)",
         },
         "classes": {
             "ProjectionHead": {"__init__": "(self, in_dim, hidden_dim=512, out_dim=128)", "forward": "(self, x)"},
@@ -1923,7 +1932,7 @@ CONTRACTS = {
                 "__init__": "(self, img_size=32, patch_size=4, in_channels=3, *, encoder_dim=192, encoder_depth=6, encoder_heads=3, decoder_dim=128, decoder_depth=2, decoder_heads=4, mask_ratio=0.75, norm_pix_loss=False)",
                 "forward": "(self, x)", "encode": "(self, x)",
             },
-            "MiniCLIP": {"__init__": "(self, image_encoder, text_encoder, image_dim, text_dim, *, embed_dim=128, init_temperature=0.07)", "forward": "(self, images, texts)"},
+            "MiniCLIP": {"__init__": "(self, image_encoder, text_encoder, image_dim, text_dim, *, embed_dim=128, init_temperature=0.07)", "forward": "(self, images, texts)", "encode_image": "(self, images)", "encode_text": "(self, texts)"},
         },
         "notes": {
             "extract_features": "encoder(x) -> (B, d) (call forward_features yourself via a wrapper if needed); eval mode, no_grad over (x, y) batches; returns (feats float32 ndarray (n,d), labels ndarray (n,))",
@@ -1934,12 +1943,14 @@ CONTRACTS = {
             "SimCLRAugment": "batched tensor augmentation on NCHW floats in [0,1]: random resized crop, flip, colour jitter (strength), grayscale; call twice for two views",
             "simsiam_loss": "symmetric negative cosine with stop-gradient on z: -(cos(p1, z2.detach()) + cos(p2, z1.detach())) / 2",
             "byol_loss": "mean(2 - 2 cos(p, z.detach()))",
-            "patchify": "imgs (B,C,H,W) -> (B, N, patch_size**2 * C) in MAE order",
+            "patchify": "imgs (B,C,H,W) -> (B, N, patch_size**2 * C) in MAE order: each patch flattened (i, j, c), channel last; differs from mlfs.transformer.patchify's (c, i, j)",
+            "collapse_metrics": "z (n,d) -> {'std': mean per-dim population std of L2-normalised rows (1/sqrt(d) when healthy, 0 when collapsed), 'effective_rank': exp of the entropy of the normalised singular values}",
+            "class_embeddings": "(n_classes, d) unit vectors: per class, embed every template.format(name) with model.encode_text (eval mode, no_grad, mode restored), normalise, average, renormalise",
             "unpatchify": "inverse of patchify (square images)",
             "random_masking": "x (B,N,D) -> (x_visible (B, N_keep, D), mask (B,N) float 1 = masked, ids_restore (B,N) int64); per-sample random shuffle",
             "MAE": "He et al. (2022) built from mlfs.transformer blocks; forward -> (loss on masked patches only, pred (B,N,p*p*C), mask); encode -> mean-pooled encoder features (B, encoder_dim) without masking",
             "clip_loss": "symmetric cross-entropy over logit_scale * normalised image_emb @ text_emb.T with matching pairs on the diagonal",
-            "MiniCLIP": "projects encoder outputs to embed_dim; learnable log temperature; forward -> (image_emb normalised, text_emb normalised, logit_scale = exp(log_scale) clamped <= 100)",
+            "MiniCLIP": "projects encoder outputs to embed_dim; learnable log temperature attr log_scale; encode_image / encode_text -> (B, embed_dim) unit vectors; forward -> (image_emb normalised, text_emb normalised, logit_scale = exp(log_scale) clamped <= 100)",
             "zero_shot_predict": "normalised embeddings (B,d), (n_classes,d) -> argmax cosine (B,) int64",
         },
     },
