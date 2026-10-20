@@ -118,7 +118,7 @@ def fid_infinity(real_feats, fake_feats, ns, *, rng=None):
 
 @app.cell(hide_code=True)
 def _():
-    checks.run(3, fid_from_features=fid_from_features, fid_infinity=fid_infinity)
+    checks.run(3, fid_from_features=fid_from_features, fid_infinity=fid_infinity, frechet_distance=frechet_distance)
     return
 
 

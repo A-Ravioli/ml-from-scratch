@@ -136,7 +136,7 @@ class ARIMA:
 
 @app.cell(hide_code=True)
 def _():
-    checks.run(4, ARIMA=ARIMA, simulate_arma=simulate_arma)
+    checks.run(4, ARIMA=ARIMA, simulate_arma=simulate_arma, arma_residuals=arma_residuals, fit_ar=fit_ar)
     return
 
 

@@ -137,7 +137,7 @@ class VAE(nn.Module):
 
 @app.cell(hide_code=True)
 def _():
-    checks.run(2, reconstruction_nll=reconstruction_nll, VAE=VAE)
+    checks.run(2, reconstruction_nll=reconstruction_nll, VAE=VAE, kl_standard_normal=kl_standard_normal, reparameterize=reparameterize)
     return
 
 
@@ -176,7 +176,7 @@ def iwae_nll(vae, x, *, k=64, generator=None, chunk_size=None):
 
 @app.cell(hide_code=True)
 def _():
-    checks.run(3, iwae_nll=iwae_nll, VAE=VAE, reconstruction_nll=reconstruction_nll)
+    checks.run(3, iwae_nll=iwae_nll, VAE=VAE, reconstruction_nll=reconstruction_nll, ConvVAE=ConvVAE, kl_standard_normal=kl_standard_normal)
     return
 
 
@@ -245,7 +245,7 @@ class ConvVAE(nn.Module):
 
 @app.cell(hide_code=True)
 def _():
-    checks.run(4, ConvVAE=ConvVAE, reconstruction_nll=reconstruction_nll)
+    checks.run(4, ConvVAE=ConvVAE, reconstruction_nll=reconstruction_nll, kl_standard_normal=kl_standard_normal)
     return
 
 
@@ -276,7 +276,7 @@ def kl_per_dim(vae, x):
 
 @app.cell(hide_code=True)
 def _():
-    checks.run(5, active_units=active_units, kl_per_dim=kl_per_dim, VAE=VAE)
+    checks.run(5, active_units=active_units, kl_per_dim=kl_per_dim, VAE=VAE, kl_standard_normal=kl_standard_normal)
     return
 
 

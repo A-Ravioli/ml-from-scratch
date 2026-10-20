@@ -164,7 +164,7 @@ class DCGANDiscriminator(nn.Module):
 
 @app.cell(hide_code=True)
 def _():
-    checks.run(3, DCGANGenerator=DCGANGenerator, DCGANDiscriminator=DCGANDiscriminator)
+    checks.run(3, DCGANGenerator=DCGANGenerator, DCGANDiscriminator=DCGANDiscriminator, gan_step=gan_step)
     return
 
 
