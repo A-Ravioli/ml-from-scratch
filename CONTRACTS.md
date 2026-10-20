@@ -1186,13 +1186,13 @@ fixed-step ODE solvers, the adjoint method, and a NeuralODE module (torch)
 
 bits/dim, FID, precision/recall; MADE/PixelCNN; VAE/ConvVAE; VQ; GAN/DCGAN; WGAN-GP; RealNVP
 
-- `21-generative-models-i-likelihood-and-adversarial/01-evaluating-generative-models`: `bits_per_dim`, `frechet_distance`, `fid_from_features`, `precision_recall_knn`
+- `21-generative-models-i-likelihood-and-adversarial/01-evaluating-generative-models`: `bits_per_dim`, `frechet_distance`, `fid_from_features`, `precision_recall_knn`, `dequantize`, `discrete_nll`, `FeatureNet`, `cached_feature_net`
 - `21-generative-models-i-likelihood-and-adversarial/02-autoregressive-models`: `MaskedLinear`, `MADE`, `MaskedConv2d`, `PixelCNN`
-- `21-generative-models-i-likelihood-and-adversarial/03-variational-autoencoders`: `reparameterize`, `kl_standard_normal`, `VAE`, `ConvVAE`
-- `21-generative-models-i-likelihood-and-adversarial/04-discrete-latents`: `VectorQuantizer`, `VQVAE`
-- `21-generative-models-i-likelihood-and-adversarial/05-gans`: `discriminator_loss`, `generator_loss`, `DCGANGenerator`, `DCGANDiscriminator`
+- `21-generative-models-i-likelihood-and-adversarial/03-variational-autoencoders`: `reparameterize`, `kl_standard_normal`, `VAE`, `ConvVAE`, `iwae_nll`
+- `21-generative-models-i-likelihood-and-adversarial/04-discrete-latents`: `VectorQuantizer`, `VQVAE`, `codebook_usage`, `restart_dead_codes`
+- `21-generative-models-i-likelihood-and-adversarial/05-gans`: `discriminator_loss`, `generator_loss`, `DCGANGenerator`, `DCGANDiscriminator`, `mode_coverage`
 - `21-generative-models-i-likelihood-and-adversarial/06-stabilizing-gans`: `gradient_penalty`, `critic_loss`, `wgan_generator_loss`, `spectral_normalize`
-- `21-generative-models-i-likelihood-and-adversarial/07-normalizing-flows`: `AffineCoupling`, `RealNVP`
+- `21-generative-models-i-likelihood-and-adversarial/07-normalizing-flows`: `AffineCoupling`, `RealNVP`, `logit_transform`, `flow_bits_per_dim`
 
 | name | signature | notes |
 |---|---|---|
@@ -1208,6 +1208,20 @@ bits/dim, FID, precision/recall; MADE/PixelCNN; VAE/ConvVAE; VQ; GAN/DCGAN; WGAN
 | `critic_loss` | `(real_scores, fake_scores)` | fake.mean() - real.mean() |
 | `wgan_generator_loss` | `(fake_scores)` | -fake.mean() |
 | `spectral_normalize` | `(weight, u, n_power_iterations=1)` | one power-iteration step(s) on weight reshaped to (out, -1); returns (weight / sigma, u_new, sigma) |
+| `dequantize` | `(x, *, n_levels=256, generator=None)` | integer levels x (any shape) -> (x + U[0,1)) / n_levels, float in [0,1) |
+| `discrete_nll` | `(log_density, n_dims, *, n_levels=256)` | the dequantization bound -log p(y) + D log n_levels in nats, for a log-density of data scaled to [0,1)^D; for data in [-1,1)^D ADD D ln 2 to the log-density first (density is 2^-D smaller per unit volume) |
+| `cached_feature_net` | `(X, y, *, name='mnist', epochs=2, seed=0, device='cpu', cache=None)` | trains (or loads from cache, default mlfs.datasets.cache_dir()) a FeatureNet keyed on a hash of X, y, epochs, seed, device and the training code; returns it in eval mode on device |
+| `iwae_nll` | `(vae, x, *, k=64, generator=None, chunk_size=None)` | importance-weighted NLL bound in nats per example (B,) for VAE or ConvVAE; k=1 equals the negative ELBO in expectation; chunk_size bounds memory |
+| `codebook_usage` | `(indices, n_codes)` | -> (perplexity, fraction of codes used) |
+| `restart_dead_codes` | `(vq, z_e, counts, *, threshold=1, generator=None)` | in place, replace codes with counts < threshold by random encoder outputs (rows drawn with torch.randint); z_e (B,D,*spatial) or (N,D); returns n_dead |
+| `mode_coverage` | `(samples, centers, std, *, n_std=3.0, min_frac=0.01)` | -> (n_covered, frac_high_quality, counts (K,) int): a sample is high quality if within n_std*std of its nearest centre; a centre is covered if its count >= min_frac * n |
+| `logit_transform` | `(x, *, alpha=0.05)` | x in [0,1] -> logit(alpha + (1-2 alpha) x) and its log\|det\| per example |
+| `flow_bits_per_dim` | `(flow, x_levels, *, n_levels=256, alpha=0.05, generator=None)` | dequantize -> logit_transform -> flow.log_prob(y in x_levels' own shape) -> bits/dim with the change-of-variables terms |
+| **class** `FeatureNet` | | small CNN classifier; forward_features -> (B, feat_dim) penultimate features (the FID space); embed(x) accepts a tensor or ndarray, returns float64 ndarray (n, feat_dim) and restores the train/eval mode it found. FIDs are comparable only within the course |
+| `FeatureNet.__init__` | `(self, in_channels=1, n_classes=10, *, feat_dim=128)` |  |
+| `FeatureNet.forward_features` | `(self, x)` |  |
+| `FeatureNet.forward` | `(self, x)` |  |
+| `FeatureNet.embed` | `(self, x, *, batch_size=500)` |  |
 | **class** `MaskedLinear` | | weight multiplied by a registered buffer mask (out, in) |
 | `MaskedLinear.__init__` | `(self, in_features, out_features, bias=True)` |  |
 | `MaskedLinear.set_mask` | `(self, mask)` |  |
@@ -1236,7 +1250,7 @@ bits/dim, FID, precision/recall; MADE/PixelCNN; VAE/ConvVAE; VQ; GAN/DCGAN; WGAN
 | `ConvVAE.forward` | `(self, x)` |  |
 | `ConvVAE.loss` | `(self, x, *, beta=1.0)` |  |
 | `ConvVAE.sample` | `(self, n, img_size, *, generator=None)` |  |
-| **class** `VectorQuantizer` | | z_e (B,D,H,W) -> (z_q straight-through (B,D,H,W), vq_loss = codebook + beta commitment, indices (B,H,W) int64); attr codebook (nn.Embedding) |
+| **class** `VectorQuantizer` | | z_e (B,D,*spatial) (e.g. images (B,D,H,W) or audio (B,D,T)) -> (z_q straight-through, same shape, vq_loss = codebook + beta commitment, indices (B,*spatial) int64); attr codebook (nn.Embedding) |
 | `VectorQuantizer.__init__` | `(self, n_codes, code_dim, *, beta=0.25)` |  |
 | `VectorQuantizer.forward` | `(self, z_e)` |  |
 | **class** `VQVAE` | | forward -> (x_recon, vq_loss, indices); encode -> indices; decode_indices -> images |
