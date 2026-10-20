@@ -1955,7 +1955,7 @@ CONTRACTS = {
         "classes": {
             "GradScaler": {
                 "__init__": "(self, init_scale=65536.0, *, growth_factor=2.0, backoff_factor=0.5, growth_interval=2000)",
-                "scale": "(self, loss)", "unscale_": "(self, optimizer)", "step": "(self, optimizer)", "update": "(self)",
+                "scale": "(self, loss)", "unscale_": "(self, optimizer)", "step": "(self, optimizer)", "update": "(self)", "get_scale": "(self)",
             },
             "ZeroAdamW": {"__init__": "(self, params, *, rank, world_size, lr=0.001, betas=(0.9, 0.999), eps=1e-08, weight_decay=0.01)", "step": "(self)", "zero_grad": "(self)"},
             "Int8Linear": {"__init__": "(self, weight_q, scale, bias=None)", "from_linear": "(linear)", "forward": "(self, x)"},
@@ -1964,7 +1964,7 @@ CONTRACTS = {
             "matmul_flops": "2 m n k for (m,k) @ (k,n)",
             "roofline": "min(peak_flops, intensity * bandwidth) attainable FLOP/s",
             "transformer_train_flops": "6 N D",
-            "GradScaler": "dynamic loss scaling like torch.cuda.amp.GradScaler but device-agnostic: step skips the update (returns False) if any grad is inf/nan, update() backs off / grows the scale; attr scale (float)",
+            "GradScaler": "dynamic loss scaling like torch.cuda.amp.GradScaler but device-agnostic: step skips the update (returns False) if any grad is inf/nan, update() backs off / grows the scale; get_scale() returns the current scale (float), as in torch",
             "ring_allreduce": "NumPy simulation: list of p equal-shape arrays (one per worker) -> list of p arrays all equal to the sum, computed chunk-wise by reduce-scatter then all-gather (no direct sum)",
             "allreduce_bytes": "bytes each worker sends in a ring all-reduce: 2 (p-1)/p n_bytes",
             "training_memory": "bytes dict {'params','grads','optimizer','total'} per device; mixed precision bf16 params/grads + fp32 master/moments for adamw; zero_stage 0..3 shards optimizer / grads / params over world_size",

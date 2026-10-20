@@ -1501,12 +1501,13 @@ FLOP/roofline calculators, loss scaling, ring all-reduce simulation, ZeRO-1 + me
 | `quantize_int8` | `(w, *, axis=0)` | symmetric per-channel along axis; returns (q int8 tensor, scale float tensor broadcastable against w) with w ~ q * scale |
 | `dequantize_int8` | `(q, scale)` | q.float() * scale |
 | `distillation_loss` | `(student_logits, teacher_logits, targets, *, temperature=2.0, alpha=0.5)` | alpha T^2 KL(softmax(t/T) \|\| softmax(s/T)) + (1 - alpha) CE(s, targets) |
-| **class** `GradScaler` | | dynamic loss scaling like torch.cuda.amp.GradScaler but device-agnostic: step skips the update (returns False) if any grad is inf/nan, update() backs off / grows the scale; attr scale (float) |
+| **class** `GradScaler` | | dynamic loss scaling like torch.cuda.amp.GradScaler but device-agnostic: step skips the update (returns False) if any grad is inf/nan, update() backs off / grows the scale; get_scale() returns the current scale (float), as in torch |
 | `GradScaler.__init__` | `(self, init_scale=65536.0, *, growth_factor=2.0, backoff_factor=0.5, growth_interval=2000)` |  |
 | `GradScaler.scale` | `(self, loss)` |  |
 | `GradScaler.unscale_` | `(self, optimizer)` |  |
 | `GradScaler.step` | `(self, optimizer)` |  |
 | `GradScaler.update` | `(self)` |  |
+| `GradScaler.get_scale` | `(self)` |  |
 | **class** `ZeroAdamW` | | ZeRO-1: each rank keeps AdamW state only for its 1/world_size shard of the flattened params; step all-reduces grads, updates its shard, all-gathers params (torch.distributed, gloo OK); identical results to AdamW |
 | `ZeroAdamW.__init__` | `(self, params, *, rank, world_size, lr=0.001, betas=(0.9, 0.999), eps=1e-08, weight_decay=0.01)` |  |
 | `ZeroAdamW.step` | `(self)` |  |
