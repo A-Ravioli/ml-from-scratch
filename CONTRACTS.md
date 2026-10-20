@@ -1465,9 +1465,9 @@ representation evaluation (probe/kNN), InfoNCE/SimCLR, SimSiam/BYOL losses, MAE,
 
 - `25-self-supervised-and-multimodal-learning/01-evaluating-representations`: `extract_features`, `linear_probe`, `knn_eval`
 - `25-self-supervised-and-multimodal-learning/02-contrastive-learning`: `info_nce_loss`, `ProjectionHead`, `SimCLRAugment`
-- `25-self-supervised-and-multimodal-learning/03-non-contrastive-methods`: `simsiam_loss`, `byol_loss`
+- `25-self-supervised-and-multimodal-learning/03-non-contrastive-methods`: `simsiam_loss`, `byol_loss`, `collapse_metrics`
 - `25-self-supervised-and-multimodal-learning/04-masked-modeling`: `patchify`, `unpatchify`, `random_masking`, `MAE`
-- `25-self-supervised-and-multimodal-learning/05-multimodal-learning`: `clip_loss`, `MiniCLIP`, `zero_shot_predict`
+- `25-self-supervised-and-multimodal-learning/05-multimodal-learning`: `clip_loss`, `MiniCLIP`, `zero_shot_predict`, `class_embeddings`
 
 | name | signature | notes |
 |---|---|---|
@@ -1477,11 +1477,13 @@ representation evaluation (probe/kNN), InfoNCE/SimCLR, SimSiam/BYOL losses, MAE,
 | `info_nce_loss` | `(z1, z2, *, temperature=0.1)` | NT-Xent over 2B views (z1[i], z2[i] positives, other 2B-2 negatives), cosine similarity; mean |
 | `simsiam_loss` | `(p1, p2, z1, z2)` | symmetric negative cosine with stop-gradient on z: -(cos(p1, z2.detach()) + cos(p2, z1.detach())) / 2 |
 | `byol_loss` | `(p, z)` | mean(2 - 2 cos(p, z.detach())) |
-| `patchify` | `(imgs, patch_size)` | imgs (B,C,H,W) -> (B, N, patch_size**2 * C) in MAE order |
+| `patchify` | `(imgs, patch_size)` | imgs (B,C,H,W) -> (B, N, patch_size**2 * C) in MAE order: each patch flattened (i, j, c), channel last; differs from mlfs.transformer.patchify's (c, i, j) |
 | `unpatchify` | `(patches, patch_size, channels=3)` | inverse of patchify (square images) |
 | `random_masking` | `(x, mask_ratio, *, generator=None)` | x (B,N,D) -> (x_visible (B, N_keep, D), mask (B,N) float 1 = masked, ids_restore (B,N) int64); per-sample random shuffle |
 | `clip_loss` | `(image_emb, text_emb, logit_scale)` | symmetric cross-entropy over logit_scale * normalised image_emb @ text_emb.T with matching pairs on the diagonal |
 | `zero_shot_predict` | `(image_emb, class_emb)` | normalised embeddings (B,d), (n_classes,d) -> argmax cosine (B,) int64 |
+| `collapse_metrics` | `(z)` | z (n,d) -> {'std': mean per-dim population std of L2-normalised rows (1/sqrt(d) when healthy, 0 when collapsed), 'effective_rank': exp of the entropy of the normalised singular values} |
+| `class_embeddings` | `(model, class_names, templates, tokenize)` | (n_classes, d) unit vectors: per class, embed every template.format(name) with model.encode_text (eval mode, no_grad, mode restored), normalise, average, renormalise |
 | **class** `ProjectionHead` | | Linear -> BN -> ReLU -> Linear |
 | `ProjectionHead.__init__` | `(self, in_dim, hidden_dim=512, out_dim=128)` |  |
 | `ProjectionHead.forward` | `(self, x)` |  |
@@ -1492,9 +1494,11 @@ representation evaluation (probe/kNN), InfoNCE/SimCLR, SimSiam/BYOL losses, MAE,
 | `MAE.__init__` | `(self, img_size=32, patch_size=4, in_channels=3, *, encoder_dim=192, encoder_depth=6, encoder_heads=3, decoder_dim=128, decoder_depth=2, decoder_heads=4, mask_ratio=0.75, norm_pix_loss=False)` |  |
 | `MAE.forward` | `(self, x)` |  |
 | `MAE.encode` | `(self, x)` |  |
-| **class** `MiniCLIP` | | projects encoder outputs to embed_dim; learnable log temperature; forward -> (image_emb normalised, text_emb normalised, logit_scale = exp(log_scale) clamped <= 100) |
+| **class** `MiniCLIP` | | projects encoder outputs to embed_dim; learnable log temperature attr log_scale; encode_image / encode_text -> (B, embed_dim) unit vectors; forward -> (image_emb normalised, text_emb normalised, logit_scale = exp(log_scale) clamped <= 100) |
 | `MiniCLIP.__init__` | `(self, image_encoder, text_encoder, image_dim, text_dim, *, embed_dim=128, init_temperature=0.07)` |  |
 | `MiniCLIP.forward` | `(self, images, texts)` |  |
+| `MiniCLIP.encode_image` | `(self, images)` |  |
+| `MiniCLIP.encode_text` | `(self, texts)` |  |
 
 ### mlfs.systems
 
