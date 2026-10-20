@@ -19,7 +19,7 @@ with app.setup:
     ex = notebooks.load_sibling("exercise")
 
     OFFLINE = datasets.is_offline()
-    torch.set_num_threads(4)
+    torch.set_num_threads(min(4, torch.get_num_threads()))  # never more than the environment allows (CI sets 1)
     STD = 0.02  # each of the 8 gaussians
     ANG = 2 * np.pi * np.arange(8) / 8
     CENTERS = 2.0 * np.c_[np.cos(ANG), np.sin(ANG)]

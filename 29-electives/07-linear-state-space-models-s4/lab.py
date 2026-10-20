@@ -19,7 +19,7 @@ with app.setup:
 
     # your own implementation from exercise.py (the reference when MLFS_SOLUTIONS=1)
     ex = notebooks.load_sibling("exercise")
-    torch.set_num_threads(2)
+    torch.set_num_threads(min(2, torch.get_num_threads()))  # never more than the environment allows (CI sets 1)
 
     class S4DBlock(nn.Module):
         """pre-norm residual block: x + GLU(Linear(GELU(S4D(LayerNorm(x)))))."""

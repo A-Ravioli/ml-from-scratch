@@ -26,7 +26,7 @@ with app.setup:
     # your MAML from topic 09 (electives own no mlfs module, so it's loaded directly)
     prev = notebooks.load_topic("09-maml", key="maml", smoke=_maml_smoke)
     maml = prev.module
-    torch.set_num_threads(2)
+    torch.set_num_threads(min(2, torch.get_num_threads()))  # never more than the environment allows (CI sets 1)
 
     D = 5  # input dimension
     N_POINTS = 15  # sequence length: predictions with 0..14 in-context examples
