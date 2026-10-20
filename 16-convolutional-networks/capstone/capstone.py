@@ -144,7 +144,7 @@ def train_and_evaluate(config, data, *, device="cpu", seed=0):
 @app.cell(hide_code=True)
 def _():
     checks.run(4, _tests="test_capstone.py", predict=predict, train_and_evaluate=train_and_evaluate,
-               build_model=build_model)
+               build_model=build_model, channel_stats=channel_stats, to_tensor=to_tensor)
     return
 
 

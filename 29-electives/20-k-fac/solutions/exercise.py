@@ -152,7 +152,7 @@ def kfac_step(model, factors, *, lr, damping, kl_clip=None):
 
 @app.cell(hide_code=True)
 def _():
-    checks.run(3, kfac_step=kfac_step)
+    checks.run(3, kfac_step=kfac_step, kfac_factors=kfac_factors)
     return
 
 
@@ -224,7 +224,7 @@ class KFAC:
 
 @app.cell(hide_code=True)
 def _():
-    checks.run(4, KFAC=KFAC)
+    checks.run(4, KFAC=KFAC, kfac_factors=kfac_factors, kfac_step=kfac_step)
     return
 
 

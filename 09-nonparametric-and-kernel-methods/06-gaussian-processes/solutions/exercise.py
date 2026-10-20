@@ -224,7 +224,7 @@ def _():
 
 @app.cell(hide_code=True)
 def _():
-    checks.run(3, GaussianProcessRegressor=GaussianProcessRegressor)
+    checks.run(3, GaussianProcessRegressor=GaussianProcessRegressor, stationary_kernel=stationary_kernel)
     return
 
 
@@ -236,7 +236,7 @@ def _():
 
 @app.cell(hide_code=True)
 def _():
-    checks.run(4, GaussianProcessRegressor=GaussianProcessRegressor)
+    checks.run(4, GaussianProcessRegressor=GaussianProcessRegressor, stationary_kernel=stationary_kernel)
     return
 
 

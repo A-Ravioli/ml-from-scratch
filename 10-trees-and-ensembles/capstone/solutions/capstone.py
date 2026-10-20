@@ -158,7 +158,7 @@ def verdict(gap_ci, margin=0.03):
 
 @app.cell(hide_code=True)
 def _():
-    checks.run(4, _tests="test_capstone.py", rmse_ci=rmse_ci, relative_gap_ci=relative_gap_ci, verdict=verdict)
+    checks.run(4, _tests="test_capstone.py", rmse_ci=rmse_ci, relative_gap_ci=relative_gap_ci, verdict=verdict, best_iteration=best_iteration, predict_with_n_trees=predict_with_n_trees, random_search=random_search, staged_rmse=staged_rmse)
     return
 
 

@@ -203,7 +203,7 @@ class HistGradientTree:
 
 @app.cell(hide_code=True)
 def _():
-    checks.run(3, HistGradientTree=HistGradientTree)
+    checks.run(3, HistGradientTree=HistGradientTree, bin_data=bin_data, quantile_bin_edges=quantile_bin_edges)
     return
 
 
@@ -278,7 +278,7 @@ class GradientBoostingRegressor(Regressor):
 
 @app.cell(hide_code=True)
 def _():
-    checks.run(4, GradientBoostingRegressor=GradientBoostingRegressor, subsample_rows=subsample_rows)
+    checks.run(4, GradientBoostingRegressor=GradientBoostingRegressor, subsample_rows=subsample_rows, HistGradientTree=HistGradientTree, bin_data=bin_data, quantile_bin_edges=quantile_bin_edges)
     return
 
 
@@ -354,7 +354,7 @@ class GradientBoostingClassifier(Classifier):
 
 @app.cell(hide_code=True)
 def _():
-    checks.run(5, GradientBoostingClassifier=GradientBoostingClassifier)
+    checks.run(5, GradientBoostingClassifier=GradientBoostingClassifier, bin_data=bin_data)
     return
 
 

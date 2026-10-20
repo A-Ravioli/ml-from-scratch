@@ -162,7 +162,7 @@ def estimate_kernel(X, shots, *, feature_map=None, rng=None):
 @app.cell(hide_code=True)
 def _():
     checks.run(3, overlap_ops=overlap_ops, estimate_kernel=estimate_kernel, fidelity_kernel=fidelity_kernel,
-               zz_feature_map=zz_feature_map, qsim=qsim)
+               zz_feature_map=zz_feature_map, qsim=qsim, product_feature_map=product_feature_map)
     return
 
 

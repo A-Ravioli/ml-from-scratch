@@ -125,7 +125,7 @@ def unsharp_mask(image: np.ndarray, *, sigma: float = 1.0, amount: float = 1.0) 
 @app.cell(hide_code=True)
 def _():
     checks.run(3, _tests="test_capstone.py", box_kernel=box_kernel, gaussian_kernel=gaussian_kernel,
-               unsharp_mask=unsharp_mask)
+               unsharp_mask=unsharp_mask, filter2d=filter2d)
     return
 
 

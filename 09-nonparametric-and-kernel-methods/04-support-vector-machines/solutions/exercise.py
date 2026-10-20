@@ -131,7 +131,7 @@ def smo_pair_update(i, j, alpha, b, K, y, C, E):
 
 @app.cell(hide_code=True)
 def _():
-    checks.run(3, smo_pair_update=smo_pair_update)
+    checks.run(3, smo_pair_update=smo_pair_update, dual_objective=dual_objective)
     return
 
 
@@ -236,7 +236,7 @@ class SVC(Classifier):
 
 @app.cell(hide_code=True)
 def _():
-    checks.run(4, SVC=SVC, final_bias=final_bias)
+    checks.run(4, SVC=SVC, final_bias=final_bias, kkt_violations=kkt_violations)
     return
 
 

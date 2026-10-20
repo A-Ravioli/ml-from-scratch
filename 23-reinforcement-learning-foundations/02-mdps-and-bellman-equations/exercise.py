@@ -150,7 +150,7 @@ def rollout(env, policy, *, max_steps=None, seed=None):
 
 @app.cell(hide_code=True)
 def _():
-    checks.run(3, GridWorld=GridWorld, rollout=rollout, Env=Env, Discrete=Discrete)
+    checks.run(3, GridWorld=GridWorld, rollout=rollout, Env=Env, Discrete=Discrete, Box=Box)
     return
 
 

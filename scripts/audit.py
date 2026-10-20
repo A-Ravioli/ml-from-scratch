@@ -13,6 +13,7 @@ hints, or live check cells.
 from __future__ import annotations
 
 import argparse
+import ast
 import json
 import re
 import subprocess
@@ -92,6 +93,70 @@ def check_stages(unit: Unit, notebook: Path, tests: Path, require_naming: bool) 
     return test_stages
 
 
+def _nb_names(tests_src: str) -> dict[int, set[str]]:
+    """{stage: names the stage's tests read as nb.<name>}, following helper functions that take nb."""
+    try:
+        tree = ast.parse(tests_src)
+    except SyntaxError:
+        return {}
+    funcs = {f.name: f for f in tree.body if isinstance(f, ast.FunctionDef)}
+    direct, calls = {}, {}
+    for name, f in funcs.items():
+        direct[name] = {n.attr for n in ast.walk(f)
+                        if isinstance(n, ast.Attribute) and isinstance(n.value, ast.Name) and n.value.id == "nb"}
+        calls[name] = {n.func.id for n in ast.walk(f)
+                       if isinstance(n, ast.Call) and isinstance(n.func, ast.Name) and n.func.id in funcs}
+
+    def used(name, seen):
+        if name in seen:
+            return set()
+        seen.add(name)
+        out = set(direct[name])
+        for c in calls[name]:
+            out |= used(c, seen)
+        return out
+
+    stages: dict[int, set[str]] = {}
+    for name in funcs:
+        m = re.match(r"test_stage(\d+)_", name)
+        if m:
+            stages.setdefault(int(m.group(1)), set()).update(used(name, set()))
+    return stages
+
+
+def _check_cell_names(notebook_src: str) -> dict[int, set[str] | None]:
+    """{stage: keyword names passed to checks.run(stage, ...)}; None if a call passes **kwargs (can't tell)."""
+    try:
+        tree = ast.parse(notebook_src)
+    except SyntaxError:
+        return {}
+    out: dict[int, set[str] | None] = {}
+    for n in ast.walk(tree):
+        if (isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute) and n.func.attr == "run"
+                and isinstance(n.func.value, ast.Name) and n.func.value.id == "checks"
+                and n.args and isinstance(n.args[0], ast.Constant) and isinstance(n.args[0].value, int)):
+            stage = n.args[0].value
+            if any(k.arg is None for k in n.keywords):
+                out[stage] = None
+            elif out.get(stage, set()) is not None:
+                out[stage] = out.get(stage, set()) | {k.arg for k in n.keywords if not k.arg.startswith("_")}
+    return out
+
+
+def check_live_names(unit: Unit, notebook: Path, tests: Path) -> None:
+    """every name a stage's tests read as nb.<name> must be passed to that stage's checks.run(...) cell,
+    or the live check crashes on correct code (pytest uses the whole module, so verify can't see this)."""
+    passed = _check_cell_names(read(notebook))
+    for stage, needed in sorted(_nb_names(read(tests)).items()):
+        have = passed.get(stage)
+        if have is None:
+            continue
+        missing = sorted(needed - have)
+        if missing:
+            unit.errors.append(f"{notebook.name}: checks.run({stage}, ...) doesn't pass {', '.join(missing)}, "
+                               f"which test_stage{stage}_* use as nb.<name>: the live check would crash")
+
+
 def check_solution(unit: Unit, solution: Path) -> None:
     for i, line in enumerate(read(solution).splitlines(), 1):
         if PLACEHOLDERS.search(line) and "TEMPLATE" not in line:
@@ -104,6 +169,8 @@ def audit_topic(topic: Path, root: Path) -> Unit:
     unit.errors += [f"missing {f}" for f in missing]
     stages = check_stages(unit, topic / "exercise.py", topic / "test_exercise.py", True)
     check_solution(unit, topic / "solutions" / "exercise.py")
+    for nb_file in (topic / "exercise.py", topic / "solutions" / "exercise.py"):
+        check_live_names(unit, nb_file, topic / "test_exercise.py")
 
     lesson = read(topic / "lesson.md")
     if lesson:
@@ -134,6 +201,8 @@ def audit_chapter(chapter: Path, root: Path) -> Unit:
     if cap.exists():
         check_stages(unit, cap / "capstone.py", cap / "test_capstone.py", False)
         check_solution(unit, cap / "solutions" / "capstone.py")
+        for nb_file in (cap / "capstone.py", cap / "solutions" / "capstone.py"):
+            check_live_names(unit, nb_file, cap / "test_capstone.py")
     templated = any("TEMPLATE" in read(chapter / f) for f in CHAPTER_FILES)
     unit.finish(templated)
     return unit

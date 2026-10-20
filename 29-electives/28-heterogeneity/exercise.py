@@ -114,7 +114,7 @@ def quadratic_scaffold(As, cs, w0, *, rounds, local_steps, lr, weights=None):
 @app.cell(hide_code=True)
 def _():
     checks.run(3, quadratic_scaffold=quadratic_scaffold, quadratic_fedavg=quadratic_fedavg,
-               global_optimum=global_optimum)
+               global_optimum=global_optimum, quadratic_fixed_point=quadratic_fixed_point)
     return
 
 
