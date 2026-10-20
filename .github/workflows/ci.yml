@@ -23,4 +23,7 @@ jobs:
       - name: verify (solutions pass, stubs fail, labs run)
         env:
           MLFS_OFFLINE: "1"
-        run: python scripts/verify.py --fast -j 4
+          # one thread per job: 4 parallel jobs x torch's default thread pool oversubscribe the 4-core runner
+          OMP_NUM_THREADS: "1"
+          MKL_NUM_THREADS: "1"
+        run: python scripts/verify.py --fast -j 4 --timeout 1500
