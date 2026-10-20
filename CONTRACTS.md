@@ -1106,20 +1106,23 @@ attention, positional encodings, blocks, GPT (+trainer, sampling), BERT, KV cach
 
 loss-landscape slices and mode connectivity, empirical NTK, power-law scaling fits
 
-- `19-deep-learning-theory/02-loss-landscapes`: `filter_normalized_direction`, `loss_surface_2d`, `linear_interpolation`
+- `19-deep-learning-theory/02-loss-landscapes`: `filter_normalized_direction`, `loss_surface_2d`, `linear_interpolation`, `hessian_vector_product`, `top_hessian_eigenvalue`
 - `19-deep-learning-theory/03-infinite-width-ntk-and-mean-field`: `empirical_ntk`, `kernel_regression_predict`
-- `19-deep-learning-theory/05-scaling-laws`: `fit_power_law`, `power_law`, `compute_optimal`
+- `19-deep-learning-theory/05-scaling-laws`: `fit_power_law`, `power_law`, `compute_optimal`, `non_embedding_params`
 
 | name | signature | notes |
 |---|---|---|
 | `filter_normalized_direction` | `(model, *, generator=None)` | Li et al. (2018): random direction dict name -> tensor shaped like each parameter, rescaled per filter to the parameter's filter norms; 1-D params (biases, norms) zeroed |
-| `loss_surface_2d` | `(model, eval_loss, d1, d2, *, span=1.0, resolution=21)` | eval_loss(model) -> float; evaluates theta + a d1 + b d2 on a resolution x resolution grid in [-span, span]^2, restores weights; returns (alphas, betas, Z ndarray (r,r)) |
-| `linear_interpolation` | `(model, state_a, state_b, eval_loss, *, n_points=21)` | loads (1-a) state_a + a state_b (float tensors only) for a in linspace(0,1,n_points); restores weights; returns (alphas ndarray, losses ndarray) |
+| `loss_surface_2d` | `(model, eval_loss, d1, d2, *, span=1.0, resolution=21)` | eval_loss(model) -> float; evaluates theta + a d1 + b d2 on a resolution x resolution grid in [-span, span]^2, restores weights even if eval_loss raises; returns (alphas, betas, Z ndarray (r,r)) with Z[i, j] at alphas[i], betas[j] (plot contour(alphas, betas, Z.T)); names missing from d1/d2 contribute nothing |
+| `linear_interpolation` | `(model, state_a, state_b, eval_loss, *, n_points=21)` | loads (1-a) state_a + a state_b (float tensors only) for a in linspace(0,1,n_points); state_a/state_b may be live state_dicts (copied first, never modified); non-float entries come from state_a; restores weights; returns (alphas ndarray, losses ndarray) |
 | `empirical_ntk` | `(model, x1, x2=None)` | scalar-output model (outputs (n,) or (n,1)); K[i,j] = <d f(x1_i)/d theta, d f(x2_j)/d theta>; returns (n1,n2) tensor |
 | `kernel_regression_predict` | `(K_train, y_train, K_test_train, *, ridge=0.0)` | K_test_train @ solve(K_train + ridge I, y_train); tensors or ndarrays |
 | `fit_power_law` | `(x, y, *, offset=True)` | fits y = a x^(-b) + c (c = 0 if offset False) by least squares in log space / scipy.optimize; returns (a, b, c) |
 | `power_law` | `(x, a, b, c=0.0)` | a * x**(-b) + c |
 | `compute_optimal` | `(compute, *, tokens_per_param=20.0)` | Chinchilla rule with C = 6 N D and D = tokens_per_param * N; returns (n_params, n_tokens) |
+| `hessian_vector_product` | `(loss_fn, params, vector)` | double backprop: loss_fn() -> scalar, params list, vector list shaped like params -> detached list H v; zeros for params the loss doesn't use |
+| `top_hessian_eigenvalue` | `(model, loss_fn, *, n_iters=20, generator=None)` | power iteration over the model's trainable params from a random start drawn with generator; loss_fn() called exactly n_iters times; returns the signed Rayleigh quotient (float); doesn't touch params or .grad |
+| `non_embedding_params` | `(model)` | parameter count excluding tok_emb.weight and pos_emb.weight (if present; ch18 GPT names); tied tensors counted once; buffers excluded |
 
 ### mlfs.gnn
 
