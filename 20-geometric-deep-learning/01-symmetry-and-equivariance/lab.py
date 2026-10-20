@@ -15,7 +15,7 @@ with app.setup:
     # your own implementation from exercise.py (the reference when MLFS_SOLUTIONS=1)
     ex = notebooks.load_sibling("exercise")
 
-    torch.set_num_threads(4)
+    torch.set_num_threads(min(4, torch.get_num_threads()))  # never more than the environment allows (CI sets 1)
     _d = datasets.mnist()  # real MNIST, or a small synthetic stand-in when offline
     N_TRAIN = min(6000, len(_d["X_train"]))
     N_TEST = min(2000, len(_d["X_test"]))

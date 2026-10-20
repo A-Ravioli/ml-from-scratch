@@ -14,7 +14,7 @@ with app.setup:
     from mlfs import notebooks, ui
     from mlfs.stats import bootstrap_ci  # yours, from ch 05 · topic 03
 
-    torch.set_num_threads(4)
+    torch.set_num_threads(min(4, torch.get_num_threads()))  # never more than the environment allows (CI sets 1)
     # your own implementation from exercise.py (the reference when MLFS_SOLUTIONS=1)
     ex = notebooks.load_sibling("exercise")
 
