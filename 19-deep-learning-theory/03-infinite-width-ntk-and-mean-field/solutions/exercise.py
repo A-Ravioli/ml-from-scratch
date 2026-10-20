@@ -75,11 +75,13 @@ def _():
 
 @app.function
 def kernel_regression_predict(K_train, y_train, K_test_train, *, ridge=0.0):
-    """stage 2: K_test_train @ solve(K_train + ridge I, y_train); returns a tensor for tensor K_test_train, else an ndarray."""
+    """stage 2: K_test_train @ solve(K_train + ridge I, y_train); returns a tensor for tensor K_test_train (on its
+    device; K_train and y_train are moved there), else an ndarray."""
     if torch.is_tensor(K_test_train):
-        K = torch.as_tensor(K_train, dtype=K_test_train.dtype)
-        y = torch.as_tensor(y_train, dtype=K_test_train.dtype)
-        A = K + ridge * torch.eye(K.shape[0], dtype=K.dtype)
+        dev = K_test_train.device  # everything on K_test_train's device (CPU, CUDA or MPS)
+        K = torch.as_tensor(K_train, dtype=K_test_train.dtype, device=dev)
+        y = torch.as_tensor(y_train, dtype=K_test_train.dtype, device=dev)
+        A = K + ridge * torch.eye(K.shape[0], dtype=K.dtype, device=dev)
         return K_test_train @ torch.linalg.solve(A, y)
     K = np.asarray(K_train.detach() if torch.is_tensor(K_train) else K_train, dtype=float)
     y = np.asarray(y_train.detach() if torch.is_tensor(y_train) else y_train, dtype=float)

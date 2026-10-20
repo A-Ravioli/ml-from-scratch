@@ -62,7 +62,8 @@ def _():
 
 @app.function
 def kernel_regression_predict(K_train, y_train, K_test_train, *, ridge=0.0):
-    """stage 2: K_test_train @ solve(K_train + ridge I, y_train); returns a tensor for tensor K_test_train, else an ndarray."""
+    """stage 2: K_test_train @ solve(K_train + ridge I, y_train); returns a tensor for tensor K_test_train (on its
+    device; K_train and y_train are moved there), else an ndarray."""
     raise NotImplementedError("stage2: implement kernel_regression_predict")
 
 

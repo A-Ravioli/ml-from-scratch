@@ -305,3 +305,16 @@ def test_stage5_relative_change(nb):
         f"||theta - theta_0|| / ||theta_0|| over all parameters together: sqrt(1 + 1) / sqrt(9 + 16) = "
         f"{math.sqrt(2) / 5:.6f}; got {got:.6f}. one global norm, not an average of per-layer ratios, and buffers "
         "(like the 'count' here) don't count")
+
+
+@pytest.mark.skipif(not torch.backends.mps.is_available(), reason="needs an Apple GPU")
+def test_stage2_kernel_regression_on_the_gpu(nb):
+    g = torch.Generator().manual_seed(3)
+    X = torch.randn(12, 3, generator=g)
+    K = X @ X.T + 0.1 * torch.eye(12)
+    y = torch.randn(12, generator=g)
+    Kt = torch.randn(5, 3, generator=g) @ X.T
+    want = nb.kernel_regression_predict(K, y, Kt, ridge=0.5)
+    got = nb.kernel_regression_predict(K.to("mps"), y.to("mps"), Kt.to("mps"), ridge=0.5)
+    assert got.device.type == "mps" and torch.allclose(got.cpu(), want, atol=1e-4), (
+        "with tensors on an Apple GPU, kernel_regression_predict must build the ridge identity on the same device")
