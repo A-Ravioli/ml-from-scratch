@@ -160,13 +160,19 @@ def precision_recall_knn(real_feats, fake_feats, *, k=3):
     def sqdist(a, b):
         return np.maximum((a * a).sum(1)[:, None] + (b * b).sum(1)[None, :] - 2.0 * a @ b.T, 0.0)
 
+    chunk = 1024  # rows at a time: never materialise an n x n matrix (10k real images would need ~800 MB)
+
     def radii(x):
-        d = sqdist(x, x)
-        np.fill_diagonal(d, np.inf)
-        return np.sqrt(np.partition(d, k - 1, axis=1)[:, k - 1])
+        out = np.empty(len(x))
+        for s in range(0, len(x), chunk):
+            d = sqdist(x[s:s + chunk], x)
+            d[np.arange(len(d)), np.arange(s, s + len(d))] = np.inf  # a point is not its own neighbour
+            out[s:s + chunk] = np.sqrt(np.partition(d, k - 1, axis=1)[:, k - 1])
+        return out
 
     def inside(points, centres, r):
-        return np.any(np.sqrt(sqdist(points, centres)) <= r[None, :] * (1 + 1e-9), axis=1)
+        return np.concatenate([np.any(np.sqrt(sqdist(points[s:s + chunk], centres)) <= r[None, :] * (1 + 1e-9), axis=1)
+                               for s in range(0, len(points), chunk)]) if len(points) else np.zeros(0, bool)
 
     precision = float(np.mean(inside(fake, real, radii(real))))
     recall = float(np.mean(inside(real, fake, radii(fake))))

@@ -237,6 +237,18 @@ def test_stage4_matches_definition(nb):
         assert got == pytest.approx(want), f"k={k}: expected {want}, got {got}"
 
 
+def test_stage4_large_sets_match_definition(nb):
+    # thousands of points, as in the capstone (10k real images): the answer must not change if you work in chunks
+    rng = np.random.default_rng(7)
+    real = rng.normal(size=(2600, 3))
+    fake = rng.normal(size=(1500, 3)) * 1.3 + 0.3
+    got = nb.precision_recall_knn(real, fake, k=3)
+    want = _pr_brute(real, fake, 3)
+    assert got == pytest.approx(want), (
+        f"on 2,600 real and 1,500 fake points expected {want}, got {got}. if you process rows in chunks, each chunk's "
+        "own point must be excluded at its global index, and every chunk must be compared against the whole other set")
+
+
 def test_stage4_separates_fidelity_and_coverage(nb):
     rng = np.random.default_rng(7)
     real = rng.normal(size=(600, 2))

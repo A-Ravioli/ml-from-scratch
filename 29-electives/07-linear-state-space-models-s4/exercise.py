@@ -44,7 +44,8 @@ def _():
 
 @app.function
 def discretize(Lambda, B, dt, method="zoh"):
-    """stage 1: (Lambda_bar, B_bar) for x' = Lambda x + B u with step dt; method 'zoh' or 'bilinear'."""
+    """stage 1: (Lambda_bar, B_bar) for x' = Lambda x + B u with step dt; method 'zoh' or 'bilinear'.
+    ZOH's B_bar = (exp(Lambda dt) - 1) / Lambda * B has the limit dt * B at Lambda = 0 (an integrator)."""
     raise NotImplementedError("stage1: implement discretize")
 
 

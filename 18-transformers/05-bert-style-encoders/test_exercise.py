@@ -179,6 +179,29 @@ def test_stage3_mlm_loss(nb):
     assert _close(got, want), "mlm_loss is the cross-entropy over the selected positions only (labels -100 ignored)"
 
 
+
+def test_stage3_mlm_loss_with_no_targets_is_zero(nb):
+    torch.manual_seed(3)
+    m = nb.BERT(20, max_len=12, n_layers=1, n_heads=2, d_model=16)
+    inputs = torch.randint(3, 20, (2, 12))
+    labels = torch.full_like(inputs, -100)  # mask_prob=0 (or a tiny batch) can select nothing
+    loss = nb.mlm_loss(m, inputs, labels)
+    assert torch.isfinite(loss) and float(loss) == 0.0, (
+        f"a batch with no selected position must give a zero loss, not NaN (mean over zero targets); got {loss}")
+    loss.backward()  # still part of the graph, so a training loop can call backward on it
+
+
+@pytest.mark.skipif(not torch.backends.mps.is_available(), reason="needs an Apple GPU")
+def test_stage1_mask_tokens_on_the_gpu(nb):
+    idx = torch.randint(3, 20, (4, 12))
+    want = nb.mask_tokens(idx, mask_token_id=MASK, vocab_size=20, special_ids=(0,), generator=torch.Generator().manual_seed(1))
+    got = nb.mask_tokens(idx.to("mps"), mask_token_id=MASK, vocab_size=20, special_ids=(0,),
+                         generator=torch.Generator().manual_seed(1))
+    assert got[0].device.type == "mps" and all(torch.equal(g.cpu(), w) for g, w in zip(got, want)), (
+        "mask_tokens on an MPS tensor must return MPS tensors with the same draws as on the CPU: draw with the "
+        "(CPU) generator, then move the random tensors to idx.device")
+
+
 def test_stage3_pretraining_learns_context(nb):
     data = _counting_corpus(512, 12, 23, 0)
     torch.manual_seed(0)

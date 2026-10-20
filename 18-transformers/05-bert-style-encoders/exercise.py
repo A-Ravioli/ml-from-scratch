@@ -92,7 +92,8 @@ def _():
 
 @app.function
 def mlm_loss(model, inputs, labels, attention_mask=None):
-    """stage 3: cross-entropy of model.mlm_logits(model(inputs, attention_mask)) against labels, -100 ignored."""
+    """stage 3: cross-entropy of model.mlm_logits(model(inputs, attention_mask)) against labels, -100 ignored;
+    a batch with no target at all gives a zero loss (still connected to the graph), not NaN."""
     raise NotImplementedError("stage3: implement mlm_loss")
 
 

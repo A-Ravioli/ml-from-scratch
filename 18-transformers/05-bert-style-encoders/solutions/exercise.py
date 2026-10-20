@@ -50,10 +50,12 @@ def mask_tokens(idx, *, mask_token_id, vocab_size, mask_prob=0.15, special_ids=(
     special = torch.zeros_like(idx, dtype=torch.bool)
     for s in special_ids:
         special |= idx == s
-    u = torch.rand(idx.shape, generator=generator)
+    # draw on the generator's device (CPU by default) in a fixed order, then move to idx's device (MPS/CUDA)
+    gdev = generator.device if generator is not None else torch.device("cpu")
+    u = torch.rand(idx.shape, generator=generator, device=gdev).to(idx.device)
     selected = (u < mask_prob) & ~special
-    action = torch.rand(idx.shape, generator=generator)
-    random_tokens = torch.randint(0, vocab_size, idx.shape, generator=generator)
+    action = torch.rand(idx.shape, generator=generator, device=gdev).to(idx.device)
+    random_tokens = torch.randint(0, vocab_size, idx.shape, generator=generator, device=gdev).to(idx.device)
     inputs = idx.clone()
     inputs[selected & (action < 0.8)] = mask_token_id
     swap = selected & (action >= 0.8) & (action < 0.9)
@@ -128,8 +130,11 @@ def _():
 
 @app.function
 def mlm_loss(model, inputs, labels, attention_mask=None):
-    """stage 3: cross-entropy of model.mlm_logits(model(inputs, attention_mask)) against labels, -100 ignored."""
+    """stage 3: cross-entropy of model.mlm_logits(model(inputs, attention_mask)) against labels, -100 ignored;
+    a batch with no target at all gives a zero loss (still connected to the graph), not NaN."""
     logits = model.mlm_logits(model(inputs, attention_mask))
+    if not (labels != -100).any():
+        return logits.sum() * 0.0
     return F.cross_entropy(logits.reshape(-1, logits.shape[-1]), labels.reshape(-1), ignore_index=-100)
 
 

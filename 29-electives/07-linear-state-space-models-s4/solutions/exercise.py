@@ -44,12 +44,16 @@ def _():
 
 @app.function
 def discretize(Lambda, B, dt, method="zoh"):
-    """stage 1: (Lambda_bar, B_bar) for x' = Lambda x + B u with step dt; method 'zoh' or 'bilinear'."""
+    """stage 1: (Lambda_bar, B_bar) for x' = Lambda x + B u with step dt; method 'zoh' or 'bilinear'.
+    ZOH's B_bar = (exp(Lambda dt) - 1) / Lambda * B has the limit dt * B at Lambda = 0 (an integrator)."""
     Lambda = torch.as_tensor(Lambda)
     B, dt = torch.as_tensor(B), torch.as_tensor(dt)
     if method == "zoh":
         Lb = torch.exp(Lambda * dt)
-        return Lb, (Lb - 1) / Lambda * B
+        zero = Lambda == 0
+        safe = torch.where(zero, torch.ones_like(Lambda), Lambda)
+        coeff = torch.where(zero, dt * torch.ones_like(Lambda), torch.expm1(Lambda * dt) / safe)  # expm1: stable near 0
+        return Lb, coeff * B
     if method == "bilinear":
         den = 1 - Lambda * dt / 2
         return (1 + Lambda * dt / 2) / den, dt / den * B

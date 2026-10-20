@@ -337,3 +337,15 @@ def test_stage5_learns_an_exponential_filter(nb):
     assert np.mean(losses[-10:]) < 0.1 * np.mean(losses[:10]), (
         f"trained for 80 Adam steps to reproduce an exponential moving average, the loss should fall at least 10x "
         f"(from {np.mean(losses[:10]):.4f} to {np.mean(losses[-10:]):.4f})")
+
+
+def test_stage1_zoh_handles_a_zero_eigenvalue(nb):
+    Lambda = torch.tensor([0.0 + 0.0j, -1e-9 + 0.0j, -0.5 + 2.0j], dtype=torch.complex128)
+    B = torch.tensor([1.0, 2.0, 3.0], dtype=torch.complex128)
+    Lb, Bb = nb.discretize(Lambda, B, 0.1, method="zoh")
+    assert torch.isfinite(Bb.real).all() and torch.isfinite(Bb.imag).all(), (
+        f"Lambda = 0 is a valid mode (an integrator); ZOH's B_bar must be finite there, got {Bb}")
+    assert torch.allclose(Bb[0], torch.tensor(0.1 * 1.0, dtype=torch.complex128)), (
+        f"at Lambda = 0, B_bar = dt * B (the limit of (exp(Lambda dt) - 1) / Lambda); got {Bb[0]}")
+    assert torch.allclose(Bb[1], torch.tensor(0.2, dtype=torch.complex128), rtol=1e-7), (
+        f"near Lambda = 0 the result must stay accurate (use expm1): want ~0.2, got {Bb[1]}")
