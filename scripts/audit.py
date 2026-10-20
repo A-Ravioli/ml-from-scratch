@@ -157,6 +157,19 @@ def check_live_names(unit: Unit, notebook: Path, tests: Path) -> None:
                                f"which test_stage{stage}_* use as nb.<name>: the live check would crash")
 
 
+THREADS_UP = re.compile(r"torch\.set_num_threads\(\s*([2-9]|[1-9]\d+)\s*\)")
+
+
+def check_threads(unit: Unit, directory: Path) -> None:
+    """a notebook that raises torch's thread count overrides CI's OMP_NUM_THREADS=1 and oversubscribes the runner
+    (labs then take 50x longer); cap it with min(N, torch.get_num_threads()) instead."""
+    for f in sorted(directory.rglob("*.py")):
+        for i, line in enumerate(read(f).splitlines(), 1):
+            if THREADS_UP.search(line):
+                unit.errors.append(f"{rel(f, directory)}:{i}: raises torch's thread count; use "
+                                   "torch.set_num_threads(min(N, torch.get_num_threads()))")
+
+
 def check_solution(unit: Unit, solution: Path) -> None:
     for i, line in enumerate(read(solution).splitlines(), 1):
         if PLACEHOLDERS.search(line) and "TEMPLATE" not in line:
@@ -171,6 +184,7 @@ def audit_topic(topic: Path, root: Path) -> Unit:
     check_solution(unit, topic / "solutions" / "exercise.py")
     for nb_file in (topic / "exercise.py", topic / "solutions" / "exercise.py"):
         check_live_names(unit, nb_file, topic / "test_exercise.py")
+    check_threads(unit, topic)
 
     lesson = read(topic / "lesson.md")
     if lesson:
@@ -203,6 +217,7 @@ def audit_chapter(chapter: Path, root: Path) -> Unit:
         check_solution(unit, cap / "solutions" / "capstone.py")
         for nb_file in (cap / "capstone.py", cap / "solutions" / "capstone.py"):
             check_live_names(unit, nb_file, cap / "test_capstone.py")
+        check_threads(unit, cap)
     templated = any("TEMPLATE" in read(chapter / f) for f in CHAPTER_FILES)
     unit.finish(templated)
     return unit

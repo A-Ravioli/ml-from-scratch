@@ -18,7 +18,7 @@ with app.setup:
 
     # your own implementation from exercise.py (the reference when MLFS_SOLUTIONS=1)
     ex = notebooks.load_sibling("exercise")
-    torch.set_num_threads(2)
+    torch.set_num_threads(min(2, torch.get_num_threads()))  # never more than the environment allows (CI sets 1)
 
     N_EPISODES = 400  # training episodes for every configuration (1-shot, 3 queries per class)
     N_TEST = 300  # test episodes (5-way; 1-shot with 5 queries, or 5-shot with 1 query)

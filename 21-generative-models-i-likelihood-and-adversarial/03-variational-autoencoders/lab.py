@@ -19,7 +19,7 @@ with app.setup:
     ex = notebooks.load_sibling("exercise")
 
     OFFLINE = datasets.is_offline()
-    torch.set_num_threads(4)
+    torch.set_num_threads(min(4, torch.get_num_threads()))  # never more than the environment allows (CI sets 1)
     _d = datasets.mnist()  # real MNIST, or a small synthetic stand-in when offline
     _gray_train = torch.tensor(_d["X_train"][:, None] / 255.0, dtype=torch.float32)
     _dev = torch.device("cpu") if OFFLINE else get_device()  # the same cached network as topic 01's lab
