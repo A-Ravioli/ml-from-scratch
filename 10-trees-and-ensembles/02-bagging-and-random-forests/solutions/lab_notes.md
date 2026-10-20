@@ -1,0 +1,27 @@
+# bagging & random forests · lab notes
+
+numbers are from the reference solution with the lab's seeds; your forests draw random numbers in their own order, so expect the same picture with slightly different digits.
+
+## experiment 1: the variance floor
+
+**what people usually predict:** that variance falls like $1/b$ for as long as you add trees, or that it levels off at zero. most expect the random forest's individual trees to be *less* variable, since they're "regularized" by seeing fewer features.
+
+**what happens:** a single bagged tree has variance $\sigma^2 = 8.21$ across training sets; the measured correlation between two trees of the same forest is $\rho = 0.113$, so the floor is $\rho\sigma^2 = 0.93$, and at 60 trees the forest's variance is 1.06, right on the curve $\rho\sigma^2 + (1 - \rho)\sigma^2/b$. the random forest's trees are *more* variable ($\sigma^2 = 12.25$) but much less correlated ($\rho = 0.038$): floor 0.47, variance 0.68 at 60 trees and still falling. the test MSE falls monotonically for both, from 12.6 to 5.2 (bagging) and from 16.1 to 5.9 (random forest), and never turns back up. on the first training set the OOB $R^2$ is 0.785 against a test $R^2$ of 0.799 for bagging, and 0.737 against 0.758 for the random forest.
+
+**why:** the trees of one forest are grown on bootstrap samples of the *same* training set, so they share its quirks: a cluster of noisy points pulls all of them the same way. that shared part is $\rho\sigma^2$, and it's the variance of the $b \to \infty$ forest across training sets: averaging over the forest's own randomness can't remove randomness that comes from the data. restricting the features per split makes trees more erratic (higher $\sigma^2$: a tree that can't use the best feature at a node makes a worse, more data-dependent choice) but decorrelates them strongly, and the floor depends on the product. with 60 trees the random forest hasn't reached its floor yet: lower correlation means you need *more* trees to cash in on it. the test MSE is bias² + variance + noise; adding trees only shrinks the variance term, so it can only go down (on paper 2 makes the same point exactly). here bagging still wins on test MSE at 60 trees, because the random forest's trees are also more biased on this data (half the features are noise, so a third of the features per split often means splitting on noise): the variance floor isn't the whole story, which is experiment 2. the OOB estimates are slightly pessimistic, as expected: each OOB prediction averages only about 22 of the 60 trees.
+
+## experiment 2: weaker trees, better forest?
+
+**what people usually predict:** either "worse trees, worse forest" or Breiman's slogan in its strong form: the fewer features, the better the forest.
+
+**what happens:** the single-tree MSE rises steadily as `max_features` falls, from 13.2 (all 10) to 25.9 (one). the forest's MSE is flat between 4 and 10 features (5.67, 5.45, 5.15, 5.52), best at **8**, and gets much worse below 3: 7.67 at 2 and 10.83 at 1. the correlation between trees' errors is U-shaped: 0.35 at 10 features, lowest (0.29) at 3–4, and back up to **0.37** at 1.
+
+**why:** the forest's error is roughly the average tree error times (correlation + the $1/B$ remainder), so it's a trade between the two. from 10 down to about 4 features, the trees get worse but less correlated, and the two effects nearly cancel: the forest is remarkably insensitive to `max_features` in that range, which is why forests need so little tuning. below that, two things go wrong at once on this data. half the features are noise, so with one feature per split, half the splits are wasted on noise and the trees are terrible. and the correlation goes *up* again: the errors $h_b - f$ include each tree's bias, and weak trees all miss the same structure (they all underfit $10\sin(\pi x_1x_2)$ the same way), so their errors are correlated through their shared bias, even though their splits are random. decorrelation only helps when the trees stay individually accurate. on data where every feature carries signal (or where strong features are correlated with each other), the optimum moves to smaller `max_features`, which is the setting of Breiman's experiments.
+
+## experiment 3: what is worth bagging?
+
+**what people usually predict:** that bagging helps everything by a similar amount, maybe 20–30%.
+
+**what happens:** bagging 50 stumps cuts the test MSE by only **9%** (19.2 → 17.5); depth 2 by 27%, depth 4 by 39%, depth 8 by 56%, and fully grown trees by **58%** (12.6 → 5.3). the best single tree has depth 4 (11.9), but the best bag is the one of fully grown trees.
+
+**why:** bagging reduces variance and leaves bias alone. a stump has high bias (one split can't represent a sine of a product) and low variance (the best single split barely changes between bootstrap samples), so there's almost nothing for averaging to remove. fully grown trees are the opposite: low bias, huge variance, and averaging removes most of the variance while keeping the low bias. so the depth that's best for a single tree (the bias–variance sweet spot of one model) is not the depth that's best inside a bag, where variance is cheap to remove: inside an ensemble you want each member to be as flexible as possible. boosting (topics 03–04) is the mirror image: it reduces *bias* by fitting many shallow, low-variance trees in sequence, each correcting the last. as experiment 1 showed, most of the gain comes from the first 10–20 trees; the slider lets you check that here.

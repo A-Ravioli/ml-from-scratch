@@ -1,0 +1,25 @@
+# testing, debugging & reproducibility · lab notes
+
+## experiment 1: spot the bug
+
+**what people usually predict:** "they all look the same, so they're probably all correct", or a guess based on line style. very few people pick out both bugs from the plot.
+
+**what happens:** the three curves are indistinguishable at plotting resolution. `assert_close` against an independently computed reference says: **A passes. B fails on all 100 values**, worst at index (12,), with a relative error of 0.5%. **C fails on all 100 values** too; its absolute error is tiny (about 0.0009 everywhere), but at index (3,), where the true z-score is only 0.0017, that's a 52% relative error.
+
+**why:** B divides by the standard deviation with `ddof=1` (dividing by $n - 1 = 99$ inside the square root instead of $n = 100$), which shrinks every z-score by the factor $\sqrt{99/100} \approx 0.995$: a 0.5% error, a fraction of a pixel. C subtracts the mean of `x[1:]`, accidentally skipping the first score, which shifts every z-score by $(\bar x - \bar x_{1:})/\sigma \approx 0.0009$: invisible too. both are realistic bugs: `ddof` conventions differ between NumPy, pandas and statistics textbooks, and off-by-one slices are the most common bug in array code. neither would change a plot, a histogram, or most downstream results visibly, which is exactly why they survive. an automatic comparison with a tight tolerance catches them instantly, and its message tells you *how* they're wrong: "every value, a constant 0.5% relative error" points straight at a scale factor, and "a constant small absolute shift" points at the mean. the reference was computed a different way (plain Python sums), so a bug in one route doesn't reappear in the other. that's the general recipe for numerical tests: **compare against a slow, obviously correct, independent computation.**
+
+## experiment 2: a bug that hides from random tests
+
+**what people usually predict:** a thousand random tests is a lot; surely either both generators find it or the bug is too rare to matter.
+
+**what happens:** the plain generator finds **nothing in 1,000 trials**. the edge-case generator finds a counterexample on **trial 16**: 18 points with coordinates around 100, one of them a duplicate, where the unclipped formula returns `nan` for the duplicate pair. with the same seed it finds the same counterexample every time.
+
+**why:** the bug needs two *distinct* points (the diagonal is overwritten with zeros) whose computed squared distance comes out negative. that happens only when the true distance is essentially zero, so that rounding errors (around $10^{-16}$ times $\|x\|^2$) can push the result below zero: duplicate or near-duplicate points, more likely when they're far from the origin. two independent standard-normal points in 3-D essentially never coincide, so no number of plain trials will ever hit it. the edge-case generator duplicates a point 30% of the time and adds large offsets 30% of the time, and a duplicate at an offset is all it takes. the lesson: random tests explore the input distribution you give them, and real data (repeated rows, constant features, huge values, zeros) is full of cases that "typical" random inputs never produce. **build the edge cases into the generator.** and because `find_counterexample` takes a seed, the failure it found is a permanent, reproducible test case.
+
+## experiment 3: is the change really better?
+
+**what people usually predict:** on the default seed (4), batch size 5 wins by about 6% (MSE 4.44 against 4.72), so batch size 5 is better. most people expect it to win on most seeds.
+
+**what happens:** across 20 seeds, batch size 5 beats batch size 10 on **exactly 50%** of them. the mean test errors are 4.91 and 4.94, a difference of 0.02, while the spread across seeds (standard deviation about 0.46) is twenty times larger, and single-seed differences go up to ±0.43 (about 9%) in either direction. the other comparison is different: batch size 10 beats batch size 20 on **95%** of seeds (mean 4.94 against 5.46), a real effect.
+
+**why:** each seed controls the train/test split as well as the initial weights and the minibatch order. with only 60 training points and 340 test points, which points land in which set changes the test error a lot, far more than the batch size does once training has converged. on one seed you're comparing two noisy numbers, and the winner is a coin flip. a real effect shows up as a *consistent* win across seeds, as with batch size 20, which at this learning rate takes half as many steps per epoch and hasn't converged after 40 epochs. comparing both settings on the **same** seeds (a paired comparison) helps, because both see the same split; even so, the 5-versus-10 differences flip sign half the time. the rules for the rest of the course: **report results over several seeds with their spread, and treat a difference smaller than the seed-to-seed variation as no difference.** chapter 07 turns this into proper confidence intervals and paired tests, and chapter 30's `mlfs.research` automates multi-seed experiments.
