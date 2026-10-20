@@ -102,7 +102,7 @@ def odeint(f, y0, t, *, method="rk4", step_size=None):
 
 @app.cell(hide_code=True)
 def _():
-    checks.run(2, odeint=odeint, rk4_step=rk4_step)
+    checks.run(2, odeint=odeint, rk4_step=rk4_step, odeint_adjoint=odeint_adjoint)
     return
 
 
@@ -188,7 +188,7 @@ class NeuralODE(nn.Module):
 
 @app.cell(hide_code=True)
 def _():
-    checks.run(4, NeuralODE=NeuralODE)
+    checks.run(4, NeuralODE=NeuralODE, odeint=odeint)
     return
 
 

@@ -108,7 +108,7 @@ def get_kernel(kernel, **params):
 
 @app.cell(hide_code=True)
 def _():
-    checks.run(3, get_kernel=get_kernel)
+    checks.run(3, get_kernel=get_kernel, laplacian_kernel=laplacian_kernel, polynomial_kernel=polynomial_kernel, rbf_kernel=rbf_kernel)
     return
 
 
@@ -132,7 +132,7 @@ def center_gram(K):
 
 @app.cell(hide_code=True)
 def _():
-    checks.run(4, is_psd=is_psd, center_gram=center_gram)
+    checks.run(4, is_psd=is_psd, center_gram=center_gram, polynomial_kernel=polynomial_kernel, rbf_kernel=rbf_kernel)
     return
 
 

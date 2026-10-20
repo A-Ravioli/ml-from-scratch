@@ -184,19 +184,19 @@ class NGramLM:
 
 @app.cell(hide_code=True)
 def _():
-    checks.run(2, _tests="test_capstone.py", NGramLM=NGramLM)
+    checks.run(2, _tests="test_capstone.py", NGramLM=NGramLM, encode=encode)
     return
 
 
 @app.cell(hide_code=True)
 def _():
-    checks.run(3, _tests="test_capstone.py", NGramLM=NGramLM)
+    checks.run(3, _tests="test_capstone.py", NGramLM=NGramLM, build_vocab=build_vocab, encode=encode)
     return
 
 
 @app.cell(hide_code=True)
 def _():
-    checks.run(4, _tests="test_capstone.py", NGramLM=NGramLM)
+    checks.run(4, _tests="test_capstone.py", NGramLM=NGramLM, encode=encode)
     return
 
 

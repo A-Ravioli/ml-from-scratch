@@ -92,7 +92,7 @@ def linear_bounds(model, X, y, *, delta=0.05, bits=32):
 
 @app.cell(hide_code=True)
 def _():
-    checks.run(3, _tests="test_capstone.py", linear_bounds=linear_bounds)
+    checks.run(3, _tests="test_capstone.py", linear_bounds=linear_bounds, margin_bounds=margin_bounds)
     return
 
 
@@ -104,7 +104,7 @@ def svm_bounds(svc, X, y, *, delta=0.05):
 
 @app.cell(hide_code=True)
 def _():
-    checks.run(4, _tests="test_capstone.py", svm_bounds=svm_bounds)
+    checks.run(4, _tests="test_capstone.py", svm_bounds=svm_bounds, margin_bounds=margin_bounds)
     return
 
 

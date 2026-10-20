@@ -166,7 +166,7 @@ def deviation_probability(sampler, mu: float, eps: float, ns, n_reps: int, *, rn
 
 @app.cell(hide_code=True)
 def _():
-    checks.run(4, deviation_probability=deviation_probability)
+    checks.run(4, deviation_probability=deviation_probability, clt_distances=clt_distances)
     return
 
 

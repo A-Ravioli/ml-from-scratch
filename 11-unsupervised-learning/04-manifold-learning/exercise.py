@@ -149,7 +149,7 @@ def tsne_kl_gradient(Y, P, *, kl=True):
 
 @app.cell(hide_code=True)
 def _():
-    checks.run(5, tsne_kl_gradient=tsne_kl_gradient)
+    checks.run(5, tsne_kl_gradient=tsne_kl_gradient, joint_probabilities=joint_probabilities)
     return
 
 

@@ -117,7 +117,7 @@ def scores_over_seeds(X, y, *, seeds=(0, 1, 2), **kwargs):
 
 @app.cell(hide_code=True)
 def _():
-    checks.run(3, _tests="test_capstone.py", scores_over_seeds=scores_over_seeds, evaluate_clustering=evaluate_clustering)
+    checks.run(3, _tests="test_capstone.py", scores_over_seeds=scores_over_seeds, evaluate_clustering=evaluate_clustering, cluster_pca=cluster_pca)
     return
 
 

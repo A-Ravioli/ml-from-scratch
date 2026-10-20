@@ -234,7 +234,7 @@ def batch_graphs(graphs):
 
 @app.cell(hide_code=True)
 def _():
-    checks.run(5, global_add_pool=global_add_pool, global_mean_pool=global_mean_pool, batch_graphs=batch_graphs)
+    checks.run(5, global_add_pool=global_add_pool, global_mean_pool=global_mean_pool, batch_graphs=batch_graphs, GCNConv=GCNConv)
     return
 
 

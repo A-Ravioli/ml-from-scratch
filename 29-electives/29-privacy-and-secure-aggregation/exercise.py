@@ -130,7 +130,7 @@ def secagg_upload_bytes(n_clients, dim, *, n_dropped=0, entry_bytes=4, key_bytes
 @app.cell(hide_code=True)
 def _():
     checks.run(3, shamir_share=shamir_share, shamir_reconstruct=shamir_reconstruct,
-               secure_aggregate=secure_aggregate, secagg_upload_bytes=secagg_upload_bytes)
+               secure_aggregate=secure_aggregate, secagg_upload_bytes=secagg_upload_bytes, decode=decode, encode=encode)
     return
 
 
@@ -203,7 +203,7 @@ def dp_fedavg(model, client_data, local_update, *, rounds, sampling_rate, clip, 
 
 @app.cell(hide_code=True)
 def _():
-    checks.run(6, dp_fedavg=dp_fedavg)
+    checks.run(6, dp_fedavg=dp_fedavg, compute_epsilon=compute_epsilon, secagg_upload_bytes=secagg_upload_bytes)
     return
 
 

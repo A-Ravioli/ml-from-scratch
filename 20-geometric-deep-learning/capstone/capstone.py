@@ -107,7 +107,7 @@ def evaluate(model, molecules, *, cutoff=R_CUT, batch_size=256):
 @app.cell(hide_code=True)
 def _():
     checks.run(4, _tests="test_capstone.py", fit=fit, evaluate=evaluate, build_model=build_model,
-               make_dataset=make_dataset)
+               make_dataset=make_dataset, collate=collate)
     return
 
 
