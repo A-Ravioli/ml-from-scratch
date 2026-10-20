@@ -16,7 +16,7 @@ with app.setup:
     # your own implementation from exercise.py (the reference when MLFS_SOLUTIONS=1)
     ex = notebooks.load_sibling("exercise")
 
-    torch.set_num_threads(4)
+    torch.set_num_threads(min(4, torch.get_num_threads()))  # never more than the environment allows (CI sets 1)
 
 
 @app.function

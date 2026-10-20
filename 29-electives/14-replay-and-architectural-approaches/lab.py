@@ -29,7 +29,7 @@ with app.setup:
         cl = notebooks.load(notebooks.resolve(_t12, "exercise", solution=True))
         CL_FALLBACK = True
 
-    torch.set_num_threads(2)
+    torch.set_num_threads(min(2, torch.get_num_threads()))  # never more than the environment allows (CI sets 1)
     GROUPS = [(0, 1), (2, 3), (4, 5), (6, 7), (8, 9)]
     TRAIN = dict(optimizer="adam", lr=1e-3, batch_size=64, epochs=1)
     BUDGET = 50 * 784  # the project's memory budget: 39,200 floats, the size of 50 MNIST images

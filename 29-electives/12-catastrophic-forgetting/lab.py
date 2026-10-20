@@ -15,7 +15,7 @@ with app.setup:
     # your own implementation from exercise.py (the reference when MLFS_SOLUTIONS=1)
     ex = notebooks.load_sibling("exercise")
 
-    torch.set_num_threads(2)
+    torch.set_num_threads(min(2, torch.get_num_threads()))  # never more than the environment allows (CI sets 1)
     GROUPS = [(0, 1), (2, 3), (4, 5), (6, 7), (8, 9)]
     TRAIN = dict(optimizer="adam", lr=1e-3, batch_size=64, epochs=1)
 

@@ -301,9 +301,11 @@ def test_stage2_bfgs_rosenbrock(nb):
 
 def test_stage2_bfgs_superlinear_on_quadratic(nb):
     A, b, f, g = _quad(np.geomspace(1, 1000, 10), seed=4)
-    res = nb.bfgs(f, _Budget(g, 500), np.zeros(10), tol=1e-7)
+    # tol 1e-5, not tighter: below ~1e-7 the Armijo decrease (c1 * alpha * g.d ~ 1e-18) is under float roundoff in f,
+    # so whether the last line search succeeds depends on the BLAS library
+    res = nb.bfgs(f, _Budget(g, 500), np.zeros(10), tol=1e-5)
     x_star = np.linalg.solve(A, b)
-    assert res.converged and np.allclose(res.x, x_star, atol=1e-8) and res.n_iters <= 70, (
+    assert res.converged and np.allclose(res.x, x_star, atol=1e-5) and res.n_iters <= 70, (
         f"on a 10-D quadratic with condition number 1000, BFGS needs a few dozen steps (gradient descent: thousands); "
         f"got {res.n_iters} steps, converged={res.converged}")
 

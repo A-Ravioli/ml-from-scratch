@@ -16,7 +16,7 @@ with app.setup:
     # your own implementation from exercise.py (the reference when MLFS_SOLUTIONS=1)
     ex = notebooks.load_sibling("exercise")
 
-    torch.set_num_threads(4)
+    torch.set_num_threads(min(4, torch.get_num_threads()))  # never more than the environment allows (CI sets 1)
     N_ATOMS = 6
     TYPES = torch.tensor([0, 0, 1, 1, 2, 2])  # every molecule has the same atoms, listed in the same order
     W = torch.tensor([[1.0, -0.5, 0.8], [-0.5, 1.5, -1.0], [0.8, -1.0, 0.6]])  # pair weights by atom type
