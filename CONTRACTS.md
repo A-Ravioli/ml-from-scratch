@@ -1282,13 +1282,13 @@ bits/dim, FID, precision/recall; MADE/PixelCNN; VAE/ConvVAE; VQ; GAN/DCGAN; WGAN
 
 Langevin/EBMs, score matching, DDPM, DDIM/PF-ODE, flow matching, guidance, DiT/latent diffusion
 
-- `22-generative-models-ii-energy-score-diffusion-and-flow-matching/01-energy-based-models`: `langevin_dynamics`, `ebm_loss`
-- `22-generative-models-ii-energy-score-diffusion-and-flow-matching/02-score-matching`: `dsm_loss`, `sliced_score_matching_loss`, `annealed_langevin`
-- `22-generative-models-ii-energy-score-diffusion-and-flow-matching/03-diffusion-ddpm`: `TimeEmbedding`, `TimeMLP`, `TimeUNet`, `DiffusionSchedule`, `ddpm_loss`, `ddpm_sample`
-- `22-generative-models-ii-energy-score-diffusion-and-flow-matching/04-the-sde-view-and-fast-sampling`: `ddim_sample`, `probability_flow_sample`
-- `22-generative-models-ii-energy-score-diffusion-and-flow-matching/05-flow-matching-and-rectified-flow`: `flow_matching_loss`, `sample_flow`, `make_reflow_pairs`
-- `22-generative-models-ii-energy-score-diffusion-and-flow-matching/06-conditioning-and-guidance`: `drop_labels`, `cfg_model`
-- `22-generative-models-ii-energy-score-diffusion-and-flow-matching/07-latent-diffusion-and-dit`: `DiT`, `encode_latents`
+- `22-generative-models-ii-energy-score-diffusion-and-flow-matching/01-energy-based-models`: `langevin_dynamics`, `ebm_loss`, `EnergyMLP`, `score_from_energy`, `mala`, `train_ebm`
+- `22-generative-models-ii-energy-score-diffusion-and-flow-matching/02-score-matching`: `dsm_loss`, `sliced_score_matching_loss`, `annealed_langevin`, `NoiseConditionalScore`, `geometric_sigmas`, `fit_dsm`
+- `22-generative-models-ii-energy-score-diffusion-and-flow-matching/03-diffusion-ddpm`: `TimeEmbedding`, `TimeMLP`, `TimeUNet`, `DiffusionSchedule`, `ddpm_loss`, `ddpm_sample`, `fit_ddpm`
+- `22-generative-models-ii-energy-score-diffusion-and-flow-matching/04-the-sde-view-and-fast-sampling`: `ddim_sample`, `probability_flow_sample`, `alpha_bar_at`, `beta_at`, `eps_to_score`, `pf_ode_drift`, `ddim_timesteps`, `reverse_sde_sample`
+- `22-generative-models-ii-energy-score-diffusion-and-flow-matching/05-flow-matching-and-rectified-flow`: `flow_matching_loss`, `sample_flow`, `make_reflow_pairs`, `fit_flow_matching`, `straightness`
+- `22-generative-models-ii-energy-score-diffusion-and-flow-matching/06-conditioning-and-guidance`: `drop_labels`, `cfg_model`, `classifier_guided_eps`, `fit_conditional`
+- `22-generative-models-ii-energy-score-diffusion-and-flow-matching/07-latent-diffusion-and-dit`: `DiT`, `encode_latents`, `decode_latents`
 
 | name | signature | notes |
 |---|---|---|
@@ -1307,6 +1307,29 @@ Langevin/EBMs, score matching, DDPM, DDIM/PF-ODE, flow matching, guidance, DiT/l
 | `drop_labels` | `(y, p_uncond, null_label, *, generator=None)` | replaces each label with null_label with prob p_uncond (classifier-free training) |
 | `cfg_model` | `(model, guidance_scale, null_label)` | returns g(x, t, y) = m(x,t,null) + w (m(x,t,y) - m(x,t,null)) with w = guidance_scale (w = 1 -> plain conditional); works for epsilon, score or velocity models; one batched forward |
 | `encode_latents` | `(vae, loader, *, device='cpu')` | runs a generative.ConvVAE (or anything with encode(x) -> (mu, logvar)) over (x, y) batches; returns (latents = mu (N, C, h, w), labels (N,)); normalise by latents.std() before diffusion |
+| `score_from_energy` | `(energy_fn)` | returns score_fn(x) = -grad_x sum(energy_fn(x)), detached, same shape as x (works under no_grad) |
+| `mala` | `(energy_fn, x0, *, step_size=0.01, n_steps=100, generator=None)` | Metropolis-adjusted Langevin on energy_fn (B, ...) -> (B,): proposal x - (h/2) grad E + sqrt(h) z, per-row accept/reject; returns (x detached, acceptance rate float over all steps) |
+| `train_ebm` | `(energy, X, *, n_iters=500, batch_size=128, lr=0.001, langevin_steps=20, step_size=0.01, buffer_size=10000, reinit_prob=0.05, alpha=0.1, seed=0)` | persistent contrastive divergence with a replay buffer (uniform on the data's bounding box, re-init prob reinit_prob); returns dict(loss, e_real, e_fake lists, buffer) |
+| `geometric_sigmas` | `(sigma_max, sigma_min, n)` | n levels from sigma_max down to sigma_min, geometric, float32 (n,) |
+| `fit_dsm` | `(model, X, sigmas, *, n_iters=2000, batch_size=256, lr=0.001, seed=0)` | Adam on dsm_loss with one sigma per example drawn from sigmas; seeded generator; returns losses |
+| `fit_ddpm` | `(model, schedule, X, *, n_iters=2000, batch_size=256, lr=0.001, seed=0)` | Adam on ddpm_loss over minibatches with a seeded generator (also passed to ddpm_loss); returns losses |
+| `alpha_bar_at` | `(schedule, t)` | continuous-time alpha_bar(t), t any shape: log alpha_bars linearly interpolated between grid points k / n_steps, t clamped to [0, (n_steps-1)/n_steps] |
+| `beta_at` | `(schedule, t)` | beta(t) = -d log alpha_bar / dt of alpha_bar_at (piecewise constant, n_steps (log ab_k - log ab_{k+1})) |
+| `eps_to_score` | `(eps, alpha_bar)` | -eps / sqrt(1 - alpha_bar); alpha_bar float or (B,) broadcast over non-batch dims |
+| `pf_ode_drift` | `(model, schedule, x, t, y=None)` | -beta(t)/2 (x + score(x, t)) with score = eps_to_score(model(x, t, y), alpha_bar_at(schedule, t)); t (B,) in [0, 1] |
+| `ddim_timesteps` | `(n_train, n_steps)` | round(linspace(0, n_train - 1, n_steps)) int64, increasing; one step -> [n_train - 1]; the subsequence ddim_sample uses |
+| `reverse_sde_sample` | `(model, schedule, shape, *, n_steps=100, y=None, generator=None, device='cpu')` | Euler-Maruyama on the reverse VP-SDE from t = (n-1)/n to 0, then the ODE sampler's final denoising step |
+| `fit_flow_matching` | `(model, X, *, X0=None, coupling=None, n_iters=2000, batch_size=256, lr=0.001, seed=0)` | Adam on flow_matching_loss; x0 = X0[idx] for given pairs (reflow), or coupling(fresh N(0, I) noise on x1's device, x1) per batch for minibatch OT-CFM (coupling returns the noise batch reordered), else drawn in the loss; ValueError if both X0 and coupling; returns losses |
+| `straightness` | `(model, x0, *, n_steps=100, y=None)` | Liu et al. (2023): mean over batch and Euler steps of \|\|(x_end - x0) - v(x_k, t_k)\|\|^2 (summed over non-batch dims); 0 = straight; eval mode, no grad, float |
+| `classifier_guided_eps` | `(eps_model, classifier, schedule, guidance_scale)` | returns an nn.Module eps(x, t) - w sqrt(1 - alpha_bar(t)) grad_x log p(y \| x, t), for every eps sampler; eps_model called without labels, classifier(x, t) -> logits (B, K) |
+| `fit_conditional` | `(model, X, y, n_classes, *, objective='flow', schedule=None, p_uncond=0.1, n_iters=2000, batch_size=256, lr=0.001, seed=0)` | classifier-free training: labels dropped to n_classes (the null label) with prob p_uncond, objective 'flow' (flow_matching_loss) or 'ddpm' (needs schedule; ValueError otherwise); returns losses |
+| `decode_latents` | `(vae, z, *, scale=1.0, batch_size=256, device='cpu')` | vae.decode(z * scale) in batches, eval mode (restored), no grad, results on the CPU; scale = the latents' std used to normalise them |
+| **class** `EnergyMLP` | | scalar energy E(x): (B, data_dim) -> (B,), SiLU activations |
+| `EnergyMLP.__init__` | `(self, data_dim=2, *, hidden_dim=128, n_layers=3)` |  |
+| `EnergyMLP.forward` | `(self, x)` |  |
+| **class** `NoiseConditionalScore` | | s(x, sigma (B,)): MLP on (x, log sigma) with output divided by sigma |
+| `NoiseConditionalScore.__init__` | `(self, data_dim=2, *, hidden_dim=128, n_layers=3)` |  |
+| `NoiseConditionalScore.forward` | `(self, x, sigma)` |  |
 | **class** `TimeEmbedding` | | t (B,) float in [0,1] -> (B, dim) sinusoidal features of 1000 t followed by a 2-layer MLP |
 | `TimeEmbedding.__init__` | `(self, dim, *, max_period=10000.0)` |  |
 | `TimeEmbedding.forward` | `(self, t)` |  |
