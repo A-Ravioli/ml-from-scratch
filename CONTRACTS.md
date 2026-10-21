@@ -1643,12 +1643,12 @@ MinHash dedup, Llama-style model + MoE, LoRA/SFT, reward models + DPO, speculati
 
 attribution, activation caching/patching, toy superposition + SAEs, FGSM/PGD, calibration + conformal, DP-SGD, MIA, fairness
 
-- `28-interpretability-robustness-and-alignment/01-attribution-and-probing`: `saliency`, `integrated_gradients`
-- `28-interpretability-robustness-and-alignment/02-mechanistic-interpretability`: `run_with_cache`, `patch_activation`, `activation_patching`
-- `28-interpretability-robustness-and-alignment/03-superposition-and-dictionary-learning`: `sparse_feature_batch`, `ToySuperposition`, `SparseAutoencoder`
-- `28-interpretability-robustness-and-alignment/04-adversarial-robustness`: `fgsm`, `pgd_attack`
-- `28-interpretability-robustness-and-alignment/05-uncertainty-and-ood`: `fit_temperature`, `conformal_quantile`, `conformal_prediction_sets`, `conformal_intervals`
-- `28-interpretability-robustness-and-alignment/06-privacy-and-fairness`: `per_sample_gradients`, `dp_sgd_step`, `loss_threshold_attack`, `demographic_parity_difference`, `equalized_odds_difference`
+- `28-interpretability-robustness-and-alignment/01-attribution-and-probing`: `saliency`, `integrated_gradients`, `rank_correlation`, `randomize_layers`, `cascading_randomization`
+- `28-interpretability-robustness-and-alignment/02-mechanistic-interpretability`: `run_with_cache`, `patch_activation`, `activation_patching`, `position_patching`, `attention_patterns`, `induction_score`, `prev_token_score`, `ablate_heads`
+- `28-interpretability-robustness-and-alignment/03-superposition-and-dictionary-learning`: `sparse_feature_batch`, `ToySuperposition`, `SparseAutoencoder`, `train_sae`, `sae_stats`, `mmcs`
+- `28-interpretability-robustness-and-alignment/04-adversarial-robustness`: `fgsm`, `pgd_attack`, `robust_accuracy`, `adversarial_training_step`, `corrupt`, `corruption_accuracy`
+- `28-interpretability-robustness-and-alignment/05-uncertainty-and-ood`: `fit_temperature`, `conformal_quantile`, `conformal_prediction_sets`, `conformal_intervals`, `ensemble_uncertainty`, `ood_auroc`
+- `28-interpretability-robustness-and-alignment/06-privacy-and-fairness`: `per_sample_gradients`, `dp_sgd_step`, `loss_threshold_attack`, `demographic_parity_difference`, `equalized_odds_difference`, `tpr_at_fpr`, `rdp_subsampled_gaussian`, `dp_sgd_epsilon`
 
 | name | signature | notes |
 |---|---|---|
@@ -1669,14 +1669,35 @@ attribution, activation caching/patching, toy superposition + SAEs, FGSM/PGD, ca
 | `loss_threshold_attack` | `(member_losses, nonmember_losses)` | Yeom et al. (2018) membership inference by thresholding loss; returns ROC AUC (members = positives, lower loss = more likely member) |
 | `demographic_parity_difference` | `(y_pred, groups)` | max - min over groups of P(y_pred = 1 \| group) |
 | `equalized_odds_difference` | `(y_true, y_pred, groups)` | max over {TPR, FPR} of (max - min across groups) |
+| `rank_correlation` | `(a, b)` | Spearman of two equal-size arrays (flattened, ties get average ranks), float; ValueError for different sizes |
+| `randomize_layers` | `(model, n, *, generator=None)` | deep copy with the LAST n parameterised modules (own parameters, model.modules() order) re-initialised by reset_parameters(), seeded from generator; the original and torch's global RNG state unchanged; ValueError if n < 0 or > their number |
+| `cascading_randomization` | `(model, attribute, x, target, *, generator=None)` | Adebayo et al. (2018): ndarray (L,), entry k-1 = rank_correlation(\|attribute(model, x, target)\|, \|attribute(randomize_layers(model, k), x, target)\|) |
+| `position_patching` | `(model, clean_idx, corrupt_idx, metric, names)` | ndarray (len(names), T): metric after patching name's clean output into the corrupt run at the single position t; eval mode (restored), no grad |
+| `attention_patterns` | `(model, idx)` | list of (B, H, T, T) attention weights, one per model.blocks entry, via attn.save_weights; eval mode and flags restored |
+| `induction_score` | `(weights, period)` | weights (B, H, T, T) -> (H,) mean attention from t to t - period + 1 over t >= period (sequences repeating every period) |
+| `prev_token_score` | `(weights)` | weights (B, H, T, T) -> (H,) mean attention from t to t - 1 over t >= 1 |
+| `ablate_heads` | `(model, idx, heads)` | model(idx) with each (layer, head) in heads zeroed at the input of blocks[layer].attn.out_proj (or o_proj) |
+| `train_sae` | `(sae, acts, *, steps=2000, batch_size=256, lr=0.001, generator=None)` | Adam on minibatches of rows of acts drawn with generator; returns per-step losses |
+| `sae_stats` | `(sae, acts)` | {'l0': mean active features per row, 'dead': fraction never active, 'fvu': \|\|x - x_hat\|\|^2 / \|\|x - mean\|\|^2} |
+| `mmcs` | `(learned, true)` | mean over the columns of true (d, n) of the max cosine similarity with a column of learned (d, m) (signed, not \|cos\|) |
+| `robust_accuracy` | `(model, x, y, attack=None, *, batch_size=256)` | accuracy on attack(model, xb, yb) per batch (clean if attack is None); eval mode |
+| `adversarial_training_step` | `(model, optimizer, x, y, *, epsilon, alpha=None, n_steps=7, loss_fn=None, generator=None)` | Madry et al.: linf PGD examples against the current model in eval mode, then one optimizer step on their loss in train mode; returns the loss float |
+| `corrupt` | `(x, kind, severity, *, generator=None)` | corrupted copy of images (B, C, H, W) in [0, 1]; kind in {'gaussian_noise','contrast','brightness','shift'}, severity 0..5 (0 = unchanged) |
+| `corruption_accuracy` | `(model, x, y, kinds, severities, *, generator=None)` | {kind: ndarray of accuracies, one per severity}; eval mode (restored); corruptions drawn with generator |
+| `ensemble_uncertainty` | `(probs)` | probs (M, n, k) -> {'mean': (n, k), 'total': H(mean), 'aleatoric': mean_m H(p_m), 'epistemic': total - aleatoric}, nats |
+| `ood_auroc` | `(scores_in, scores_out)` | ROC AUC with OOD inputs as positives, higher score = more OOD |
+| `tpr_at_fpr` | `(member_losses, nonmember_losses, fpr=0.01)` | Carlini et al. (2022): fraction of members with loss < tau, tau the loosest threshold flagging at most fpr of non-members |
+| `rdp_subsampled_gaussian` | `(q, noise_multiplier, orders)` | RDP epsilon(alpha) of one Poisson-subsampled Gaussian step (sensitivity 1) at integer orders >= 2 (Mironov et al., 2019); ndarray like orders |
+| `dp_sgd_epsilon` | `(q, noise_multiplier, steps, delta, *, orders=None)` | min over orders (None: 2..255) of steps * RDP(alpha) + log(1/delta) / (alpha - 1) |
 | **class** `ToySuperposition` | | Elhage et al. (2022): x -> ReLU(W^T W x + b), W (n_hidden, n_features); importance (n_features,) stored as a buffer (default ones) for the caller's importance-weighted MSE |
 | `ToySuperposition.__init__` | `(self, n_features, n_hidden, *, importance=None)` |  |
 | `ToySuperposition.forward` | `(self, x)` |  |
-| **class** `SparseAutoencoder` | | encode -> ReLU features (B, d_hidden); decode -> reconstruction; forward -> (x_hat, features, loss = MSE + l1_coeff * L1(features)); decoder columns unit-normalised |
+| **class** `SparseAutoencoder` | | encode -> ReLU features (B, d_hidden); decode -> reconstruction; forward -> (x_hat, features, loss = MSE + l1_coeff * L1(features)); decoder columns unit-norm at initialisation (dictionary() renormalises) |
 | `SparseAutoencoder.__init__` | `(self, d_in, d_hidden, *, l1_coeff=0.001)` |  |
 | `SparseAutoencoder.encode` | `(self, x)` |  |
 | `SparseAutoencoder.decode` | `(self, f)` |  |
 | `SparseAutoencoder.forward` | `(self, x)` |  |
+| `SparseAutoencoder.dictionary` | `(self)` | the decoder directions renormalised to unit-norm columns, (d_in, d_hidden) |
 
 ### mlfs.research
 
