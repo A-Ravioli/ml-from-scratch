@@ -75,15 +75,20 @@ def _():
 def speculative_accept(p, q, draft_tokens, *, generator=None):
     """stage 2: p (k+1, V) target probs, q (k, V) draft probs, draft_tokens (k,) -> (n_accepted, next_token int)."""
     k = len(draft_tokens)
+    dev = None if generator is None else generator.device  # draw where the generator lives (e.g. CPU, with a GPU model)
+
+    def draw(probs):
+        return int(torch.multinomial(probs if dev is None else probs.to(dev), 1, generator=generator))
+
     for i in range(k):
         x = int(draft_tokens[i])
-        u = torch.rand((), generator=generator).item()
+        u = torch.rand((), generator=generator, device=dev).item()
         if u * q[i, x] < p[i, x]:  # accept with probability min(1, p/q)
             continue
         residual = (p[i] - q[i]).clamp(min=0)
         residual = residual / residual.sum() if residual.sum() > 0 else p[i]
-        return i, int(torch.multinomial(residual, 1, generator=generator))
-    return k, int(torch.multinomial(p[k], 1, generator=generator))
+        return i, draw(residual)
+    return k, draw(p[k])
 
 
 @app.cell(hide_code=True)
@@ -128,7 +133,8 @@ def speculative_decode(target, draft, idx, max_new_tokens, *, k=4, temperature=1
                     qs.append(F.one_hot(tok, logits.shape[-1]).float())
                 else:
                     q = F.softmax(logits / temperature, dim=-1)
-                    tok = torch.multinomial(q, 1, generator=generator)[0]
+                    q_g = q if generator is None else q.to(generator.device)  # sample where the generator lives
+                    tok = torch.multinomial(q_g, 1, generator=generator)[0]
                     qs.append(q)
                 drafted = torch.cat([drafted, tok.view(1, 1).to(seq.device)], dim=1)
             t_logits = probs(target, drafted)[-(n_draft + 1):]  # the target's distribution at every drafted position
@@ -184,7 +190,9 @@ def constrained_decode(model, idx, max_new_tokens, allowed, *, temperature=1.0, 
             if temperature == 0:
                 tok = int(logits.argmax())
             else:
-                tok = int(torch.multinomial(F.softmax(logits / temperature, -1), 1, generator=generator))
+                probs = F.softmax(logits / temperature, -1)
+                probs = probs if generator is None else probs.to(generator.device)  # sample where the generator lives
+                tok = int(torch.multinomial(probs, 1, generator=generator))
             generated.append(tok)
             seq = torch.cat([seq, torch.tensor([[tok]], device=seq.device)], dim=1)
     finally:
