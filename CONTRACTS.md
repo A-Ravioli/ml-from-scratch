@@ -1542,13 +1542,13 @@ FLOP/roofline calculators, loss scaling, ring all-reduce simulation, ZeRO-1 + me
 
 MinHash dedup, Llama-style model + MoE, LoRA/SFT, reward models + DPO, speculative decoding, eval harness, retrieval
 
-- `27-large-language-models/01-pretraining-data-and-compute`: `shingles`, `minhash_signature`, `jaccard`, `minhash_dedup`
+- `27-large-language-models/01-pretraining-data-and-compute`: `shingles`, `minhash_signature`, `jaccard`, `minhash_dedup`, `quality_filter`
 - `27-large-language-models/02-modern-llm-architecture`: `SwiGLU`, `GroupedQueryAttention`, `MoE`, `LlamaBlock`, `Llama`
-- `27-large-language-models/03-fine-tuning`: `LoRALinear`, `apply_lora`, `merge_lora`, `build_sft_example`, `sft_loss`
-- `27-large-language-models/04-preference-learning`: `sequence_logprobs`, `RewardModel`, `bradley_terry_loss`, `dpo_loss`
+- `27-large-language-models/03-fine-tuning`: `LoRALinear`, `apply_lora`, `merge_lora`, `build_sft_example`, `sft_loss`, `collate_sft`
+- `27-large-language-models/04-preference-learning`: `sequence_logprobs`, `RewardModel`, `bradley_terry_loss`, `dpo_loss`, `token_logprobs`, `dpo_step`, `kl_penalized_rewards`, `best_of_n_kl`
 - `27-large-language-models/05-decoding-and-inference`: `speculative_decode`
-- `27-large-language-models/06-evaluation`: `loglikelihood`, `evaluate_multiple_choice`
-- `27-large-language-models/07-retrieval-tools-and-reasoning`: `chunk_text`, `cosine_top_k`, `VectorIndex`
+- `27-large-language-models/06-evaluation`: `loglikelihood`, `evaluate_multiple_choice`, `accuracy_ci`, `paired_accuracy_diff`, `pairwise_judge`, `ngrams`, `contamination_flags`
+- `27-large-language-models/07-retrieval-tools-and-reasoning`: `chunk_text`, `cosine_top_k`, `VectorIndex`, `HashingEmbedder`, `build_rag_prompt`, `run_agent`, `majority_vote`
 
 | name | signature | notes |
 |---|---|---|
@@ -1564,39 +1564,57 @@ MinHash dedup, Llama-style model + MoE, LoRA/SFT, reward models + DPO, speculati
 | `bradley_terry_loss` | `(chosen_rewards, rejected_rewards)` | -mean(logsigmoid(chosen - rejected)) |
 | `dpo_loss` | `(policy_chosen_logps, policy_rejected_logps, ref_chosen_logps, ref_rejected_logps, *, beta=0.1)` | Rafailov et al. (2023); all inputs (B,) sequence log-probs; returns (loss, chosen_rewards = beta (pi_c - ref_c) detached, rejected_rewards) |
 | `speculative_decode` | `(target, draft, idx, max_new_tokens, *, k=4, temperature=1.0, generator=None)` | batch size 1; draft proposes k tokens, target verifies in one forward; exact rejection-sampling correction (target distribution preserved; temperature 0 -> greedy); returns (tokens (1, T + max_new_tokens), acceptance_rate float) |
-| `loglikelihood` | `(model, tokenizer, context, continuation, *, device='cpu')` | returns (sum log p(continuation \| context), is_greedy bool) using tokenizer.encode |
+| `loglikelihood` | `(model, tokenizer, context, continuation, *, device='cpu')` | returns (sum log p(continuation \| context), is_greedy bool); context and continuation encoded separately, left-truncated to block_size; ValueError if the continuation alone doesn't fit; eval mode, no_grad |
 | `evaluate_multiple_choice` | `(model, tokenizer, items, *, normalize=True, device='cpu')` | items: list of dict(question str, choices list[str], answer int); picks argmax loglikelihood (per-token if normalize); returns accuracy float |
 | `chunk_text` | `(text, chunk_size=200, overlap=50)` | word-level sliding windows; returns list[str] |
 | `cosine_top_k` | `(query, keys, k=5)` | NumPy: query (d,) or (q,d), keys (n,d) -> (indices, scores) each (k,) or (q,k), descending |
+| `quality_filter` | `(text, *, min_words=20, word_len=(3.0, 10.0), max_symbol_ratio=0.1, min_alpha_frac=0.8, max_dup_line_frac=0.3)` | Gopher-style heuristic filters -> (keep bool, reasons list[str] of the rules the text fails, in a fixed order) |
+| `collate_sft` | `(examples, *, pad_id=0)` | list of (input_ids, targets) -> (B,T) int64 tensors right-padded with pad_id and -100 |
+| `token_logprobs` | `(model, input_ids, targets)` | (B,T) log p(targets) per position, 0 where targets == -100 |
+| `dpo_step` | `(policy, reference, batch, optimizer, *, beta=0.1)` | one optimizer step of dpo_loss with a frozen reference (no_grad, eval); policy in train mode; returns dict of floats loss, accuracy (fraction chosen_reward > rejected_reward, strict), margin, chosen_reward, rejected_reward |
+| `kl_penalized_rewards` | `(scores, policy_logps, ref_logps, mask, *, beta=0.1)` | (B,T) per-token rewards: -beta (policy_logps - ref_logps) on mask, plus scores at each row's last True; 0 off mask |
+| `best_of_n_kl` | `(n)` | KL(best-of-n \|\| base) = log n - (n - 1) / n nats; ValueError if n < 1 |
+| `accuracy_ci` | `(correct, *, n_boot=2000, alpha=0.05, rng=None)` | bootstrap percentile interval of mean(correct) -> (acc, lo, hi) |
+| `paired_accuracy_diff` | `(correct_a, correct_b, *, n_boot=2000, alpha=0.05, rng=None)` | paired bootstrap of mean(correct_a - correct_b) over shared items -> (diff, lo, hi) |
+| `pairwise_judge` | `(judge, prompt, response_a, response_b)` | judge(prompt, a, b) -> P(a better); returns (judge(prompt, a, b) + 1 - judge(prompt, b, a)) / 2 to cancel position bias |
+| `ngrams` | `(text, n=13)` | set of word n-gram tuples (words = runs of [a-z0-9'] after lowercasing) |
+| `contamination_flags` | `(test_texts, train_texts, *, n=13)` | bool ndarray (len(test_texts),): True where a test text shares at least one word n-gram with the training texts |
+| `build_rag_prompt` | `(question, passages)` | 'Context:\n[1] p1\n[2] p2\n...\n\nQuestion: {question}\nAnswer:' (just the question line if no passages) |
+| `run_agent` | `(llm, tools, task, *, max_steps=8)` | loop llm(transcript) -> 'CALL name(arg)' (runs tools[name](arg), appends 'RESULT: ...') or 'ANSWER: x' (ANSWER takes precedence) for at most max_steps; returns (answer or None, transcript) |
+| `majority_vote` | `(answers)` | most common answer, None ignored; ties -> the answer seen first; None if there are none |
 | **class** `SwiGLU` | | w_down(silu(w_gate x) * w_up x); d_ff default int(8 d / 3) rounded up to a multiple of 8; no biases |
 | `SwiGLU.__init__` | `(self, d_model, d_ff=None)` |  |
 | `SwiGLU.forward` | `(self, x)` |  |
-| **class** `GroupedQueryAttention` | | always causal; q_proj d -> n_heads*dh, k_proj/v_proj d -> n_kv_heads*dh, o_proj; transformer.RotaryEmbedding on q, k with offset = cache.seq_len (cache: transformer.LayerKVCache, stores the n_kv_heads k/v); n_kv_heads = 1 is MQA, = n_heads is MHA |
+| **class** `GroupedQueryAttention` | | always causal; q_proj d -> n_heads*dh, k_proj/v_proj d -> n_kv_heads*dh, o_proj; transformer.RotaryEmbedding on q, k with offset = cache.seq_len (cache: transformer.LayerKVCache, stores the n_kv_heads k/v); n_kv_heads = 1 is MQA, = n_heads is MHA; attrs q_proj, k_proj, v_proj, o_proj (no biases), rope, n_heads, n_kv_heads, head_dim; save_weights=False, when True takes an explicit softmax path and stores last_weights (B,H,Tq,Tk) detached, pre-dropout, after the end-aligned causal mask (same semantics as transformer.MultiHeadAttention) |
 | `GroupedQueryAttention.__init__` | `(self, d_model, n_heads, n_kv_heads, *, rope_base=10000.0, max_seq_len=2048, dropout=0.0)` |  |
 | `GroupedQueryAttention.forward` | `(self, x, *, cache=None)` |  |
-| **class** `MoE` | | top_k routing over n_experts SwiGLU experts; x (B,T,d) -> (out, aux_loss) with the Switch load-balancing loss |
+| **class** `MoE` | | top_k routing over n_experts SwiGLU experts; x (B,T,d) -> (out, aux_loss) with the Switch load-balancing loss; attrs router, experts, top_k, n_experts, last_counts (int64 (n_experts,) tokens routed in the last forward) |
 | `MoE.__init__` | `(self, d_model, d_ff, n_experts, *, top_k=2)` |  |
 | `MoE.forward` | `(self, x)` |  |
-| **class** `LlamaBlock` | | pre-norm torchnn.RMSNorm -> GQA -> residual -> RMSNorm -> SwiGLU or MoE (n_experts > 0) -> residual; MoE aux loss stored in self.aux_loss (0.0 otherwise) |
+| **class** `LlamaBlock` | | submodules norm1, attn, norm2, mlp; pre-norm torchnn.RMSNorm -> GQA -> residual -> RMSNorm -> SwiGLU or MoE (n_experts > 0) -> residual; MoE aux loss stored in self.aux_loss (0.0 otherwise) |
 | `LlamaBlock.__init__` | `(self, d_model, n_heads, n_kv_heads, *, d_ff=None, n_experts=0, top_k=2, max_seq_len=2048)` |  |
 | `LlamaBlock.forward` | `(self, x, *, cache=None)` |  |
-| **class** `Llama` | | causal-LM protocol (CONVENTIONS['torch']); tok_emb, blocks (ModuleList of LlamaBlock), norm, lm_head; loss = CE(ignore_index=-100) + aux_loss_coef * sum of block aux losses; works with transformer.KVCache / generate_cached |
+| **class** `Llama` | | causal-LM protocol (CONVENTIONS['torch']); tok_emb, blocks (ModuleList of LlamaBlock), norm, lm_head; loss = CE(ignore_index=-100) + aux_loss_coef * sum of block aux losses; works with transformer.KVCache / generate_cached; the aux term is included in eval mode too (so estimate_loss on MoE models includes it) |
 | `Llama.__init__` | `(self, vocab_size, *, block_size=256, n_layers=4, n_heads=4, n_kv_heads=2, d_model=128, d_ff=None, n_experts=0, top_k=2, aux_loss_coef=0.01, tie_weights=True)` |  |
 | `Llama.forward` | `(self, idx, targets=None, *, cache=None)` |  |
 | `Llama.hidden_states` | `(self, idx)` |  |
 | `Llama.generate` | `(self, idx, max_new_tokens, *, temperature=1.0, top_k=None, top_p=None, generator=None)` |  |
-| **class** `LoRALinear` | | wraps a frozen nn.Linear: base(x) + (alpha / r) * B(A(dropout(x))), A Kaiming-init (r, in), B zeros (out, r); merge() -> plain nn.Linear with W + (alpha/r) B A |
+| **class** `LoRALinear` | | wraps a frozen nn.Linear: base(x) + (alpha / r) * B(A(dropout(x))), A Kaiming-init (r, in), B zeros (out, r); merge() -> plain nn.Linear with W + (alpha/r) B A; attrs base, lora_A, lora_B (Parameters), scaling, dropout, r, alpha; follows the base's device and dtype |
 | `LoRALinear.__init__` | `(self, base, r=8, *, alpha=16.0, dropout=0.0)` |  |
 | `LoRALinear.forward` | `(self, x)` |  |
 | `LoRALinear.merge` | `(self)` |  |
 | **class** `RewardModel` | | backbone: causal LM with hidden_states(idx); linear value head on the hidden state at the last True position of attention_mask (B,T) bool (default last position); returns (B,) rewards |
 | `RewardModel.__init__` | `(self, backbone, d_model)` |  |
 | `RewardModel.forward` | `(self, input_ids, attention_mask=None)` |  |
-| **class** `VectorIndex` | | NumPy; cosine similarity; n_lists = 0 -> exact search; n_lists > 0 -> IVF (k-means coarse quantiser via mlfs.unsupervised.KMeans, train() required first, searching n_probe lists); search -> (scores (q,k), ids (q,k)) |
+| **class** `VectorIndex` | | NumPy; cosine similarity; n_lists = 0 -> exact search; n_lists > 0 -> IVF (k-means coarse quantiser via mlfs.unsupervised.KMeans, train() required first, searching n_probe lists); search -> (scores (q,k), ids (q,k)) (note: the reverse of cosine_top_k's (indices, scores)); missing results padded with id -1 and score -inf; train returns self; property ntotal; attr centroids_ after train |
 | `VectorIndex.__init__` | `(self, dim, *, n_lists=0, n_probe=1, seed=0)` |  |
 | `VectorIndex.train` | `(self, vectors)` |  |
 | `VectorIndex.add` | `(self, vectors, ids=None)` |  |
 | `VectorIndex.search` | `(self, queries, k=5)` |  |
+| **class** `HashingEmbedder` | | hashed character n-gram TF-IDF embedder; fit(texts) sets idf_ = log((1+N)/(1+df)) + 1 and returns self; transform(texts) -> (n, dim) rows of (1 + log count) * idf, L2-normalised |
+| `HashingEmbedder.__init__` | `(self, dim=1024, *, ngram=(3, 5))` |  |
+| `HashingEmbedder.fit` | `(self, texts)` |  |
+| `HashingEmbedder.transform` | `(self, texts)` |  |
 
 ### mlfs.safety
 
