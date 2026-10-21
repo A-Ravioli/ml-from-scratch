@@ -2277,21 +2277,23 @@ CONTRACTS = {
     # ------------------------------------------------------------------ part VII
     "research": {
         "topics": ["30-research-practice-and-thesis/03-experimental-rigor"],
-        "summary": "multi-seed runs, confidence intervals, paired comparisons and ablation tables",
+        "summary": "multi-seed runs, confidence intervals, paired comparisons, ablation tables and expected best-of-k",
         "by_topic": {"30-research-practice-and-thesis/03-experimental-rigor": [
-            "run_seeds", "mean_ci", "compare_runs", "ablation_table"]},
+            "run_seeds", "mean_ci", "compare_runs", "ablation_table", "expected_best"]},
         "functions": {
             "run_seeds": "(fn, seeds=(0, 1, 2, 3, 4))",
             "mean_ci": "(values, *, alpha=0.05, method='t', rng=None)",
             "compare_runs": "(a, b, *, paired=True, alpha=0.05, n_permutations=10000, rng=None)",
             "ablation_table": "(results, *, baseline=None, alpha=0.05, higher_is_better=True, fmt='{:.3f}')",
+            "expected_best": "(scores, k, *, higher_is_better=True)",
         },
         "classes": {},
         "notes": {
-            "run_seeds": "calls fn(seed) per seed; scalar results -> ndarray (n_seeds,), dict results -> dict key -> ndarray",
-            "mean_ci": "method 't' (Student t via scipy.stats) or 'bootstrap' (mlfs.stats.bootstrap_ci); returns (mean, lo, hi)",
-            "compare_runs": "a, b per-seed metrics; returns dict(diff = mean(a - b) or mean(a) - mean(b), ci (lo, hi) via stats.bootstrap_ci, p_value via stats.permutation_test)",
-            "ablation_table": "results: dict name -> per-seed values; returns a Markdown table string with mean +/- CI and, if baseline is given, the difference vs the baseline with its CI; best row in bold",
+            "run_seeds": "calls fn(seed) once per seed, in order; scalar results -> float ndarray (n_seeds,), dict results -> dict key -> ndarray (keys in the first result's order); nan results kept",
+            "mean_ci": "method 't' (Student t, ddof=1, n-1 dof) or 'bootstrap' (mlfs.stats.bootstrap_ci); returns (mean, lo, hi) floats; ValueError for < 2 or non-finite values",
+            "compare_runs": "a, b per-seed metrics; returns dict(diff, ci (lo, hi), p_value, n_a, n_b, paired); one generator, interval drawn first, then the test. paired: diff = mean(a - b), bootstrap_ci of a - b, paired permutation_test (ValueError unless equal lengths). unpaired: diff = mean(a) - mean(b), percentile bootstrap resampling a and b independently, unpaired permutation_test",
+            "ablation_table": "results: dict name -> per-seed values (rows in that order); Markdown table '| config | mean ± L CI | n |' (L = f'{100(1-alpha):g}%') plus 'Δ vs {baseline} ± L CI' with a baseline: fmt(mean) ± fmt(half-width) of mean_ci, paired per-seed differences with a leading '+'; every cell of the best (tied) row in **bold**",
+            "expected_best": "Dodge et al. (2019): expected best of k trials drawn with replacement from the observed scores; k a positive int or int array (returns float or an array of k's shape); higher_is_better=False takes the minimum",
         },
     },
 }
