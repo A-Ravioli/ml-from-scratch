@@ -44,8 +44,8 @@ def _():
 @app.function
 def damped_inverses(A, G, damping):
     """stage 1: ((A + pi sqrt(damping) I)^-1, (G + sqrt(damping)/pi I)^-1), pi = sqrt((tr A / dim A) / (tr G / dim G))."""
-    eye_a = torch.eye(A.shape[0], dtype=A.dtype)
-    eye_g = torch.eye(G.shape[0], dtype=G.dtype)
+    eye_a = torch.eye(A.shape[0], dtype=A.dtype, device=A.device)
+    eye_g = torch.eye(G.shape[0], dtype=G.dtype, device=G.device)
     if damping == 0:
         return torch.linalg.inv(A), torch.linalg.inv(G)
     pi = torch.sqrt((torch.trace(A) / A.shape[0]) / (torch.trace(G) / G.shape[0]))
@@ -96,9 +96,9 @@ def kfac_factors(model, X, labels=None):
     N, K = logp.shape
     A = []
     for a in inputs:
-        a_aug = torch.cat([a, torch.ones(N, 1, dtype=a.dtype)], dim=1)
+        a_aug = torch.cat([a, torch.ones(N, 1, dtype=a.dtype, device=a.device)], dim=1)
         A.append(a_aug.T @ a_aug / N)
-    G = [torch.zeros(s.shape[1], s.shape[1], dtype=s.dtype) for s in outputs]
+    G = [torch.zeros(s.shape[1], s.shape[1], dtype=s.dtype, device=s.device) for s in outputs]
     if labels is None:  # exact expectation over y ~ p(. | x_n): one backward pass per class
         probs = logp.detach().exp()
         for k in range(K):
@@ -191,7 +191,8 @@ class KFAC:
             else:
                 with torch.no_grad():
                     probs = torch.softmax(model(X), dim=-1)
-                labels = torch.multinomial(probs, 1, generator=self.generator).squeeze(1)
+                probs = probs.to(self.generator.device)  # sample where the generator lives (e.g. CPU, with a GPU model)
+                labels = torch.multinomial(probs, 1, generator=self.generator).squeeze(1).to(X.device)
             new = kfac_factors(model, X, labels)
             if self.factors is None:
                 self.factors = new
